@@ -12,6 +12,7 @@ void setup(){
   dieKamera = new Kamera();
   dasLevel = new Level();
   dieEingabe = new Eingabe();
+  println("hi");
 }
 
 

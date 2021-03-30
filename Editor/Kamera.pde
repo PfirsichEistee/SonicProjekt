@@ -7,9 +7,9 @@ class Kamera{
   
   // KONSTRUKTOR
   public Kamera(){
-    x = 0;
-    y = 0;
     pixelProEinheit = 50;
+    x = -(width / pixelProEinheit) / 2;
+    y = (height / pixelProEinheit) / 2;
   }
   
   
@@ -44,12 +44,21 @@ class Kamera{
     line(einheitZuPixelX(x1), einheitZuPixelY(y1), einheitZuPixelX(x2), einheitZuPixelY(y2));
   }
   
+  public void drawText(String txt, float px, float py, float size) {
+    textSize(size * pixelProEinheit);
+    text(txt, einheitZuPixelX(px), einheitZuPixelY(py));
+  }
+  
+  public void drawCircle(float px, float py, float pr) {
+    ellipse(einheitZuPixelX(px), einheitZuPixelY(py), pr * 2 * pixelProEinheit, pr * 2 * pixelProEinheit);
+  }
+  
   // Sonstige
   public void zeichneHintergrund() {
     // GITTER ZEICHNEN
     
     stroke(0);
-    strokeWeight(1);
+    strokeWeight(0.5f);
     
     // Vertikale Linien zeichnen
     for (int phX = floor(x); phX <= (floor(x) + ceil(width / pixelProEinheit)); phX++) {
@@ -60,7 +69,7 @@ class Kamera{
     }
     
     // Horizontale Linien zeichnen
-    for (int phY = floor(y); phY >= -(floor(y) + ceil(height / pixelProEinheit)); phY--) {
+    for (int phY = floor(y); phY >= (floor(y) - ceil(height / pixelProEinheit)); phY--) {
       if (phY == 0)
         continue;
       
@@ -76,23 +85,39 @@ class Kamera{
     
     // INFOS ZEICHNEN
     fill(0);
+    textSize(16);
     String txt = "Kamera Position: " + (floor(x * 10f) / 10f) + " | " + (floor(y * 10f) / 10f) + "    (Bildschirm-Ecke oben-links)\n";
     txt += "Maus Position: " + (floor(pixelZuEinheitX(mouseX) * 10f) / 10f) + " | " + (floor(pixelZuEinheitY(mouseY) * 10f) / 10f) + "\n";
-    text(txt, einheitZuPixelX(x + 0.1f), einheitZuPixelY(y - 0.25f));
+    txt += "Werkzeug mit A/D wechseln\n";
+    txt += "Kamera mit mittlerer Maustaste bewegen\n";
+    text(txt, 20, 36);
   }
   
-  public void move(){
-    if(dieEingabe.istTasteGedrueckt('a') == true){
-      x = x - 0.1f;
+  
+  public void move(float dx, float dy){
+    if (dieEingabe.istMausButtonGedrueckt(2) == true) {
+      x -= dx;
+      y -= dy;
+      
+      dieEingabe.cursorX = pixelZuEinheitX(mouseX);
+      dieEingabe.cursorY = pixelZuEinheitY(mouseY);
     }
-    if(dieEingabe.istTasteGedrueckt('s') == true){
-      y = y - 0.1f;
-    }
-    if(dieEingabe.istTasteGedrueckt('d') == true){
-      x = x + 0.1f;
-    }
-    if(dieEingabe.istTasteGedrueckt('w') == true){
-      y = y + 0.1f;
-    }
+  }
+  
+  
+  public void zoom(float delta) {
+    pixelProEinheit -= delta * 3;
+    
+    if (pixelProEinheit < 10) pixelProEinheit = 10;
+    else if (pixelProEinheit > 80) pixelProEinheit = 80;
+  }
+  
+  
+  // Getter & setter
+  public float getWidth() {
+    return (width / pixelProEinheit);
+  }
+  public float getHeight() {
+    return (height / pixelProEinheit);
   }
 }

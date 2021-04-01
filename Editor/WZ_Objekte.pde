@@ -40,15 +40,15 @@ public class WZ_Objekte extends Werkzeug {
   public void cursorClicked(int button) {
     if (button == 0) {
       // PLATZIEREN
-      dasLevel.liste_Objekte.add(new Objekte(auswahl, spezialBezeichnungen[auswahl], dieEingabe.cursorX, dieEingabe.cursorY));
+      dasLevel.liste_Objekte.add(new Objekt(auswahl, spezialBezeichnungen[auswahl], dieEingabe.cursorX, dieEingabe.cursorY));
     } else if (button == 1) {
       // LOESCHEN
       if (dasLevel.liste_Objekte.size() > 0) {
         int naechsterIndex = 0;
-        Objekte nObjekte = dasLevel.liste_Objekte.get(0);
+        Objekt nObjekte = dasLevel.liste_Objekte.get(0);
         
         for (int i = 1; i < dasLevel.liste_Objekte.size(); i++) {
-          Objekte ph = dasLevel.liste_Objekte.get(i);
+          Objekt ph = dasLevel.liste_Objekte.get(i);
           
           if (dist(dieEingabe.cursorX, dieEingabe.cursorY, ph.x, ph.y) < dist(dieEingabe.cursorX, dieEingabe.cursorY, nObjekte.x, nObjekte.y)) {
             naechsterIndex = i;

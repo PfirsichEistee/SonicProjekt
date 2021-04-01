@@ -117,7 +117,7 @@ class WZ_Strecken extends Werkzeug {
   }
   public void cursorReleased(int button) {
     if (button == 0) {
-      if (selectedIndex == -1) {
+      if (selectedIndex == -1 && newX1 != null) {
         dasLevel.liste_Strecken.add(newX1);
         dasLevel.liste_Strecken.add(newY1);
         dasLevel.liste_Strecken.add(newX2);

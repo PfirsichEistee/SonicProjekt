@@ -9,7 +9,6 @@ public class Level {
   public ArrayList<Spezial> liste_Spezial;
   private Sonic derSonic;
   private Gegner derGegner;
-  private Strecken dieStrecke;
   
   private PImage hintergrund;
   private boolean zeichneMap;
@@ -26,7 +25,6 @@ public class Level {
     liste_Spezial = new ArrayList<Spezial>();
     derSonic = new Sonic();
     derGegner = new Gegner();
-    dieStrecke = new Strecken();
     
 
     

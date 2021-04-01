@@ -73,3 +73,7 @@ public class WZ_Objekte extends Werkzeug {
     
   }
 }
+
+
+// Wenn du ein neues Objekt erzeugen willst:
+//    liste_Objekte.add( new Objekt( ART?, POS_X?, POS_Y? ) );

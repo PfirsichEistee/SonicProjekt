@@ -47,6 +47,7 @@ void draw(){
     txt += "Werkzeug mit A/D wechseln\n";
     txt += "Kamera mit mittlerer Maustaste bewegen\n";
     txt += "Mit Mausrad zoomen\n";
+    txt += "Map anzeigen mit 'M'\n";
     txt += "\nSpeichern mit ' 9 '\nLaden mit ' 0 '\n";
     text(txt, 20, 56);
   }

@@ -1,37 +1,47 @@
 public class Level {
   // ATTRIBUTE //
-  int musik;
-  int hintergrund;
-  
   public Werkzeug dasWerkzeug;
   private int auswahlWerkzeug;
   
   // Platzierte Dinge
+  public ArrayList<Objekt> liste_Objekte;
   public ArrayList<Float> liste_Strecken;
   public ArrayList<Spezial> liste_Spezial;
   private Sonic derSonic;
   private Gegner derGegner;
   private Strecken dieStrecke;
-  private Objekte dasObjekt;
+  
+  private PImage hintergrund;
+  private boolean zeichneMap;
   
   
   // KONSTRUKTOR //
   public Level() {
+    auswahlWerkzeug = 0;
+    werkzeugWechseln(0);
+    
+    
+    liste_Objekte = new ArrayList<Objekt>();
     liste_Strecken = new ArrayList<Float>();
     liste_Spezial = new ArrayList<Spezial>();
     derSonic = new Sonic();
     derGegner = new Gegner();
     dieStrecke = new Strecken();
-    dasObjekt = new Objekte();
     
-    
-    auswahlWerkzeug = 0;
-    werkzeugWechseln(0);
+    hintergrund = loadImage("images/map_01.png"); // 88x8 chunks; 4x4 tiles per chunk
+    zeichneMap = false;
   }
   
   
   // METHODEN //
   public void zeichnen() {
+    // Hintergrund zeichnen
+    if (zeichneMap) {
+      tint(200, 200, 200, 155);
+      dieKamera.drawImage(hintergrund, 0, 0, 88 * 4, 8 * 4);
+    }
+    
+    
     // Spezial-Liste zeichnen
     stroke(0, 0, 0, 155);
     fill(75, 75, 255, 155);
@@ -44,6 +54,11 @@ public class Level {
     strokeWeight(6);
     for (int i = 0; i < liste_Strecken.size(); i += 4) {
       dieKamera.drawLine(liste_Strecken.get(i), liste_Strecken.get(i + 1), liste_Strecken.get(i + 2), liste_Strecken.get(i + 3));
+    }
+    
+    // Objekte zeichnen
+    for (int i = 0; i < liste_Objekte.size(); i++) {
+      liste_Objekte.get(i).zeichnen();
     }
     
     
@@ -75,6 +90,8 @@ public class Level {
       werkzeugWechseln(-1);
     else if (k == 'D')
       werkzeugWechseln(1);
+    else if (k == 'M')
+      zeichneMap = !zeichneMap;
   }
   public void tasteLosgelassen(char k) {
     dasWerkzeug.tasteLosgelassen(k);

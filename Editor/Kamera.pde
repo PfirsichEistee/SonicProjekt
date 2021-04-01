@@ -53,6 +53,10 @@ class Kamera{
     ellipse(einheitZuPixelX(px), einheitZuPixelY(py), pr * 2 * pixelProEinheit, pr * 2 * pixelProEinheit);
   }
   
+  public void drawImage(PImage img, float px, float py, float pw, float ph) {
+    image(img, einheitZuPixelX(px), einheitZuPixelY(py) - ph * pixelProEinheit, pw * pixelProEinheit, ph * pixelProEinheit);
+  }
+  
   // Sonstige
   public void zeichneHintergrund() {
     // GITTER ZEICHNEN

@@ -7,6 +7,9 @@ public Level dasLevel;
 public Eingabe dieEingabe;
 
 
+private boolean zeigeHilfe = false;
+
+
 
 void setup(){
   size(1000, 800);
@@ -31,6 +34,22 @@ void draw(){
   dieKamera.zeichneHintergrund();
   
   dasLevel.zeichnen();
+  
+  // Editor infos zeichnen
+  textSize(16);
+  fill(0);
+  stroke(0);
+  text("Druecke 'H' fuer Hilfe", 20, 36);
+  
+  if (zeigeHilfe == true) {
+    String txt = "Kamera Position: " + (floor(dieKamera.x * 10f) / 10f) + " | " + (floor(dieKamera.y * 10f) / 10f) + "    (Bildschirm-Ecke oben-links)\n";
+    txt += "Maus Position: " + (floor(dieEingabe.cursorX * 10f) / 10f) + " | " + (floor(dieEingabe.cursorY * 10f) / 10f) + "\n";
+    txt += "Werkzeug mit A/D wechseln\n";
+    txt += "Kamera mit mittlerer Maustaste bewegen\n";
+    txt += "Mit Mausrad zoomen\n";
+    txt += "\nSpeichern mit ' 9 '\nLaden mit ' 0 '\n";
+    text(txt, 20, 56);
+  }
 }
 
 
@@ -52,9 +71,23 @@ public void cursorClicked(int button) {
   dasLevel.cursorClicked(button);
 }
 
+public void tasteGedrueckt(char k) {
+  dasLevel.tasteGedrueckt(k);
+  
+  if (k == 'H') {
+    zeigeHilfe = !zeigeHilfe;
+  }
+}
+public void tasteLosgelassen(char k) {
+  dasLevel.tasteLosgelassen(k);
+}
 
-public boolean istCursorBeiPunkt(float px, float py) {
-  float dis = sqrt((px - dieEingabe.cursorX) * (px - dieEingabe.cursorX) + (py - dieEingabe.cursorY) * (py - dieEingabe.cursorY)) * dieKamera.pixelProEinheit;;
+
+public boolean istCursorNahePunkt(float px, float py) {
+  return istPktANahePktB(dieEingabe.cursorX, dieEingabe.cursorY, px, py);
+}
+public boolean istPktANahePktB(float xa, float ya, float xb, float yb) {
+  float dis = sqrt((xb - xa) * (xb - xa) + (yb - ya) * (yb - ya)) * dieKamera.pixelProEinheit;;
   if (dis < 30)
     return true;
   

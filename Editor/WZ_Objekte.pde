@@ -11,6 +11,8 @@ public class WZ_Objekte extends Werkzeug {
   
   // METHODEN //
   public void zeichnen() {
+    stroke(0);
+    fill(0);
     textSize(16);
     text("Werkzeug: Objekte", 20, height - 20);
   }
@@ -25,6 +27,12 @@ public class WZ_Objekte extends Werkzeug {
     
   }
   public void cursorClicked(int button) {
+    
+  }
+  public void tasteGedrueckt(char k) {
+    
+  }
+  public void tasteLosgelassen(char k) {
     
   }
 }

@@ -65,6 +65,7 @@ public class Eingabe {
     }
     
     gedrueckteTasten.add(k);
+    tasteGedrueckt(k);
   }
   
   public void keyReleased() {
@@ -74,6 +75,7 @@ public class Eingabe {
     for (int i = 0; i < gedrueckteTasten.size(); i++) {
       if (gedrueckteTasten.get(i).equals(k)) {
         gedrueckteTasten.remove(i);
+        tasteLosgelassen(k);
         return;
       }
     }
@@ -83,25 +85,31 @@ public class Eingabe {
     if (mouseButton == LEFT) {
       gedrueckteMausButtons[0] = true;
       mausButtonClickZeit[0] = millis();
+      cursorPressed(0);
     } else if (mouseButton == RIGHT) {
       gedrueckteMausButtons[1] = true;
       mausButtonClickZeit[1] = millis();
+      cursorPressed(1);
     } else {
       gedrueckteMausButtons[2] = true;
       mausButtonClickZeit[2] = millis();
+      cursorPressed(2);
     }
   }
   
   public void mouseReleased() {
     if (mouseButton == LEFT) {
       gedrueckteMausButtons[0] = false;
-      if ((millis() - mausButtonClickZeit[0]) < 100) cursorClicked(0);
+      if ((millis() - mausButtonClickZeit[0]) < 175) cursorClicked(0);
+      cursorReleased(0);
     } else if (mouseButton == RIGHT) {
       gedrueckteMausButtons[1] = false;
-      if ((millis() - mausButtonClickZeit[1]) < 100) cursorClicked(1);
+      if ((millis() - mausButtonClickZeit[1]) < 175) cursorClicked(1);
+      cursorReleased(1);
     } else {
       gedrueckteMausButtons[2] = false;
-      if ((millis() - mausButtonClickZeit[2]) < 100) cursorClicked(2);
+      if ((millis() - mausButtonClickZeit[2]) < 175) cursorClicked(2);
+      cursorReleased(2);
     }
   }
   

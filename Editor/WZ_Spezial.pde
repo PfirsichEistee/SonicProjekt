@@ -21,14 +21,8 @@ public class WZ_Spezial extends Werkzeug {
     fill(0);
     dieKamera.drawText(spezialBezeichnungen[auswahl], dieEingabe.cursorX, dieEingabe.cursorY + 0.5f, 0.4f);
     
-    
-    fill(75, 75, 255, 155);
-    stroke(0, 0, 0, 0);
-    if (!istCursorBeiPunkt(0, 0)) {
-      dieKamera.drawCircle(dieEingabe.cursorX, dieEingabe.cursorY, 0.2f);
-    } else {
-      dieKamera.drawCircle(0, 0, 0.2f);
-    }
+    textSize(16);
+    text("Werkzeug: Spezial\nSpezial Item wechseln mit 'X'\nLinks-Click: Platzieren\nRechts-Click: Loeschen", 20, height - 100);
   }
   public void cursorMoved(float deltaX, float deltaY) {
     
@@ -40,6 +34,38 @@ public class WZ_Spezial extends Werkzeug {
     
   }
   public void cursorClicked(int button) {
-    dasLevel.liste_Spezial.add(new Spezial(0, dieEingabe.cursorX, dieEingabe.cursorY));
+    if (button == 0) {
+      // PLATZIEREN
+      dasLevel.liste_Spezial.add(new Spezial(auswahl, spezialBezeichnungen[auswahl], dieEingabe.cursorX, dieEingabe.cursorY));
+    } else if (button == 1) {
+      // LOESCHEN
+      if (dasLevel.liste_Spezial.size() > 0) {
+        int naechsterIndex = 0;
+        Spezial nSpezial = dasLevel.liste_Spezial.get(0);
+        
+        for (int i = 1; i < dasLevel.liste_Spezial.size(); i++) {
+          Spezial ph = dasLevel.liste_Spezial.get(i);
+          
+          if (dist(dieEingabe.cursorX, dieEingabe.cursorY, ph.x, ph.y) < dist(dieEingabe.cursorX, dieEingabe.cursorY, nSpezial.x, nSpezial.y)) {
+            naechsterIndex = i;
+            nSpezial = ph;
+          }
+        }
+        
+        if (istCursorNahePunkt(nSpezial.x, nSpezial.y)) {
+          dasLevel.liste_Spezial.remove(naechsterIndex);
+        }
+      }
+    }
+  }
+  public void tasteGedrueckt(char k) {
+    if (k == 'X') {
+      auswahl++;
+      if (auswahl >= spezialBezeichnungen.length)
+        auswahl = 0;
+    }
+  }
+  public void tasteLosgelassen(char k) {
+    
   }
 }

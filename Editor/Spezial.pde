@@ -1,12 +1,14 @@
 public class Spezial {
   // ATTRIBUTE //
   public int id;
+  public String text;
   public float x, y;
   
   
   // KONSTRUKTOR //
-  public Spezial(int pID, float px, float py) {
+  public Spezial(int pID, String pText, float px, float py) {
     id = pID;
+    text = pText;
     x = px;
     y = py;
   }
@@ -27,6 +29,8 @@ public class Spezial {
         break;
     }
     
-    dieKamera.drawCircle(x, y, 0.2f);
+    dieKamera.drawCircle(x, y, 0.1f);
+    fill(255, 0, 0);
+    dieKamera.drawText(text, x - 0.5f, y + 0.3f, 0.2f);
   }
 }

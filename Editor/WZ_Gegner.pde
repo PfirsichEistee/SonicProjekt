@@ -16,4 +16,10 @@ class WZ_Gegner extends Werkzeug{
   public void cursorClicked(int button) {
     
   }
+  public void tasteGedrueckt(char k) {
+    
+  }
+  public void tasteLosgelassen(char k) {
+    
+  }
 }

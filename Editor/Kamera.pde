@@ -81,16 +81,6 @@ class Kamera{
     strokeWeight(2);
     drawLine(x, 0, x + (width / pixelProEinheit), 0);
     drawLine(0, y, 0, y - (height / pixelProEinheit));
-    
-    
-    // INFOS ZEICHNEN
-    fill(0);
-    textSize(16);
-    String txt = "Kamera Position: " + (floor(x * 10f) / 10f) + " | " + (floor(y * 10f) / 10f) + "    (Bildschirm-Ecke oben-links)\n";
-    txt += "Maus Position: " + (floor(pixelZuEinheitX(mouseX) * 10f) / 10f) + " | " + (floor(pixelZuEinheitY(mouseY) * 10f) / 10f) + "\n";
-    txt += "Werkzeug mit A/D wechseln\n";
-    txt += "Kamera mit mittlerer Maustaste bewegen\n";
-    text(txt, 20, 36);
   }
   
   
@@ -109,7 +99,7 @@ class Kamera{
     pixelProEinheit -= delta * 3;
     
     if (pixelProEinheit < 10) pixelProEinheit = 10;
-    else if (pixelProEinheit > 80) pixelProEinheit = 80;
+    else if (pixelProEinheit > 160) pixelProEinheit = 160;
   }
   
   

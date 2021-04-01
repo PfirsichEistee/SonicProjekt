@@ -35,8 +35,7 @@ public class Spielwelt {
 		
 		Kollision.init(10, 5, this);
 		
-		new Kollision(1, 1, 7, 3);
-		new Kollision(-1, 1, 7, 3);
+		debugCreateMap();
 	}
 	
 	
@@ -49,16 +48,18 @@ public class Spielwelt {
 	public void update(float delta) {
 		debugUpdate();
 		debugDraw(delta);
+		
+		derSpieler.update(delta);
 	}
 	
 	
 	public void fixedUpdate(float delta) {
-		
+		derSpieler.fixedUpdate(delta);
 	}
 	
 	
 	public void draw() {
-		dieKamera.drawLine(5, 1, 16, -11);
+		derSpieler.draw();
 	}
 	
 	
@@ -70,45 +71,54 @@ public class Spielwelt {
 	
 	// DEBUG
 	private void debugStart() {
-		dieKamera.setLineWidth(0.05f);
-		Kollision.raycast(5, 1, 11, -12);
+		
 	}
 	
 	private void debugDraw(float delta) {
 		// grid
-		int ph = (int)Math.floor(dieKamera.getX());
-		for (int x = ph; x <= (ph + 20); x++) {
+		int ph = (int)Math.floor(dieKamera.getX() - (dieKamera.getWidth() / 2));
+		for (int x = ph; x <= (ph + (int)Math.ceil(dieKamera.getWidth())); x++) {
 			if (x == 0) {
 				dieKamera.setFarbe(Color.RED);
+				dieKamera.setLineWidth(0.03f);
 			} else {
 				dieKamera.setFarbe(Color.BLACK);
+				dieKamera.setLineWidth(0.01f);
 			}
 			
-			dieKamera.drawLine(x, dieKamera.getY(), x, dieKamera.getY() - 15);
+			dieKamera.drawLine(x, dieKamera.getY() - (dieKamera.getHeight() / 2), x, dieKamera.getY() + (dieKamera.getHeight() / 2));
 		}
 		
-		ph = (int)Math.floor(dieKamera.getY());
-		for (int y = ph; y >= (ph - 15); y--) {
+		ph = (int)Math.floor(dieKamera.getY() - (dieKamera.getHeight() / 2));
+		for (int y = ph; y <= (ph + (int)Math.ceil(dieKamera.getHeight())); y++) {
 			if (y == 0) {
 				dieKamera.setFarbe(Color.RED);
+				dieKamera.setLineWidth(0.03f);
 			} else {
 				dieKamera.setFarbe(Color.BLACK);
+				dieKamera.setLineWidth(0.01f);
 			}
 			
-			dieKamera.drawLine(dieKamera.getX(), y, dieKamera.getX() + 20, y);
+			dieKamera.drawLine(dieKamera.getX() - (dieKamera.getWidth() / 2), y, dieKamera.getX() + (dieKamera.getWidth() / 2), y);
 		}
+		
+		
+		dieKamera.setLineWidth(0.02f);
+		
+		
+		Kollision.drawDebug(dieKamera);
 		
 		
 		// kollision test
 		dieKamera.setFarbe(Color.GREEN);
-		dieKamera.drawLine(1, 1, 7, 3);
-		dieKamera.drawLine(dieKamera.getX() + 6, dieKamera.getY() - 5, dieKamera.pixelZuEinheitX(Eingabe.mouseX), dieKamera.pixelZuEinheitY(Eingabe.mouseY));
-		RaycastHit hit = Kollision.raycast(dieKamera.getX() + 6, dieKamera.getY() - 5,
-				dieKamera.pixelZuEinheitX(Eingabe.mouseX) - (dieKamera.getX() + 6),
-				dieKamera.pixelZuEinheitY(Eingabe.mouseY) - (dieKamera.getY() - 5));
+		//dieKamera.drawLine(1, 1, 7, 3);
+		dieKamera.drawLine(dieKamera.getX() - 3, dieKamera.getY() - 1, dieKamera.pixelZuEinheitX(Eingabe.mouseX), dieKamera.pixelZuEinheitY(Eingabe.mouseY));
+		RaycastHit hit = Kollision.raycast(dieKamera.getX() - 3, dieKamera.getY() - 1,
+				dieKamera.pixelZuEinheitX(Eingabe.mouseX) - (dieKamera.getX() - 3),
+				dieKamera.pixelZuEinheitY(Eingabe.mouseY) - (dieKamera.getY() - 1));
 		if (hit != null) {
 			dieKamera.setFarbe(Color.RED);
-			dieKamera.drawRect(hit.hitX - 0.1f, hit.hitY + 0.1f, 0.2f, 0.2f);
+			dieKamera.drawRect(hit.hitX - 0.1f, hit.hitY - 0.1f, 0.2f, 0.2f);
 			dieKamera.drawLine(hit.hitX, hit.hitY, hit.hitX + hit.normalX, hit.hitY + hit.normalY);
 		}
 		
@@ -116,15 +126,15 @@ public class Spielwelt {
 		
 		dieKamera.setFarbe(Color.DARKRED);
 		float phfps = (float)Math.floor((1f / delta) * 10) / 10;
-		dieKamera.drawText(phfps + " FPS", dieKamera.getX() + 0.15f, dieKamera.getY() - 0.5f);
+		dieKamera.drawText(phfps + " FPS", dieKamera.getX() - (dieKamera.getWidth() / 2) + 0.15f, dieKamera.getY() + (dieKamera.getHeight() / 2) - 0.5f);
 		float phx = (float)Math.floor(dieKamera.pixelZuEinheitX(Eingabe.mouseX) * 10) / 10;
 		float phy = (float)Math.floor(dieKamera.pixelZuEinheitY(Eingabe.mouseY) * 10) / 10;
-		dieKamera.drawText("cursor: " + phx + " | " + phy, dieKamera.getX() + 0.15f, dieKamera.getY() - 1f);
+		dieKamera.drawText("cursor: " + phx + " | " + phy, dieKamera.getX() - (dieKamera.getWidth() / 2) + 0.15f, dieKamera.getY() + (dieKamera.getHeight() / 2) - 1f);
 		
 	}
 	
 	private void debugUpdate() {
-		if (Eingabe.isKeyDown("A")) {
+		/*if (Eingabe.isKeyDown("A")) {
 			dieKamera.setX(dieKamera.getX() - 0.1f);
 		} else if (Eingabe.isKeyDown("D")) {
 			dieKamera.setX(dieKamera.getX() + 0.1f);
@@ -133,6 +143,14 @@ public class Spielwelt {
 			dieKamera.setY(dieKamera.getY() - 0.1f);
 		} else if (Eingabe.isKeyDown("W")) {
 			dieKamera.setY(dieKamera.getY() + 0.1f);
-		}
+		}*/
+	}
+	
+	private void debugCreateMap() {
+		new Kollision(-1, -1, 7, -3);
+		new Kollision(7, -3, 10, -4);
+		new Kollision(10, -4, 15, -3.5f);
+		new Kollision(15, -3.5f, 21, -3.75f);
+		new Kollision(21, -3.75f, 27, -4.5f);
 	}
 }

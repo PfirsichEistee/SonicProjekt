@@ -2,6 +2,8 @@ package app;
 
 import java.util.ArrayList;
 
+import javafx.scene.paint.Color;
+
 public class Kollision {
 	// ATTRIBUTE //
 	private static ArrayList<Kollision> altKollisionenListe; // Hier kommen Kollisionen rein, die keinem Chunk zugeordnet wurden
@@ -37,9 +39,9 @@ public class Kollision {
 	
 	// METHODEN //
 	@SuppressWarnings("unchecked")
-	public static void init(int chunkW, int chunkY, Spielwelt pSpielwelt) {
+	public static void init(int chunkW, int chunkH, Spielwelt pSpielwelt) {
 		altKollisionenListe = new ArrayList<Kollision>();
-		kollisionenListe = new ArrayList[chunkW][chunkY];
+		kollisionenListe = new ArrayList[chunkW][chunkH];
 		dieSpielwelt = pSpielwelt;
 	}
 	
@@ -67,7 +69,7 @@ public class Kollision {
 		float rayM = dirY / dirX;
 		float rayB = (startY - rayM * startX);
 		
-		RaycastHit rayhit = null;
+		RaycastHit rayhit = raycastOutOfMap(startX, startY, dirX, dirY);
 		
 		
 		while (true) {
@@ -106,7 +108,7 @@ public class Kollision {
 						cutX = (cutY - rayB) / rayM;
 						
 						normalX = 0f;
-						normalY = 0f;
+						normalY = 1f;
 					}
 					
 					
@@ -184,10 +186,6 @@ public class Kollision {
 		}
 		
 		
-		
-		if (rayhit == null)
-			return raycastOutOfMap(startX, startY, dirX, dirY);
-		
 		return rayhit;
 	}
 	
@@ -198,7 +196,7 @@ public class Kollision {
 		int chunkY = (int)Math.floor(startY / 10);
 		int lastChunkX = chunkX, lastChunkY = chunkY;
 		
-		RaycastHit rayhit = null;
+		RaycastHit rayhit = raycastOutOfMap(startX, startY, dirX, dirY);
 		
 		if (dirX != 0) // Horizontal
 			lastChunkX = (int)Math.floor((startX + dirX) / 10);
@@ -257,7 +255,7 @@ public class Kollision {
 								normalX /= (float)Math.sqrt(normalX * normalX + normalY * normalY);
 								normalY /= (float)Math.sqrt(normalX * normalX + normalY * normalY);
 							} else if (col.y1 == col.y2) {
-								// Vertical
+								// Horzontal
 								cutX = startX;
 								cutY = col.y1;
 								
@@ -307,16 +305,86 @@ public class Kollision {
 		
 		
 		
-		if (rayhit == null)
-			return raycastOutOfMap(startX, startY, dirX, dirY);
-		
 		return rayhit;
 	}
 	
 	
 	// LANGSAMES RAYCAST (vermeide es, Kollisionen ausserhalb der Chunk-Range zu platzieren aight)
 	private static RaycastHit raycastOutOfMap(float startX, float startY, float dirX, float dirY) {
-		return null;
+		if (dirX == 0)
+			dirX = 0.0001f;
+		else if (dirY == 0)
+			dirY = 0.0001f;
+		
+		float rayM = dirY / dirX;
+		float rayB = (startY - rayM * startX);
+		
+		RaycastHit rayhit = null;
+		
+		for (int i = 0; i < altKollisionenListe.size(); i++) {
+			Kollision col = altKollisionenListe.get(i);
+			
+			// Get collision values
+			float cutX = -999, cutY = -999;
+			float normalX = -1, normalY = -1;
+			
+			if (col.x1 != col.x2 && col.y1 != col.y2) { // Line cuts line
+				float colM = (col.y2 - col.y1) / (col.x2 - col.x1);
+				float colB = (col.y1 - colM * col.x1);
+				
+				if ((rayM - colM) != 0) { // Are lines NOT parallel to each other?
+					cutX = (colB - rayB) / (rayM - colM);
+					cutY = rayM * cutX + rayB;
+					
+					float ph = -1f / colM;
+					normalX = 1f;
+					normalY = normalX * ph;
+					normalX /= (float)Math.sqrt(normalX * normalX + normalY * normalY);
+					normalY /= (float)Math.sqrt(normalX * normalX + normalY * normalY);
+				}
+			} else if (col.x1 == col.x2) { // Line cuts vertical line
+				cutX = col.x1;
+				cutY = rayM * cutX + rayB;
+				
+				normalX = 1f;
+				normalY = 0f;
+			} else { // Line cuts horizontal line
+				cutY = col.y1;
+				cutX = (cutY - rayB) / rayM;
+				
+				normalX = 0f;
+				normalY = 0f;
+			}
+			
+			
+			// Did collision occur?
+			if (cutX != -999 || cutY != -999) {
+				// Is collision within bounds?
+				if (col.isInBoundingRect(cutX, cutY) && CMath.distance(startX, startY, cutX, cutY) <= CMath.distance(0, 0, dirX, dirY)) {
+					// Did the ray shoot in the right direction?
+					if (CMath.angleBetweenDirs(dirX, dirY, cutX - startX, cutY - startY) < 15f) {
+						// Is it a new raycast or is it nearer?
+						if (rayhit == null || CMath.distance(startX, startY, cutX, cutY) < rayhit.distance) {
+							if (CMath.angleBetweenDirs(dirX, dirY, normalX, normalY) < 90) {
+								normalX *= -1;
+								normalY *= -1;
+							}
+							
+							if (rayhit == null)
+								rayhit = new RaycastHit(0, 0, 0, 0, 0);
+							
+							rayhit.hitX = cutX;
+							rayhit.hitY = cutY;
+							rayhit.normalX = normalX;
+							rayhit.normalY = normalY;
+							rayhit.distance = CMath.distance(startX, startY, cutX, cutY);
+						}
+					}
+				}
+			}
+		}
+		
+		return rayhit;
 	}
 	
 	
@@ -328,5 +396,31 @@ public class Kollision {
 		}
 		
 		return false;
+	}
+	
+	
+	
+	
+	// DEBUG
+	public static void drawDebug(Kamera dieKamera) {
+		dieKamera.setLineWidth(0.075f);
+		dieKamera.setFarbe(Color.AQUA);
+		
+		for (int x = 0; x < kollisionenListe.length; x++) {
+			for (int y = 0; y < kollisionenListe[0].length; y++) {
+				if (kollisionenListe[x][y] != null) {
+					for (int i = 0; i < kollisionenListe[x][y].size(); i++) {
+						Kollision k = kollisionenListe[x][y].get(i);
+						dieKamera.drawLine(k.x1, k.y1, k.x2, k.y2);
+					}
+				}
+			}
+		}
+
+		dieKamera.setFarbe(Color.CRIMSON);
+		for (int i = 0; i < altKollisionenListe.size(); i++) {
+			Kollision k = altKollisionenListe.get(i);
+			dieKamera.drawLine(k.x1, k.y1, k.x2, k.y2);
+		}
 	}
 }

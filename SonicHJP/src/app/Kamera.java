@@ -31,20 +31,22 @@ public class Kamera {
 	}
 	
 	public float pixelZuEinheitX(float pixel) {
-		return (pixel / pixelProEinheit) + x;
+		return ((pixel - (screenWidth / 2)) / pixelProEinheit) + x;
 	}
 	public float pixelZuEinheitY(float pixel) {
-		return (-pixel / pixelProEinheit) + y;
+		return (-(pixel - (screenHeight / 2)) / pixelProEinheit) + y;
 	}
 	
 	public float einheitZuPixelX(float einheit) {
 		float loesung = einheit * pixelProEinheit;
 		loesung = loesung - x * pixelProEinheit;
+		loesung = loesung + (screenWidth / 2);
 		return loesung;
 	}
 	public float einheitZuPixelY(float einheit) {
 		float loesung = einheit * pixelProEinheit;
 		loesung = -loesung + y * pixelProEinheit;
+		loesung = loesung + (screenHeight / 2);
 		return loesung;
 	}
 	
@@ -68,7 +70,11 @@ public class Kamera {
 	}
 	
 	public void drawRect(float px, float py, float pw, float ph) {
-		gc.fillRect(einheitZuPixelX(px), einheitZuPixelY(py), pw * pixelProEinheit, ph * pixelProEinheit);
+		gc.fillRect(einheitZuPixelX(px), einheitZuPixelY(py), pw * pixelProEinheit, -ph * pixelProEinheit);
+	}
+	
+	public void drawOval(float px, float py, float pw, float ph) {
+		gc.fillOval(einheitZuPixelX(px), einheitZuPixelY(py + ph), pw * pixelProEinheit, ph * pixelProEinheit);
 	}
 	
 	

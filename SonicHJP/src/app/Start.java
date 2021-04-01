@@ -16,7 +16,7 @@ import javafx.stage.Stage;
 public class Start extends Application {
 	private int width = 800;
 	private int height = 600;
-	private float timePerFixedUpdate = 0.16f;
+	private float timePerFixedUpdate = 1f / 60f;
 	
 	private Canvas canvas;
 	private GraphicsContext gc;

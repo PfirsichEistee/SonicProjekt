@@ -9,10 +9,10 @@ public class Level {
   // Platzierte Dinge
   public ArrayList<Float> liste_Strecken;
   public ArrayList<Spezial> liste_Spezial;
+  public ArrayList<Objekte> liste_Objekte;
   private Sonic derSonic;
   private Gegner derGegner;
   private Strecken dieStrecke;
-  private Objekte dasObjekt;
   
   
   // KONSTRUKTOR //
@@ -22,7 +22,7 @@ public class Level {
     derSonic = new Sonic();
     derGegner = new Gegner();
     dieStrecke = new Strecken();
-    dasObjekt = new Objekte();
+    liste_Objekte = new ArrayList<Objekte>();
     
     
     auswahlWerkzeug = 0;
@@ -44,6 +44,13 @@ public class Level {
     strokeWeight(6);
     for (int i = 0; i < liste_Strecken.size(); i += 4) {
       dieKamera.drawLine(liste_Strecken.get(i), liste_Strecken.get(i + 1), liste_Strecken.get(i + 2), liste_Strecken.get(i + 3));
+    }
+    
+    // Objekt-Liste zeichnen
+    stroke(0, 0, 0, 155);
+    fill(75, 75, 255, 155);
+    for (int i = 0; i < liste_Objekte.size(); i++) {
+      liste_Objekte.get(i).zeichnen();
     }
     
     

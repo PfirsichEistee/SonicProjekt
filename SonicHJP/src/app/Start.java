@@ -61,7 +61,7 @@ public class Start extends Application {
 		
 		
 		// Load game
-		dieSpielwelt = new Spielwelt(null, 0, 0, null, null, null, null);
+		dieSpielwelt = new Spielwelt(null, 0, -0.75f, null, null, null, null);
 		
 		
 		// Game loop

@@ -54,6 +54,7 @@ public class Spielwelt {
 	
 	
 	public void fixedUpdate(float delta) {
+		delta *= 0.5f;
 		derSpieler.fixedUpdate(delta);
 	}
 	
@@ -110,20 +111,6 @@ public class Spielwelt {
 		
 		
 		// kollision test
-		dieKamera.setFarbe(Color.GREEN);
-		//dieKamera.drawLine(1, 1, 7, 3);
-		dieKamera.drawLine(dieKamera.getX() - 3, dieKamera.getY() - 1, dieKamera.pixelZuEinheitX(Eingabe.mouseX), dieKamera.pixelZuEinheitY(Eingabe.mouseY));
-		RaycastHit hit = Kollision.raycast(dieKamera.getX() - 3, dieKamera.getY() - 1,
-				dieKamera.pixelZuEinheitX(Eingabe.mouseX) - (dieKamera.getX() - 3),
-				dieKamera.pixelZuEinheitY(Eingabe.mouseY) - (dieKamera.getY() - 1));
-		if (hit != null) {
-			dieKamera.setFarbe(Color.RED);
-			dieKamera.drawRect(hit.hitX - 0.1f, hit.hitY - 0.1f, 0.2f, 0.2f);
-			dieKamera.drawLine(hit.hitX, hit.hitY, hit.hitX + hit.normalX, hit.hitY + hit.normalY);
-		}
-		
-
-		
 		dieKamera.setFarbe(Color.DARKRED);
 		float phfps = (float)Math.floor((1f / delta) * 10) / 10;
 		dieKamera.drawText(phfps + " FPS", dieKamera.getX() - (dieKamera.getWidth() / 2) + 0.15f, dieKamera.getY() + (dieKamera.getHeight() / 2) - 0.5f);
@@ -152,5 +139,8 @@ public class Spielwelt {
 		new Kollision(10, -4, 15, -3.5f);
 		new Kollision(15, -3.5f, 21, -3.75f);
 		new Kollision(21, -3.75f, 27, -4.5f);
+		new Kollision(27, -4.5f, 30, -4f);
+		new Kollision(30, -4, 31, -3);
+		new Kollision(31, -3, 32, -1.5f);
 	}
 }

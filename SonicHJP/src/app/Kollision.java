@@ -20,7 +20,8 @@ public class Kollision {
 		y1 = py1;
 		x2 = px2;
 		y2 = py2;
-		
+		altKollisionenListe.add(this);
+		if (false) {
 		int cx = (int)Math.floor(px1 / 10f);
 		int cy = (int)Math.floor(py1 / 10f);
 		if (cx >= 0 && cx < kollisionenListe.length && cy >= 0 && cy < kollisionenListe[0].length) {
@@ -32,7 +33,7 @@ public class Kollision {
 		} else {
 			System.out.println("[!!!] Kollision wurde ausserhalb der Chunk-Range platziert!\n\t(" + x1 + "|" + y1 + ") (" + x2 + "|" + y2 + ")");
 			altKollisionenListe.add(this);
-		}
+		}}
 	}
 	
 	
@@ -48,6 +49,9 @@ public class Kollision {
 	
 	// MAIN RAYCAST
 	public static RaycastHit raycast(float startX, float startY, float dirX, float dirY)  {
+		dirX = (Math.abs(dirX) < 0.0001f ? 0 : dirX);
+		dirY = (Math.abs(dirY) < 0.0001f ? 0 : dirY);
+		
 		if (dirX == 0 || dirY == 0)
 			return raycastSimple(startX, startY, dirX, dirY);
 		
@@ -70,6 +74,7 @@ public class Kollision {
 		float rayB = (startY - rayM * startX);
 		
 		RaycastHit rayhit = raycastOutOfMap(startX, startY, dirX, dirY);
+		System.out.println("out of map rayhit: " + rayhit);
 		
 		
 		while (true) {
@@ -316,8 +321,10 @@ public class Kollision {
 		else if (dirY == 0)
 			dirY = 0.0001f;
 		
+		
 		float rayM = dirY / dirX;
 		float rayB = (startY - rayM * startX);
+		
 		
 		RaycastHit rayhit = null;
 		

@@ -17,6 +17,9 @@ public class Sonic {
 	
 	private float radHor, radVer; // radius horizontal/vertikal
 	private float modeRotation; // nur in 90° Schritten
+	private int modeCounter; // jeder modus muss fuer mind. 6 Updates bestehen
+	
+	private boolean grounded;
 	
 	
 	private Image dasImage;
@@ -45,6 +48,9 @@ public class Sonic {
 		radHor = 0.3f;
 		radVer = 0.5f;
 		modeRotation = 0;
+		modeCounter = 0;
+		
+		grounded = true;
 	}
 	
 	
@@ -69,19 +75,22 @@ public class Sonic {
 		float mSin = (float)Math.sin(modeRotation);
 		float mCos = (float)Math.cos(modeRotation);
 		
-		// WICHTIG: Wenn sonic vorher bereits grounded war, raycast mit 2 multiplizieren. Wenn vorher air: raycast * 1.5
-		hitB1 = Kollision.raycast(x - radHor * 0.98f * mCos, y - radHor * 0.98f * mSin, radVer * 1.5f * mSin, -radVer * 1.5f * mCos);
-		hitB2 = Kollision.raycast(x + radHor * 0.98f * mCos, y + radHor * 0.98f * mSin, radVer * 1.5f * mSin, -radVer * 1.5f * mCos);
+		float distMult = (grounded ? 2f : 1.25f);
+		
+		hitB1 = Kollision.raycast(x - radHor * 0.98f * mCos, y - radHor * 0.98f * mSin, radVer * mSin * distMult, -radVer * mCos * distMult);
+		hitB2 = Kollision.raycast(x + radHor * 0.98f * mCos, y + radHor * 0.98f * mSin, radVer * mSin * distMult, -radVer * mCos * distMult);
 		//hitD1 = Kollision.raycast(x - radHor * 0.98f, y, 0, radVer);
 		//hitD2 = Kollision.raycast(x + radHor * 0.98f, y, 0, radVer);
 		//hitL = Kollision.raycast(x, y, -radHor, 0);
 		//hitR = Kollision.raycast(x, y, radHor, 0);
 		
+		
+		// Find groundHit
 		RaycastHit groundHit = hitB1;
 		if (hitB1 == null && hitB2 != null) {
 			groundHit = hitB2;
 		} else if (hitB1 != null && hitB2 != null) {
-			if (modeRotation == 0 || modeRotation == Math.PI)
+			if (modeRotation == 0 || modeRotation == (float)Math.PI)
 				groundHit = (Math.abs(y - hitB1.hitY) < Math.abs(y - hitB2.hitY) ? hitB1 : hitB2);
 			else
 				groundHit = (Math.abs(x - hitB1.hitX) < Math.abs(x - hitB2.hitX) ? hitB1 : hitB2);
@@ -89,22 +98,30 @@ public class Sonic {
 		
 		
 		if (groundHit != null) {
-			// Update rotation mode
-			float angle = CMath.angleBetweenDirs(0, 1, groundHit.normalX, groundHit.normalY);
-			if (angle <= 45)
-				modeRotation = 0;
-			else if (angle <= 135)
-				modeRotation = (float)(Math.PI / 2) * (groundHit.normalX >= 0 ? -1 : 1);
-			else
-				modeRotation = (float)Math.PI;
-			
-			
 			// Stick to ground
-			boolean vertical = ((modeRotation == 0 || modeRotation == Math.PI) ? true : false);
-			if (vertical) {
+			boolean vertical = ((modeRotation == 0 || modeRotation == (float)Math.PI) ? true : false);
+			if (vertical)
 				y = groundHit.hitY + radVer * (modeRotation == 0 ? 1 : -1);
-			} else {
-				x = groundHit.hitX + radVer * (modeRotation == (Math.PI / 2) ? 1 : -1);
+			else
+				x = groundHit.hitX + radVer * (modeRotation == (float)(Math.PI / 2) ? -1 : 1);
+			
+			
+			// Update rotation mode
+			modeCounter++;
+			float angle = CMath.angleBetweenDirs(0, 1, groundHit.normalX, groundHit.normalY);
+			if (modeCounter >= 6) {
+				float lastModeRot = modeRotation;
+				
+				if (angle <= 45)
+					modeRotation = 0;
+				else if (angle <= 135)
+					modeRotation = (float)(Math.PI / 2) * (groundHit.normalX >= 0 ? -1 : 1);
+				else
+					modeRotation = (float)Math.PI;
+				
+				if (modeRotation != lastModeRot) {
+					modeCounter = 0;
+				}
 			}
 			
 			
@@ -113,6 +130,34 @@ public class Sonic {
 			float deceleration = 50f;
 			float maxSpeed = 25f;
 			
+			
+			// Did sonic ground JUST NOW?
+			if (!grounded) {
+				if (angle <= 25) {
+					// Shallow
+					speed = speedX;
+					//System.out.println("grounded SHALLOW");
+				} else if (angle <= 45) {
+					// Half Steep
+					if (Math.abs(speedX) > -speedY) {
+						speed = speedX;
+					} else {
+						speed = speedY * (float)Math.signum(Math.sin(angle * (Math.PI / 180))) * 0.5f;
+					}
+					//System.out.println("grounded HALF STEEP");
+				} else {
+					// Full Steep
+					if (Math.abs(speedX) > -speedY) {
+						speed = speedX;
+					} else {
+						speed = speedY * (float)Math.signum(Math.sin(angle * (Math.PI / 180)));
+					}
+					//System.out.println("grounded FULL STEEP");
+				}
+			}
+			
+			
+			// Update speed
 			float inputX = (Eingabe.isKeyDown("D") ? 1 : 0);
 			inputX = (Eingabe.isKeyDown("A") ? (inputX - 1) : inputX);
 			
@@ -124,6 +169,19 @@ public class Sonic {
 				}
 			} else {
 				speed = CMath.move(speed, 0, deceleration * 0.25f * delta);
+			}
+			
+			
+			// Jump
+			if (Eingabe.isKeyDown("W")) {
+				grounded = false;
+				float jumpForce = 7f;
+				x += groundHit.normalX * (radVer * 1.3f);
+				y += groundHit.normalY * (radVer * 1.3f);
+				speedX += groundHit.normalX * jumpForce;
+				speedY += groundHit.normalY * jumpForce;
+				
+				return;
 			}
 			
 			
@@ -139,10 +197,17 @@ public class Sonic {
 			
 			x += speedX * delta;
 			y += speedY * delta;
+			
+			
+			// Grounded
+			grounded = true;
 		} else {
 			// Sonic ungrounded
 			modeRotation = 0;
+			modeCounter = 10;
 			airUpdate(delta);
+			
+			grounded = false;
 		}
 	}
 	
@@ -191,6 +256,7 @@ public class Sonic {
 		dieKamera.setFarbe(Color.AQUA);
 		debugDrawRay(x + radHor * (float)Math.cos(modeRotation), y + radHor * (float)Math.sin(modeRotation),
 				radVer * (float)Math.sin(modeRotation), -radVer * (float)Math.cos(modeRotation));
+		
 		
 		
 		dieKamera.setFarbe(Color.RED);

@@ -7,8 +7,8 @@ public class Level {
   public ArrayList<Objekt> liste_Objekte;
   public ArrayList<Float> liste_Strecken;
   public ArrayList<Spezial> liste_Spezial;
+  public ArrayList<Gegner> liste_Gegner;
   private Sonic derSonic;
-  private Gegner derGegner;
   
   private PImage hintergrund;
   private boolean zeichneMap;
@@ -23,8 +23,8 @@ public class Level {
     liste_Objekte = new ArrayList<Objekt>();
     liste_Strecken = new ArrayList<Float>();
     liste_Spezial = new ArrayList<Spezial>();
+    liste_Gegner = new ArrayList<Gegner>();
     derSonic = new Sonic();
-    derGegner = new Gegner();
     
 
     
@@ -65,6 +65,16 @@ public class Level {
 
     for (int i = 0; i < liste_Objekte.size(); i++) {
       liste_Objekte.get(i).zeichnen();
+    }
+    
+    // Gegner-Liste zeichnen
+    stroke(0, 0, 0, 155);
+    fill(75, 75, 255, 155);
+
+    // Gegner zeichnen
+
+    for (int i = 0; i < liste_Gegner.size(); i++) {
+      liste_Gegner.get(i).zeichnen();
     }
     
     

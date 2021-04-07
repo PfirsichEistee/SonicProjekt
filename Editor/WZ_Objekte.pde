@@ -1,8 +1,7 @@
 public class WZ_Objekte extends Werkzeug {
   // ATTRIBUTE //
   private String[] spezialBezeichnungen;
-  int auswahl;
-  int event;
+  private int auswahl;
   
   
   // KONSTRUKTOR //

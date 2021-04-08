@@ -81,8 +81,7 @@ public class Sonic {
 		hitB2 = Kollision.raycast(x + radHor * 0.98f * mCos, y + radHor * 0.98f * mSin, radVer * mSin * distMult, -radVer * mCos * distMult);
 		//hitD1 = Kollision.raycast(x - radHor * 0.98f, y, 0, radVer);
 		//hitD2 = Kollision.raycast(x + radHor * 0.98f, y, 0, radVer);
-		//hitL = Kollision.raycast(x, y, -radHor, 0);
-		//hitR = Kollision.raycast(x, y, radHor, 0);
+		
 		
 		
 		// Find groundHit
@@ -94,6 +93,15 @@ public class Sonic {
 				groundHit = (Math.abs(y - hitB1.hitY) < Math.abs(y - hitB2.hitY) ? hitB1 : hitB2);
 			else
 				groundHit = (Math.abs(x - hitB1.hitX) < Math.abs(x - hitB2.hitX) ? hitB1 : hitB2);
+		}
+		
+		
+		// Check if can ground
+		if (!grounded && groundHit != null) {
+			float angle = CMath.angleBetweenDirs(0, 1, groundHit.normalX, groundHit.normalY);
+			if (angle > 45) {
+				groundHit = null;
+			}
 		}
 		
 		
@@ -204,11 +212,13 @@ public class Sonic {
 		} else {
 			// Sonic ungrounded
 			modeRotation = 0;
-			modeCounter = 10;
+			modeCounter = 99;
 			airUpdate(delta);
 			
 			grounded = false;
 		}
+		
+		collide();
 	}
 	
 	
@@ -219,10 +229,49 @@ public class Sonic {
 		
 		speedY = CMath.move(speedY, -maxSpeed, gravity * delta);
 		
+
+		float inputX = (Eingabe.isKeyDown("D") ? 1 : 0);
+		inputX = (Eingabe.isKeyDown("A") ? (inputX - 1) : inputX);
+		speedX += inputX * delta * 10f;
+		
 		
 		// Apply velocity
 		x += speedX * delta;
 		y += speedY * delta;
+	}
+	
+	
+	private void collide() {
+		float mSin = (float)Math.sin(modeRotation);
+		float mCos = (float)Math.cos(modeRotation);
+		
+		boolean horizontal = ((modeRotation == 0 || modeRotation == (float)Math.PI) ? true : false);
+		hitL = Kollision.raycast(x, y, -radHor * mCos, -radHor * mSin);
+		hitR = Kollision.raycast(x, y, radHor * mCos, radHor * mSin);
+		if (hitL != null) {
+			if (horizontal) {
+				x = hitL.hitX + radHor * mCos;
+				speedX = 0;
+			} else {
+				y = hitL.hitY + radHor * mSin;
+				speedY = 0;
+			}
+		}
+		if (hitR != null) {
+			if (horizontal) {
+				x = hitR.hitX - radHor * mCos;
+				speedX = 0;
+			} else {
+				y = hitR.hitY - radHor * mSin;
+				speedY = 0;
+			}
+		}
+		
+		
+		if (!grounded) {
+			hitD1 = Kollision.raycast(x - radHor * 0.98f * mCos, y - radHor * 0.98f * mSin, -radVer * mSin, radVer * mCos);
+			hitD2 = Kollision.raycast(x + radHor * 0.98f * mCos, y + radHor * 0.98f * mSin, -radVer * mSin, radVer * mCos);
+		}
 	}
 	
 	

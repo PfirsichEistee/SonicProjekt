@@ -12,14 +12,16 @@ public class Kollision {
 	
 	public float x1, y1;
 	public float x2, y2;
+	public boolean platform;
 	
 	
 	// KONSTRUKTOR //
-	public Kollision(float px1, float py1, float px2, float py2) {
+	public Kollision(float px1, float py1, float px2, float py2, boolean pPlatform) {
 		x1 = px1;
 		y1 = py1;
 		x2 = px2;
 		y2 = py2;
+		platform = pPlatform;
 		altKollisionenListe.add(this);
 		if (false) {
 		int cx = (int)Math.floor(px1 / 10f);
@@ -48,12 +50,12 @@ public class Kollision {
 	
 	
 	// MAIN RAYCAST
-	public static RaycastHit raycast(float startX, float startY, float dirX, float dirY)  {
+	public static RaycastHit raycast(float startX, float startY, float dirX, float dirY, boolean checkPlatform)  {
 		dirX = (Math.abs(dirX) < 0.0001f ? 0 : dirX);
 		dirY = (Math.abs(dirY) < 0.0001f ? 0 : dirY);
 		
 		if (dirX == 0 || dirY == 0)
-			return raycastSimple(startX, startY, dirX, dirY);
+			return raycastSimple(startX, startY, dirX, dirY, checkPlatform);
 		
 		/*if (dirX == 0)
 			dirX = 0.00001f;
@@ -73,8 +75,7 @@ public class Kollision {
 		float rayM = dirY / dirX;
 		float rayB = (startY - rayM * startX);
 		
-		RaycastHit rayhit = raycastOutOfMap(startX, startY, dirX, dirY);
-		System.out.println("out of map rayhit: " + rayhit);
+		RaycastHit rayhit = raycastOutOfMap(startX, startY, dirX, dirY, checkPlatform);
 		
 		
 		while (true) {
@@ -83,6 +84,8 @@ public class Kollision {
 			if (chunkX >= 0 && chunkX < kollisionenListe.length && chunkY >= 0 && chunkY < kollisionenListe[0].length && kollisionenListe[chunkX][chunkY] != null) {
 				for (int i = 0; i < kollisionenListe[chunkX][chunkY].size(); i++) {
 					Kollision col = kollisionenListe[chunkX][chunkY].get(i);
+					if (!checkPlatform && col.platform)
+						continue;
 					
 					// Get collision values
 					float cutX = -999, cutY = -999;
@@ -196,12 +199,12 @@ public class Kollision {
 	
 	
 	// VEREINFACHTES RAYCAST (muesste schneller sein idk)
-	private static RaycastHit raycastSimple(float startX, float startY, float dirX, float dirY)  {
+	private static RaycastHit raycastSimple(float startX, float startY, float dirX, float dirY, boolean checkPlatform)  {
 		int chunkX = (int)Math.floor(startX / 10);
 		int chunkY = (int)Math.floor(startY / 10);
 		int lastChunkX = chunkX, lastChunkY = chunkY;
 		
-		RaycastHit rayhit = raycastOutOfMap(startX, startY, dirX, dirY);
+		RaycastHit rayhit = raycastOutOfMap(startX, startY, dirX, dirY, checkPlatform);
 		
 		if (dirX != 0) // Horizontal
 			lastChunkX = (int)Math.floor((startX + dirX) / 10);
@@ -213,6 +216,8 @@ public class Kollision {
 			if (chunkX >= 0 && chunkX < kollisionenListe.length && chunkY >= 0 && chunkY < kollisionenListe[0].length && kollisionenListe[chunkX][chunkY] != null) {
 				for (int i = 0; i < kollisionenListe[chunkX][chunkY].size(); i++) {
 					Kollision col = kollisionenListe[chunkX][chunkY].get(i);
+					if (!checkPlatform && col.platform)
+						continue;
 					
 					float cutX = -999, cutY = -999;
 					float normalX = -1, normalY = -1;
@@ -315,7 +320,7 @@ public class Kollision {
 	
 	
 	// LANGSAMES RAYCAST (vermeide es, Kollisionen ausserhalb der Chunk-Range zu platzieren aight)
-	private static RaycastHit raycastOutOfMap(float startX, float startY, float dirX, float dirY) {
+	private static RaycastHit raycastOutOfMap(float startX, float startY, float dirX, float dirY, boolean checkPlatform) {
 		if (dirX == 0)
 			dirX = 0.0001f;
 		else if (dirY == 0)
@@ -330,6 +335,8 @@ public class Kollision {
 		
 		for (int i = 0; i < altKollisionenListe.size(); i++) {
 			Kollision col = altKollisionenListe.get(i);
+			if (!checkPlatform && col.platform)
+				continue;
 			
 			// Get collision values
 			float cutX = -999, cutY = -999;
@@ -360,7 +367,7 @@ public class Kollision {
 				cutX = (cutY - rayB) / rayM;
 				
 				normalX = 0f;
-				normalY = 0f;
+				normalY = 1f;
 			}
 			
 			
@@ -395,7 +402,7 @@ public class Kollision {
 	}
 	
 	
-	public boolean isInBoundingRect(float px, float py) {
+	private boolean isInBoundingRect(float px, float py) {
 		if (px >= x1 && px <= x2 || px >= x2 && px <= x1) {
 			if (py >= y1 && py <= y2 || py >= y2 && py <= y1) {
 				return true;

@@ -53,7 +53,16 @@ public class Kamera {
 	
 	// Zeichen-Methoden
 	public void drawImage(Image pImage, float px, float py, float pw, float ph, float pRotation) {
+		gc.save();
 		
+		pw *= pixelProEinheit;
+		ph *= pixelProEinheit;
+		
+		gc.translate(einheitZuPixelX(px) + (pw / 2), einheitZuPixelY(py) + (ph / 2));
+		gc.rotate(pRotation * (180.0 / Math.PI));
+		gc.drawImage(pImage, -pw / 2, -ph / 2, pw, ph);
+		
+		gc.restore();
 	}
 	
 	public void drawImageSection(Image pImage, int imgX, int imgY, int imgW, int imgH, float px, float py, float pw, float ph, float pRotation) {

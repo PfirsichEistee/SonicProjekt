@@ -117,17 +117,6 @@ public class Spielwelt {
 		float phy = (float)Math.floor(dieKamera.pixelZuEinheitY(Eingabe.mouseY) * 10) / 10;
 		dieKamera.drawText("cursor: " + phx + " | " + phy, dieKamera.getX() - (dieKamera.getWidth() / 2) + 0.15f, dieKamera.getY() + (dieKamera.getHeight() / 2) - 1f);
 		
-		
-		
-		dieKamera.drawLine(dieKamera.getX(), dieKamera.getY(), dieKamera.pixelZuEinheitX(Eingabe.mouseX), dieKamera.pixelZuEinheitY(Eingabe.mouseY));
-		
-		/*RaycastHit hit = Kollision.raycast(dieKamera.getX(), dieKamera.getY(), dieKamera.pixelZuEinheitX(Eingabe.mouseX) - dieKamera.getX(), dieKamera.pixelZuEinheitY(Eingabe.mouseY) - dieKamera.getY());
-		
-		if (hit != null) {
-			dieKamera.drawOval(hit.hitX, hit.hitY, 0.2f, 0.2f);
-		}*/
-		
-		dieKamera.drawLine(30.693897f, 2.6466613f, 30.693897f + -8.742278f * (float)Math.pow(10, -8), 2.6466613f + 1.0f);
 	}
 	
 	private void debugUpdate() {
@@ -144,18 +133,19 @@ public class Spielwelt {
 	}
 	
 	private void debugCreateMap() {
-		new Kollision(-1, -1, 7, -3);
-		new Kollision(7, -3, 10, -4);
-		new Kollision(10, -4, 15, -3.5f);
-		new Kollision(15, -3.5f, 21, -3.75f);
-		new Kollision(21, -3.75f, 27, -4.5f);
-		new Kollision(27, -4.5f, 30, -4f);
-		new Kollision(30, -4, 31, -3);
-		new Kollision(31, -3, 32, -1.5f);
-		new Kollision(35, -1, 48, 1);
-		new Kollision(32, -1.5f, 32.1f, 0.5f);
-		new Kollision(32.1f, 0.5f, 31.9f, 2f);
-		new Kollision(31.9f, 2f, 31f, 3.1f);
-		new Kollision(28f, 4.8f, 31, 3.1f);
+		new Kollision(-1, -1, 7, -3, false);
+		new Kollision(7, -3, 10, -4, false);
+		new Kollision(10, -4, 15, -3.5f, false);
+		new Kollision(15, -3.5f, 21, -3.75f, false);
+		new Kollision(21, -3.75f, 27, -4.5f, false);
+		new Kollision(27, -4.5f, 30, -4f, false);
+		new Kollision(30, -4, 31, -3, false);
+		new Kollision(31, -3, 32, -1.5f, false);
+		new Kollision(35, -1, 48, 1, false);
+		new Kollision(32, -1.5f, 32.1f, 0.5f, false);
+		new Kollision(32.1f, 0.5f, 31.9f, 2f, false);
+		new Kollision(31.9f, 2f, 31f, 3.1f, false);
+		new Kollision(28f, 4.8f, 31, 3.1f, false);
+		new Kollision(16, 0, 19, 0, true);
 	}
 }

@@ -24,6 +24,10 @@ public class CMath {
 		return from + Math.signum(to - from) * delta;
 	}
 	
+	public static float lerp(float from, float to, float mult) {
+		return from + (to - from) * mult;
+	}
+	
 	public static float angleBetweenDirs(float dx1, float dy1, float dx2, float dy2) {
 		// cos(a) = (VEC1 * VEC2) / (|VEC1| * |VEC2|)
 		// V1 * V2 = V1x * V2x + V1y * V2y

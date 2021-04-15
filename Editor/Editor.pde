@@ -1,4 +1,3 @@
-
 // Wichtig: in Processing können alle Klassen auf diese Attribute zugreifen
 // Die wichtigsten Sachen passieren in der Level-Klasse
 
@@ -34,6 +33,8 @@ void draw(){
   dieKamera.zeichneHintergrund();
   
   dasLevel.zeichnen();
+  dasLevel.export();
+  dasLevel.inport();
   
   // Editor infos zeichnen
   textSize(16);

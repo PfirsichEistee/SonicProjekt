@@ -11,6 +11,8 @@ public class Spezial {
     text = pText;
     x = px;
     y = py;
+    
+    println(pID + " " + pText + " " + px + " " + py);
   }
   
   

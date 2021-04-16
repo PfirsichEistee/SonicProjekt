@@ -184,6 +184,8 @@ public class Level {
         }
       } while (line != null);
       
+      reader.close();
+      
       println("Level geladen!");
     } catch (IOException e) {
       println("FEHLER - Konnte Level nicht laden!");

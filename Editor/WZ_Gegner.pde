@@ -1,16 +1,10 @@
 class WZ_Gegner extends Werkzeug{
-  private String[] spezialBezeichnungen;
   private int auswahl;
   private int richtung;
   
   
   // KONSTRUKTOR //
   public WZ_Gegner() {
-    spezialBezeichnungen = new String [4];
-    spezialBezeichnungen[0] = "Robot";
-    spezialBezeichnungen[1] = "Fisch";
-    spezialBezeichnungen[2] = "Fledermaus";
-    spezialBezeichnungen[3] = "Eggman";
     
     
     auswahl = 0;
@@ -19,7 +13,7 @@ class WZ_Gegner extends Werkzeug{
   public void zeichnen() {
     stroke(0);
     fill(0);
-    dieKamera.drawText(spezialBezeichnungen[auswahl], dieEingabe.cursorX, dieEingabe.cursorY + 0.5f, 0.4f);
+    dieKamera.drawText(objektBezeichnungen[auswahl], dieEingabe.cursorX, dieEingabe.cursorY + 0.5f, 0.4f);
     
     dieKamera.drawText("Richtung: "+ richtung, dieEingabe.cursorX, dieEingabe.cursorY + 0.9f, 0.4f);
     
@@ -38,7 +32,7 @@ class WZ_Gegner extends Werkzeug{
   public void cursorClicked(int button) {
     if (button == 0) {
       // PLATZIEREN
-      dasLevel.liste_Gegner.add(new Gegner(auswahl, spezialBezeichnungen[auswahl], dieEingabe.cursorX, dieEingabe.cursorY, richtung));
+      dasLevel.liste_Gegner.add(new Gegner(auswahl, dieEingabe.cursorX, dieEingabe.cursorY, richtung));
     } else if (button == 1) {
       // LOESCHEN
       if (dasLevel.liste_Gegner.size() > 0) {
@@ -63,7 +57,7 @@ class WZ_Gegner extends Werkzeug{
   public void tasteGedrueckt(char k) {
     if (k == 'X') {
       auswahl++;
-      if (auswahl >= spezialBezeichnungen.length)
+      if (auswahl >= objektBezeichnungen.length)
       auswahl = 0;
     }
     if(keyCode == 37){

@@ -1,13 +1,11 @@
 class Gegner{  
   int id;
-  String text;
   float x, y;
   int richtung;
   
   // KONSTRUKTOR //
-  public Gegner(int pID, String pText, float px, float py, int prichtung) {
+  public Gegner(int pID, float px, float py, int prichtung) {
     id = pID;
-    text = pText;
     x = px;
     y = py;
     richtung = prichtung;
@@ -36,6 +34,6 @@ class Gegner{
       dieKamera.drawLine(x,y,x+0.5,y);
     }
     fill(0, 255, 0);
-    dieKamera.drawText(text, x - 0.5f, y + 0.3f, 0.2f);
+    dieKamera.drawText(gegnerBezeichnungen[id], x - 0.5f, y + 0.3f, 0.2f);
   }
 }

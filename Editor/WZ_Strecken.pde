@@ -1,11 +1,12 @@
 class WZ_Strecken extends Werkzeug {
   // ATTRIBUTE //
-  private int selectedIndex;
+  private int selectedIndex, selectedPoint; // selectedPoint == 0 or 1
   
   private Float newX1, newY1, newX2, newY2;
   
   private boolean platzieren;
   private boolean snap;
+  private int kollisionTyp;
   
   
   // KONSTRUKTOR //
@@ -13,6 +14,7 @@ class WZ_Strecken extends Werkzeug {
     selectedIndex = -1;
     platzieren = true;
     snap = false;
+    kollisionTyp = 0;
   }
   
   
@@ -32,9 +34,10 @@ class WZ_Strecken extends Werkzeug {
       dieKamera.drawText("Bearbeiten", dieEingabe.cursorX, dieEingabe.cursorY + 0.5f, 0.4f);
     
     dieKamera.drawText("Snap: " + snap, dieEingabe.cursorX, dieEingabe.cursorY + 0.9f, 0.4f);
+    dieKamera.drawText("Kollision: " + ((kollisionTyp == 0) ? "Normal" : "Platform"), dieEingabe.cursorX, dieEingabe.cursorY + 1.3f, 0.4f);
     
     textSize(16);
-    text("Werkzeug: Strecken\nSnap wechseln mit 'X'\nBau-Modus wechseln mit 'C'\nLinks-Click (halten): Platzieren\nRechts-Click: Loeschen", 20, height - 120);
+    text("Werkzeug: Strecken\nSnap wechseln mit 'X'\nBau-Modus wechseln mit 'C'\nCollision aendern mit 'V'\nLinks-Click (halten): Platzieren\nRechts-Click: Loeschen", 20, height - 140);
   }
   public void cursorMoved(float deltaX, float deltaY) {
     if (dieEingabe.istMausButtonGedrueckt(0)) {
@@ -42,12 +45,20 @@ class WZ_Strecken extends Werkzeug {
       float targetY = dieEingabe.cursorY;
       
       if (snap) {
-        for (int i = 0; i < dasLevel.liste_Strecken.size(); i += 2) {
+        for (int i = 0; i < dasLevel.liste_Strecken.size(); i++) {
           if (i != selectedIndex) {
-            if ((dist(targetX, targetY, dasLevel.liste_Strecken.get(i), dasLevel.liste_Strecken.get(i + 1)) * dieKamera.pixelProEinheit) < 30) {
-              targetX = dasLevel.liste_Strecken.get(i);
-              targetY = dasLevel.liste_Strecken.get(i + 1);
-              break;
+            float px = dasLevel.liste_Strecken.get(i).x1;
+            float py = dasLevel.liste_Strecken.get(i).y1;
+            
+            for (int k = 0; k < 2; k++) {
+              if ((dist(targetX, targetY, px, py) * dieKamera.pixelProEinheit) < 30) {
+                targetX = px;
+                targetY = py;
+                break;
+              }
+              
+              px = dasLevel.liste_Strecken.get(i).x2;
+              py = dasLevel.liste_Strecken.get(i).y2;
             }
           }
         }
@@ -58,8 +69,13 @@ class WZ_Strecken extends Werkzeug {
         newX2 = targetX;
         newY2 = targetY;
       } else {
-        dasLevel.liste_Strecken.set(selectedIndex, targetX);
-        dasLevel.liste_Strecken.set(selectedIndex + 1, targetY);
+        if (selectedPoint == 0) {
+          dasLevel.liste_Strecken.get(selectedIndex).x1 = targetX;
+          dasLevel.liste_Strecken.get(selectedIndex).y1 = targetY;
+        } else {
+          dasLevel.liste_Strecken.get(selectedIndex).x2 = targetX;
+          dasLevel.liste_Strecken.get(selectedIndex).y2 = targetY;
+        }
       }
     }
   }
@@ -77,22 +93,22 @@ class WZ_Strecken extends Werkzeug {
         selectedIndex = -1;
         float selX = -1;
         float selY = -1;
-        for (int i = 0; i < dasLevel.liste_Strecken.size(); i += 4) {
-          float x1 = dasLevel.liste_Strecken.get(i);
-          float y1 = dasLevel.liste_Strecken.get(i + 1);
-          float x2 = dasLevel.liste_Strecken.get(i + 2);
-          float y2 = dasLevel.liste_Strecken.get(i + 3);
-          int ph = 0;
+        for (int i = 0; i < dasLevel.liste_Strecken.size(); i++) {
+          float x1 = dasLevel.liste_Strecken.get(i).x1;
+          float y1 = dasLevel.liste_Strecken.get(i).y1;
+          float x2 = dasLevel.liste_Strecken.get(i).x2;
+          float y2 = dasLevel.liste_Strecken.get(i).y2;
+          selectedPoint = 0;
           
           if (dist(dieEingabe.cursorX, dieEingabe.cursorY, x2, y2) < dist(dieEingabe.cursorX, dieEingabe.cursorY, x1, y1)) {
             x1 = x2;
             y1 = y2;
-            ph = 2;
+            selectedPoint = 1;
           }
           
           if ((dist(dieEingabe.cursorX, dieEingabe.cursorY, x1, y1) * dieKamera.pixelProEinheit) <= 30) {
             if (selectedIndex == -1 || dist(dieEingabe.cursorX, dieEingabe.cursorY, x1, y1) < dist(dieEingabe.cursorX, dieEingabe.cursorY, selX, selY)) {
-              selectedIndex = i + ph;
+              selectedIndex = i;
               selX = x1;
               selY = y1;
             }
@@ -108,9 +124,6 @@ class WZ_Strecken extends Werkzeug {
         
         if ((dis * dieKamera.pixelProEinheit) < 60) {
           dasLevel.liste_Strecken.remove(i);
-          dasLevel.liste_Strecken.remove(i);
-          dasLevel.liste_Strecken.remove(i);
-          dasLevel.liste_Strecken.remove(i);
         }
       }
     }
@@ -118,10 +131,7 @@ class WZ_Strecken extends Werkzeug {
   public void cursorReleased(int button) {
     if (button == 0) {
       if (selectedIndex == -1 && newX1 != null) {
-        dasLevel.liste_Strecken.add(newX1);
-        dasLevel.liste_Strecken.add(newY1);
-        dasLevel.liste_Strecken.add(newX2);
-        dasLevel.liste_Strecken.add(newY2);
+        dasLevel.liste_Strecken.add(new Strecke(newX1, newY1, newX2, newY2, kollisionTyp));
       }
       
       newX1 = null;
@@ -141,6 +151,8 @@ class WZ_Strecken extends Werkzeug {
       platzieren = !platzieren;
     } else if (k == 'X') {
       snap = !snap;
+    } else if (k == 'V') {
+      kollisionTyp = 1 - kollisionTyp;
     }
   }
   public void tasteLosgelassen(char k) {
@@ -152,11 +164,11 @@ class WZ_Strecken extends Werkzeug {
     int naechsterIndex = -1;
     float naechsteDistanz = 999999999;
     
-    for (int i = 0; i < dasLevel.liste_Strecken.size(); i += 4) {
-      float x1 = dasLevel.liste_Strecken.get(i);
-      float y1 = dasLevel.liste_Strecken.get(i + 1);
-      float x2 = dasLevel.liste_Strecken.get(i + 2);
-      float y2 = dasLevel.liste_Strecken.get(i + 3);
+    for (int i = 0; i < dasLevel.liste_Strecken.size(); i++) {
+      float x1 = dasLevel.liste_Strecken.get(i).x1;
+      float y1 = dasLevel.liste_Strecken.get(i).y1;
+      float x2 = dasLevel.liste_Strecken.get(i).x2;
+      float y2 = dasLevel.liste_Strecken.get(i).y2;
       
       if (x1 == x2) x2 += 0.0001f; // vertikal
       if (y1 == y2) y2 += 0.0001f; // horizontal
@@ -195,10 +207,10 @@ class WZ_Strecken extends Werkzeug {
   
   
   private float getNaechsteDistanzZuStrecke(int i, float px, float py) {
-    float x1 = dasLevel.liste_Strecken.get(i);
-    float y1 = dasLevel.liste_Strecken.get(i + 1);
-    float x2 = dasLevel.liste_Strecken.get(i + 2);
-    float y2 = dasLevel.liste_Strecken.get(i + 3);
+    float x1 = dasLevel.liste_Strecken.get(i).x1;
+    float y1 = dasLevel.liste_Strecken.get(i).y1;
+    float x2 = dasLevel.liste_Strecken.get(i).x2;
+    float y2 = dasLevel.liste_Strecken.get(i).y2;
     
     if (x1 == x2) x2 += 0.0001f; // vertikal
     if (y1 == y2) y2 += 0.0001f; // horizontal

@@ -1,16 +1,10 @@
 public class WZ_Spezial extends Werkzeug {
   // ATTRIBUTE //
-  private String[] spezialBezeichnungen;
   private int auswahl;
   
   
   // KONSTRUKTOR //
   public WZ_Spezial() {
-    spezialBezeichnungen = new String[3];
-    spezialBezeichnungen[0] = "Blume";
-    spezialBezeichnungen[1] = "Schlangenbahn";
-    spezialBezeichnungen[2] = "Looping";
-    
     auswahl = 0;
   }
   
@@ -36,7 +30,7 @@ public class WZ_Spezial extends Werkzeug {
   public void cursorClicked(int button) {
     if (button == 0) {
       // PLATZIEREN
-      dasLevel.liste_Spezial.add(new Spezial(auswahl, spezialBezeichnungen[auswahl], dieEingabe.cursorX, dieEingabe.cursorY));
+      dasLevel.liste_Spezial.add(new Spezial(auswahl, dieEingabe.cursorX, dieEingabe.cursorY));
     } else if (button == 1) {
       // LOESCHEN
       if (dasLevel.liste_Spezial.size() > 0) {

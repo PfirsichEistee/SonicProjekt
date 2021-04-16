@@ -1,18 +1,10 @@
 public class WZ_Objekte extends Werkzeug {
   // ATTRIBUTE //
-  private String[] spezialBezeichnungen;
   private int auswahl;
   
   
   // KONSTRUKTOR //
   public WZ_Objekte() {
-    spezialBezeichnungen = new String [4];
-    spezialBezeichnungen[0] = "Ringe";
-    spezialBezeichnungen[1] = "Checkpoint";
-    spezialBezeichnungen[2] = "Schild";
-    spezialBezeichnungen[3] = "Powerup"; //Unsterblichkeit
-    
-    
     auswahl = 0;
   }
   
@@ -21,7 +13,7 @@ public class WZ_Objekte extends Werkzeug {
   public void zeichnen() {
     stroke(0);
     fill(0);
-    dieKamera.drawText(spezialBezeichnungen[auswahl], dieEingabe.cursorX, dieEingabe.cursorY + 0.5f, 0.4f);
+    dieKamera.drawText(objektBezeichnungen[auswahl], dieEingabe.cursorX, dieEingabe.cursorY + 0.5f, 0.4f);
     
     textSize(16);
     text("Werkzeug: Objekte\nItem wechseln mit 'X'\nLinks-Click: Platzieren\nRechts-Click: Loeschen", 20, height - 100);
@@ -39,7 +31,7 @@ public class WZ_Objekte extends Werkzeug {
   public void cursorClicked(int button) {
     if (button == 0) {
       // PLATZIEREN
-      dasLevel.liste_Objekte.add(new Objekt(auswahl, spezialBezeichnungen[auswahl], dieEingabe.cursorX, dieEingabe.cursorY));
+      dasLevel.liste_Objekte.add(new Objekt(auswahl, dieEingabe.cursorX, dieEingabe.cursorY));
     } else if (button == 1) {
       // LOESCHEN
       if (dasLevel.liste_Objekte.size() > 0) {
@@ -64,7 +56,7 @@ public class WZ_Objekte extends Werkzeug {
   public void tasteGedrueckt(char k) {
     if (k == 'X') {
       auswahl++;
-      if (auswahl >= spezialBezeichnungen.length)
+      if (auswahl >= objektBezeichnungen.length)
       auswahl = 0;
     }
   }

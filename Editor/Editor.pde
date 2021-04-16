@@ -9,12 +9,35 @@ public Eingabe dieEingabe;
 private boolean zeigeHilfe = false;
 
 
+public String[] spezialBezeichnungen;
+public String[] gegnerBezeichnungen;
+public String[] objektBezeichnungen;
+
+
 
 void setup(){
   size(1000, 800);
   dieEingabe = new Eingabe();
   dieKamera = new Kamera();
   dasLevel = new Level();
+  
+  
+  spezialBezeichnungen = new String[3];
+  spezialBezeichnungen[0] = "Blume";
+  spezialBezeichnungen[1] = "Schlangenbahn";
+  spezialBezeichnungen[2] = "Looping";
+  
+  gegnerBezeichnungen = new String [4];
+  gegnerBezeichnungen[0] = "Robot";
+  gegnerBezeichnungen[1] = "Fisch";
+  gegnerBezeichnungen[2] = "Fledermaus";
+  gegnerBezeichnungen[3] = "Eggman";
+  
+  objektBezeichnungen = new String [4];
+  objektBezeichnungen[0] = "Ringe";
+  objektBezeichnungen[1] = "Checkpoint";
+  objektBezeichnungen[2] = "Schild";
+  objektBezeichnungen[3] = "Powerup"; //Unsterblichkeit
 }
 
 
@@ -33,8 +56,6 @@ void draw(){
   dieKamera.zeichneHintergrund();
   
   dasLevel.zeichnen();
-  dasLevel.export();
-  dasLevel.inport();
   
   // Editor infos zeichnen
   textSize(16);

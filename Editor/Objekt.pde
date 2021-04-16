@@ -1,13 +1,11 @@
 class Objekt{
-  String text;
   int id;
   float x;
   float y;
   
   // KONSTRUKTOR //
-  public Objekt(int pID, String pText, float px, float py) {
+  public Objekt(int pID, float px, float py) {
     id = pID;
-    text = pText;
     x = px;
     y = py;
 
@@ -32,6 +30,6 @@ class Objekt{
     }
     dieKamera.drawCircle(x, y, 0.1f);
     fill(0, 0, 255);
-    dieKamera.drawText(text, x - 0.5f, y + 0.3f, 0.2f);
+    dieKamera.drawText(objektBezeichnungen[id], x - 0.5f, y + 0.3f, 0.2f);
   } 
 }

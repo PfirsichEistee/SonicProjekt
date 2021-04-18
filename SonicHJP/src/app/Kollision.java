@@ -8,7 +8,6 @@ public class Kollision {
 	// ATTRIBUTE //
 	private static ArrayList<Kollision> altKollisionenListe; // Hier kommen Kollisionen rein, die keinem Chunk zugeordnet wurden
 	private static ArrayList<Kollision>[][] kollisionenListe;
-	private static Spielwelt dieSpielwelt;
 	
 	public float x1, y1;
 	public float x2, y2;
@@ -22,10 +21,63 @@ public class Kollision {
 		x2 = px2;
 		y2 = py2;
 		platform = pPlatform;
-		altKollisionenListe.add(this);
-		if (false) {
+		
 		int cx = (int)Math.floor(px1 / 10f);
 		int cy = (int)Math.floor(py1 / 10f);
+		
+		if (!(Math.floor(px1 / 10f) == Math.floor(px2 / 10f) && Math.floor(py1 / 10f) == Math.floor(py2 / 10f))) {
+			// Split Collision
+			
+			if (py1 == py2) {
+				// Horizontal
+				
+			} else if (px1 == px2) {
+				// Vertical
+				
+			} else {
+				// Free
+				float m = (py2 - py1) / (px2 - px1);
+				float b = py1 - m * px1;
+				
+				float testX = (cx + 1) * 10;
+				if (px2 < px1) testX = cx * 10;
+				
+				
+				if ((int)Math.floor((m * testX + b) / 10) == cy) {
+					// y doesnt change
+					
+					if (testX == (cx * 10)) {
+						new Kollision(x2, y2, testX - 0.0001f, m * testX + b, pPlatform);
+					} else {
+						new Kollision(x2, y2, testX, m * testX + b, pPlatform);
+					}
+					
+					x2 = testX;
+					y2 = m * testX + b;
+				} else {
+					float testY = (cy + 1) * 10;
+					if (py2 < py1) testY = cy * 10;
+					
+					if ((int)Math.floor(((testY - b) / m) / 10) == cx) {
+						// x doesnt change
+						
+						if (testY == (cy * 10)) {
+							new Kollision(x2, y2, (testY - b) / m, testY - 0.0001f, pPlatform);
+						} else {
+							new Kollision(x2, y2, (testY - b) / m, testY, pPlatform);
+						}
+						
+						x2 = (testY - b) / m;
+						y2 = testY;
+					} else {
+						// both change?
+						altKollisionenListe.add(this);
+						return;
+					}
+				}
+			}
+		}
+		
 		if (cx >= 0 && cx < kollisionenListe.length && cy >= 0 && cy < kollisionenListe[0].length) {
 			if (kollisionenListe[cx][cy] == null) {
 				kollisionenListe[cx][cy] = new ArrayList<Kollision>();
@@ -35,17 +87,16 @@ public class Kollision {
 		} else {
 			System.out.println("[!!!] Kollision wurde ausserhalb der Chunk-Range platziert!\n\t(" + x1 + "|" + y1 + ") (" + x2 + "|" + y2 + ")");
 			altKollisionenListe.add(this);
-		}}
+		}
 	}
 	
 	
 	
 	// METHODEN //
 	@SuppressWarnings("unchecked")
-	public static void init(int chunkW, int chunkH, Spielwelt pSpielwelt) {
+	public static void init(int chunkW, int chunkH) {
 		altKollisionenListe = new ArrayList<Kollision>();
 		kollisionenListe = new ArrayList[chunkW][chunkH];
-		dieSpielwelt = pSpielwelt;
 	}
 	
 	
@@ -413,6 +464,15 @@ public class Kollision {
 	}
 	
 	
+	public static int getWidth() {
+		return kollisionenListe.length;
+	}
+	
+	public static int getHeight() {
+		return kollisionenListe[0].length;
+	}
+	
+	
 	
 	
 	// DEBUG
@@ -425,16 +485,23 @@ public class Kollision {
 				if (kollisionenListe[x][y] != null) {
 					for (int i = 0; i < kollisionenListe[x][y].size(); i++) {
 						Kollision k = kollisionenListe[x][y].get(i);
+						dieKamera.setFarbe(Color.AQUA);
 						dieKamera.drawLine(k.x1, k.y1, k.x2, k.y2);
+						dieKamera.setFarbe(Color.DARKBLUE);
+						dieKamera.drawRect(k.x1 - 0.1f, k.y1 - 0.1f, 0.2f, 0.2f);
+						dieKamera.drawRect(k.x2 - 0.1f, k.y2 - 0.1f, 0.2f, 0.2f);
 					}
 				}
 			}
 		}
-
-		dieKamera.setFarbe(Color.CRIMSON);
+		
 		for (int i = 0; i < altKollisionenListe.size(); i++) {
 			Kollision k = altKollisionenListe.get(i);
+			dieKamera.setFarbe(Color.CRIMSON);
 			dieKamera.drawLine(k.x1, k.y1, k.x2, k.y2);
+			dieKamera.setFarbe(Color.DARKBLUE);
+			dieKamera.drawRect(k.x1 - 0.1f, k.y1 - 0.1f, 0.2f, 0.2f);
+			dieKamera.drawRect(k.x2 - 0.1f, k.y2 - 0.1f, 0.2f, 0.2f);
 		}
 	}
 }

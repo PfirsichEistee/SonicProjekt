@@ -20,6 +20,7 @@ public class Sonic {
 	private int modeCounter; // jeder modus muss fuer mind. 6 Updates bestehen
 	
 	private float jumpTimer;
+	private boolean jumpLock;
 	
 	private boolean grounded;
 	
@@ -53,6 +54,7 @@ public class Sonic {
 		modeCounter = 0;
 		
 		jumpTimer = -1;
+		jumpLock = false;
 		
 		grounded = true;
 		
@@ -126,7 +128,7 @@ public class Sonic {
 		// Check if can ground
 		if (!grounded && groundHit != null) {
 			float angle = CMath.angleBetweenDirs(0, 1, groundHit.normalX, groundHit.normalY);
-			if (angle > 50 || speedY > 0.1f) {
+			if (angle > 45 || speedY > 0.1f) {
 				groundHit = null;
 			}
 		}
@@ -215,9 +217,12 @@ public class Sonic {
 			
 			
 			// Jump
-			if (Eingabe.isKeyDown("W")) {
-				x += groundHit.normalX * (radVer * 1.0001f);
-				y += groundHit.normalY * (radVer * 1.0001f);
+			if (!Eingabe.isKeyDown("W") && jumpLock)
+				jumpLock = false;
+			
+			if (Eingabe.isKeyDown("W") && !jumpLock) {
+				x += groundHit.normalX * 0.1f;
+				y += groundHit.normalY * 0.1f;
 				
 				grounded = false;
 				float jumpForce = 7f;
@@ -271,7 +276,7 @@ public class Sonic {
 			
 			angle *= (Math.PI / 180.0);
 			
-			rotation = CMath.lerp(rotation, angle, 10f * delta);
+			rotation = CMath.slerp(rotation, angle, 10f * delta);
 		} else {
 			// Sonic ungrounded
 			modeRotation = 0;
@@ -280,7 +285,7 @@ public class Sonic {
 			
 			grounded = false;
 
-			rotation = CMath.lerp(rotation, 0, 10f * delta);
+			rotation = CMath.slerp(rotation, 0, 10f * delta);
 		}
 		
 		collide();
@@ -294,8 +299,8 @@ public class Sonic {
 		if (!Eingabe.isKeyDown("W"))
 			jumpTimer = -1f;
 		
-		if (Eingabe.isKeyDown("W") && jumpTimer < 0)
-			Eingabe.onKeyUp("W");
+		if (jumpTimer < 0 || !Eingabe.isKeyDown("W"))
+			jumpLock = true;
 		
 		
 		// Update velocity
@@ -364,7 +369,7 @@ public class Sonic {
 	public void draw() {
 		dieKamera.setFarbe(new Color(1f, 0.5f, 0, 0.2f));
 		
-		dieKamera.drawImage(dasImage, x - 1, y + 1, 2, 2, rotation);
+		dieKamera.drawImage(dasImage, x - 0.9f, y + 0.9f, 1.8f, 1.8f, rotation);
 
 		dieKamera.setLineWidth(0.05f);
 		

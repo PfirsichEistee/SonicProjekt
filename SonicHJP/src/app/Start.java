@@ -58,9 +58,12 @@ public class Start extends Application {
 		// Initialize static main stuff
 		Kamera.init(gc, width, height);
 		Eingabe.init(scene);
+		Kollision.init(10, 5);
 		
 		
 		// Load game
+		LevelLeser leser = new LevelLeser("files/maps/level.txt");
+		leser.erzeugeSpielwelt();
 		dieSpielwelt = new Spielwelt(null, 30, 5.5f, null, null, null, null);
 		
 		

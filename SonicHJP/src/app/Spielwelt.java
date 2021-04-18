@@ -33,8 +33,6 @@ public class Spielwelt {
 		dieGegner = pDieGegner;
 		dieProjektile = pDieProjektile;
 		
-		Kollision.init(10, 5, this);
-		
 		debugCreateMap();
 	}
 	
@@ -100,6 +98,19 @@ public class Spielwelt {
 			}
 			
 			dieKamera.drawLine(dieKamera.getX() - (dieKamera.getWidth() / 2), y, dieKamera.getX() + (dieKamera.getWidth() / 2), y);
+		}
+		
+		
+		for (int xx = 0; xx < 15; xx++) {
+			int clr = xx % 2;
+			for (int yy = 0; yy < 5; yy++) {
+				clr = (clr + yy) % 2;
+				
+				if (clr == 0) dieKamera.setFarbe(new Color(1, 0, 0, 0.4f));
+				else dieKamera.setFarbe(new Color(1, 1, 0, 0.4f));
+				
+				dieKamera.drawRect(xx * 10, yy * 10, 10, 10);
+			}
 		}
 		
 		

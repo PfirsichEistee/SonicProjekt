@@ -28,6 +28,23 @@ public class CMath {
 		return from + (to - from) * mult;
 	}
 	
+	public static float slerp(float from, float to, float mult) {
+		float twoPI = 2f * (float)Math.PI;
+		
+		while (from < 0) from += twoPI;
+		while (to < 0) to += twoPI;
+
+		while (from > twoPI) from -= twoPI;
+		while (to > twoPI) to -= twoPI;
+		
+		if (Math.abs(to - from) > Math.PI) {
+			if (to < Math.PI) to += twoPI;
+			else from += twoPI;
+		}
+		
+		return from + (to - from) * mult;
+	}
+	
 	public static float angleBetweenDirs(float dx1, float dy1, float dx2, float dy2) {
 		// cos(a) = (VEC1 * VEC2) / (|VEC1| * |VEC2|)
 		// V1 * V2 = V1x * V2x + V1y * V2y

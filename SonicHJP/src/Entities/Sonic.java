@@ -1,5 +1,6 @@
 package Entities;
 
+import Objects.SpezialStrecke;
 import app.CMath;
 import app.Eingabe;
 import app.Kamera;
@@ -23,6 +24,9 @@ public class Sonic {
 	private boolean jumpLock;
 	
 	private boolean grounded;
+	
+	private SpezialStrecke dieSpezStrecke;
+	private boolean physicsLock;
 	
 	
 	private Image dasImage;
@@ -58,6 +62,9 @@ public class Sonic {
 		
 		grounded = true;
 		
+		dieSpezStrecke = null;
+		physicsLock = false;
+		
 		
 		dasImage = new Image("file:files/textures/testsonic.png");
 	}
@@ -92,6 +99,11 @@ public class Sonic {
 	
 	
 	public void fixedUpdate(float delta) {
+		if (physicsLock) {
+			spezialUpdate(delta);
+			return;
+		}
+		
 		int repeat = (int)CMath.min((int)Math.ceil((Math.abs(speed) * delta) / 0.1f), 1); // fuer alle 0.1 LE updaten
 		//System.out.println("Repeat " + repeat + "x");
 		for (int i = 0; i < repeat; i++) {
@@ -176,7 +188,7 @@ public class Sonic {
 				if (angle <= 25) {
 					// Shallow
 					speed = speedX;
-					System.out.println("grounded SHALLOW");
+					//System.out.println("grounded SHALLOW");
 				} else if (angle <= 45) {
 					// Half Steep
 					if (Math.abs(speedX) > -speedY) {
@@ -184,7 +196,7 @@ public class Sonic {
 					} else {
 						speed = speedY * (float)Math.signum(Math.sin(angle * (Math.PI / 180))) * 0.5f;
 					}
-					System.out.println("grounded HALF STEEP");
+					//System.out.println("grounded HALF STEEP");
 				} else {
 					// Full Steep
 					if (Math.abs(speedX) > -speedY) {
@@ -192,7 +204,7 @@ public class Sonic {
 					} else {
 						speed = speedY * (float)Math.signum(Math.sin(angle * (Math.PI / 180)));
 					}
-					System.out.println("grounded FULL STEEP");
+					//System.out.println("grounded FULL STEEP");
 				}
 			}
 			
@@ -321,6 +333,12 @@ public class Sonic {
 	}
 	
 	
+	private void spezialUpdate(float delta) {
+		// TODO: bewege Sonic entlang einer Spezial-Strecke
+		// Am Ende physic wieder entsperren
+	}
+	
+	
 	private void collide() {
 		float mSin = (float)Math.sin(modeRotation);
 		float mCos = (float)Math.cos(modeRotation);
@@ -413,6 +431,21 @@ public class Sonic {
 			dieKamera.drawRect(hitL.hitX - 0.1f, hitL.hitY - 0.1f, 0.2f, 0.2f);
 		if (hitR != null)
 			dieKamera.drawRect(hitR.hitX - 0.1f, hitR.hitY - 0.1f, 0.2f, 0.2f);
+	}
+	
+	
+	public void lockPhysics() {
+		physicsLock = true;
+	}
+	public void unlockPhysics() {
+		physicsLock = false;
+	}
+	public boolean isPhysicsLocked() {
+		return physicsLock;
+	}
+	
+	public void setSpezialStrecke(SpezialStrecke pStrecke) {
+		dieSpezStrecke = pStrecke;
 	}
 	
 	

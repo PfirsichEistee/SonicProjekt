@@ -66,7 +66,22 @@ public class Kamera {
 	}
 	
 	public void drawImageSection(Image pImage, int imgX, int imgY, int imgW, int imgH, float px, float py, float pw, float ph, float pRotation) {
+		gc.save();
 		
+		pw *= pixelProEinheit;
+		ph *= pixelProEinheit;
+		
+		gc.translate(einheitZuPixelX(px) + (pw / 2), einheitZuPixelY(py) + (ph / 2));
+		gc.rotate(pRotation * (180.0 / Math.PI));
+		gc.drawImage(pImage, imgX, imgY, imgW, imgH, -pw / 2, -ph / 2, pw, ph);
+		
+		gc.restore();
+	}
+	
+	public void drawImageSection(Image pImage, int imgX, int imgY, int imgW, int imgH, float px, float py, float pw, float ph) {
+		pw *= pixelProEinheit;
+		ph *= pixelProEinheit;
+		gc.drawImage(pImage, imgX, imgY, imgW, imgH, einheitZuPixelX(px), einheitZuPixelY(py) - ph, pw, ph);
 	}
 	
 	public void drawLine(float x1, float y1, float x2, float y2) {

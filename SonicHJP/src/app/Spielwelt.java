@@ -7,6 +7,8 @@ import Entities.Sonic;
 import Objects.Objekt;
 import Objects.Projektil;
 import Objects.Ring;
+import Objects.SS_SBahn;
+import Objects.SpezialStrecke;
 import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
 
@@ -16,6 +18,7 @@ public class Spielwelt {
 	
 	private Kamera dieKamera;
 	private Sonic derSpieler;
+	private SpezialStrecke[] dieSpezialStrecken;
 	private ArrayList<Objekt> dieObjekte;
 	private ArrayList<Ring> dieRinge;
 	private ArrayList<Gegner> dieGegner;
@@ -23,11 +26,13 @@ public class Spielwelt {
 	
 	
 	// KONSTRUKTOR //
-	public Spielwelt(Image pLevelImage, float pSpielerX, float pSpielerY, ArrayList<Objekt> pDieObjekte, ArrayList<Ring> pDieRinge, ArrayList<Gegner> pDieGegner, ArrayList<Projektil> pDieProjektile) {
+	public Spielwelt(Image pLevelImage, float pSpielerX, float pSpielerY, SpezialStrecke[] pSpezialStrecken, ArrayList<Objekt> pDieObjekte, ArrayList<Ring> pDieRinge, ArrayList<Gegner> pDieGegner, ArrayList<Projektil> pDieProjektile) {
 		dasLevelImage = pLevelImage;
 		dieKamera = new Kamera(pSpielerX, pSpielerY, 48);
 		derSpieler = new Sonic(pSpielerX, pSpielerY, dieKamera);
 		
+		dieSpezialStrecken = new SpezialStrecke[1];
+		dieSpezialStrecken[0] = new SS_SBahn(0, -3, 1);
 		dieObjekte = pDieObjekte;
 		dieRinge = pDieRinge;
 		dieGegner = pDieGegner;
@@ -53,11 +58,27 @@ public class Spielwelt {
 	
 	public void fixedUpdate(float delta) {
 		derSpieler.fixedUpdate(delta);
+		
+		// TODO: Prüfe, ob Sonic eine SBahn betritt
+		// wenn dieSpezialStrecken[i].isPointInRange(blabla), dann derSpieler.lockPhysics(); && derSpieler.setSpezialStrecke(blabla);
+		// Wichtig: prüfe vorher, ob die Physik nicht evtl. bereits gesperrt ist ("isPhysicsLocked()")
 	}
 	
 	
 	public void draw() {
+		if (dieSpezialStrecken != null) {
+			for (int i = 0; i < dieSpezialStrecken.length; i++) {
+				dieSpezialStrecken[i].draw(dieKamera);
+			}
+		}
+		
 		derSpieler.draw();
+		
+		if (dieSpezialStrecken != null) {
+			for (int i = 0; i < dieSpezialStrecken.length; i++) {
+				dieSpezialStrecken[i].lateDraw(dieKamera);
+			}
+		}
 	}
 	
 	

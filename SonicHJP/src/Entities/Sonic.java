@@ -11,10 +11,13 @@ import javafx.scene.paint.Color;
 
 public class Sonic {
 	// ATTRIBUTE //
-	private float x, y;
+	public float x, y;
 	private float speed;
 	private float speedX, speedY;
 	private float rotation;
+	
+	public float progx;
+	public float specialziel;
 	
 	private float radHor, radVer; // radius horizontal/vertikal
 	private float modeRotation; // nur in 90° Schritten
@@ -334,6 +337,41 @@ public class Sonic {
 	
 	
 	private void spezialUpdate(float delta) {
+		
+		//x = dieSpezStrecke.getSonicX(progx);
+		//y = dieSpezStrecke.getSonicY(progx);
+		
+		if(specialziel == 1) {
+			if(progx < 1) {
+				progx = progx + 0.02f;
+				
+				x = dieSpezStrecke.getSonicX(progx);
+				y = dieSpezStrecke.getSonicY(progx);
+			}
+			else {
+				unlockPhysics();
+				
+				speedX = -20f;
+			    speedY = 0;
+			    progx = 0;
+			    }
+		}
+		else if(specialziel == 0) {
+			if(progx < 1) {
+				progx = progx + 0.02f;
+				
+				x = dieSpezStrecke.getSonicX(progx); 
+				y = dieSpezStrecke.getSonicY(progx);
+			}
+			else {
+				unlockPhysics();
+				
+				speedX = 20f;
+			    speedY = 0;
+			    progx = 0;			    
+			    }
+		}
+			
 		// TODO: bewege Sonic entlang einer Spezial-Strecke
 		// Am Ende physic wieder entsperren
 	}

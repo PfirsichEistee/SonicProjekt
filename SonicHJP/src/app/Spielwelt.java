@@ -16,6 +16,8 @@ public class Spielwelt {
 	// ATTRIBUTE //
 	private Image dasLevelImage;
 	
+	private int Anzahl;
+	
 	private Kamera dieKamera;
 	private Sonic derSpieler;
 	private SpezialStrecke[] dieSpezialStrecken;
@@ -31,7 +33,9 @@ public class Spielwelt {
 		dieKamera = new Kamera(pSpielerX, pSpielerY, 48);
 		derSpieler = new Sonic(pSpielerX, pSpielerY, dieKamera);
 		
-		dieSpezialStrecken = new SpezialStrecke[1];
+		Anzahl = 1;
+		
+		dieSpezialStrecken = new SpezialStrecke[Anzahl];
 		dieSpezialStrecken[0] = new SS_SBahn(0, -3, 1);
 		dieObjekte = pDieObjekte;
 		dieRinge = pDieRinge;
@@ -58,6 +62,28 @@ public class Spielwelt {
 	
 	public void fixedUpdate(float delta) {
 		derSpieler.fixedUpdate(delta);
+		
+		for(int i = 0; i < Anzahl; i++) {
+			boolean Abfrage = dieSpezialStrecken[i].isPointInRange(derSpieler.x, derSpieler.y);
+			if(Abfrage == true) {
+				
+				derSpieler.lockPhysics();
+				derSpieler.setSpezialStrecke(dieSpezialStrecken[i]);
+				
+				if(dieSpezialStrecken[i].x + 0.5 >= derSpieler.x && dieSpezialStrecken[i].x - 0.5 <= derSpieler.x) {
+					
+					derSpieler.x = dieSpezialStrecken[i].x;
+					derSpieler.y = dieSpezialStrecken[i].y;
+					derSpieler.specialziel = 1;
+				}
+				else {
+					
+					derSpieler.x = dieSpezialStrecken[i].x + (4 * 3 * dieSpezialStrecken[i].laenge);
+					derSpieler.y = dieSpezialStrecken[i].y;
+					derSpieler.specialziel = 0;
+				}
+			}
+		}
 		
 		// TODO: Prüfe, ob Sonic eine SBahn betritt
 		// wenn dieSpezialStrecken[i].isPointInRange(blabla), dann derSpieler.lockPhysics(); && derSpieler.setSpezialStrecke(blabla);

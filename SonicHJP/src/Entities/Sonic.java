@@ -11,13 +11,10 @@ import javafx.scene.paint.Color;
 
 public class Sonic {
 	// ATTRIBUTE //
-	public float x, y;
+	private float x, y;
 	private float speed;
 	private float speedX, speedY;
 	private float rotation;
-	
-	public float progx;
-	public float specialziel;
 	
 	private float radHor, radVer; // radius horizontal/vertikal
 	private float modeRotation; // nur in 90° Schritten
@@ -29,6 +26,8 @@ public class Sonic {
 	private boolean grounded;
 	
 	private SpezialStrecke dieSpezStrecke;
+	private float spezialProzent;
+	private float spezialZiel;
 	private boolean physicsLock;
 	
 	
@@ -75,11 +74,6 @@ public class Sonic {
 	
 	// METHODEN //
 	public void update(float delta) {
-		// Kamera bewegen
-		dieKamera.setX((x - dieKamera.getX()) * delta * 10 + dieKamera.getX());
-		dieKamera.setY((y - dieKamera.getY()) * delta * 10 + dieKamera.getY());
-		
-		
 		// Animation updaten
 		int zustand = 0;
 		/* Zustaende:
@@ -104,14 +98,17 @@ public class Sonic {
 	public void fixedUpdate(float delta) {
 		if (physicsLock) {
 			spezialUpdate(delta);
-			return;
+		} else {
+			int repeat = (int)CMath.min((int)Math.ceil((Math.abs(speed) * delta) / 0.1f), 1); // fuer alle 0.1 LE updaten
+			//System.out.println("Repeat " + repeat + "x");
+			for (int i = 0; i < repeat; i++) {
+				groundUpdate(delta / repeat);
+			}
 		}
 		
-		int repeat = (int)CMath.min((int)Math.ceil((Math.abs(speed) * delta) / 0.1f), 1); // fuer alle 0.1 LE updaten
-		//System.out.println("Repeat " + repeat + "x");
-		for (int i = 0; i < repeat; i++) {
-			groundUpdate(delta / repeat);
-		}
+		// Kamera bewegen
+		dieKamera.setX((x - dieKamera.getX()) * delta * 10 + dieKamera.getX());
+		dieKamera.setY((y - dieKamera.getY()) * delta * 10 + dieKamera.getY());
 	}
 	
 	
@@ -337,43 +334,15 @@ public class Sonic {
 	
 	
 	private void spezialUpdate(float delta) {
+		rotation = 0;
+		spezialProzent = CMath.move(spezialProzent, spezialZiel, delta);
 		
-		//x = dieSpezStrecke.getSonicX(progx);
-		//y = dieSpezStrecke.getSonicY(progx);
+		x = dieSpezStrecke.getSonicX(spezialProzent);
+		y = dieSpezStrecke.getSonicY(spezialProzent);
 		
-		if(specialziel == 1) {
-			if(progx < 1) {
-				progx = progx + 0.02f;
-				
-				x = dieSpezStrecke.getSonicX(progx);
-				y = dieSpezStrecke.getSonicY(progx);
-			}
-			else {
-				unlockPhysics();
-				
-				speedX = -20f;
-			    speedY = 0;
-			    progx = 0;
-			    }
+		if (spezialProzent == spezialZiel) {
+			unlockPhysics();
 		}
-		else if(specialziel == 0) {
-			if(progx < 1) {
-				progx = progx + 0.02f;
-				
-				x = dieSpezStrecke.getSonicX(progx); 
-				y = dieSpezStrecke.getSonicY(progx);
-			}
-			else {
-				unlockPhysics();
-				
-				speedX = 20f;
-			    speedY = 0;
-			    progx = 0;			    
-			    }
-		}
-			
-		// TODO: bewege Sonic entlang einer Spezial-Strecke
-		// Am Ende physic wieder entsperren
 	}
 	
 	
@@ -484,6 +453,31 @@ public class Sonic {
 	
 	public void setSpezialStrecke(SpezialStrecke pStrecke) {
 		dieSpezStrecke = pStrecke;
+	}
+	
+	public float getX() {
+		return x;
+	}
+	public float getY() {
+		return y;
+	}
+	
+	public float getSpeedX() {
+		return speedX;
+	}
+	public float getSpeedY() {
+		return speedY;
+	}
+	
+	public boolean getGrounded() {
+		return grounded;
+	}
+	
+	public void setSpezialProzent(float pProzent) {
+		spezialProzent = pProzent;
+	}
+	public void setSpezialZiel(float pZiel) {
+		spezialZiel = pZiel;
 	}
 	
 	

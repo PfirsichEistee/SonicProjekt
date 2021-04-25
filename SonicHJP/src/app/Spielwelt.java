@@ -16,8 +16,6 @@ public class Spielwelt {
 	// ATTRIBUTE //
 	private Image dasLevelImage;
 	
-	private int Anzahl;
-	
 	private Kamera dieKamera;
 	private Sonic derSpieler;
 	private SpezialStrecke[] dieSpezialStrecken;
@@ -33,10 +31,8 @@ public class Spielwelt {
 		dieKamera = new Kamera(pSpielerX, pSpielerY, 48);
 		derSpieler = new Sonic(pSpielerX, pSpielerY, dieKamera);
 		
-		Anzahl = 1;
-		
-		dieSpezialStrecken = new SpezialStrecke[Anzahl];
-		dieSpezialStrecken[0] = new SS_SBahn(0, -3, 1);
+		dieSpezialStrecken = new SpezialStrecke[1];
+		dieSpezialStrecken[0] = new SS_SBahn(-1 - 4 * 3 * 2, -1 - 2.5f, 2);
 		dieObjekte = pDieObjekte;
 		dieRinge = pDieRinge;
 		dieGegner = pDieGegner;
@@ -63,31 +59,31 @@ public class Spielwelt {
 	public void fixedUpdate(float delta) {
 		derSpieler.fixedUpdate(delta);
 		
-		for(int i = 0; i < Anzahl; i++) {
-			boolean Abfrage = dieSpezialStrecken[i].isPointInRange(derSpieler.x, derSpieler.y);
-			if(Abfrage == true) {
-				
-				derSpieler.lockPhysics();
-				derSpieler.setSpezialStrecke(dieSpezialStrecken[i]);
-				
-				if(dieSpezialStrecken[i].x + 0.5 >= derSpieler.x && dieSpezialStrecken[i].x - 0.5 <= derSpieler.x) {
+		// Try entering spezial track
+		if (!derSpieler.isPhysicsLocked() && derSpieler.getGrounded() && Math.abs(derSpieler.getSpeedX()) > 10) {
+			for(int i = 0; i < dieSpezialStrecken.length; i++) {
+				boolean Abfrage = dieSpezialStrecken[i].isPointInRange(derSpieler.getX(), derSpieler.getY());
+				if (Abfrage == true) {
+					if (CMath.distance(dieSpezialStrecken[i].getX(), 0, derSpieler.getX(), 0) <= 1) {
+						// Enter from left
+						if (derSpieler.getSpeedX() < 0) continue;
+						
+						derSpieler.setSpezialProzent(0);
+						derSpieler.setSpezialZiel(1);
+					} else {
+						// Enter from right
+						if (derSpieler.getSpeedX() > 0) continue;
+						
+						derSpieler.setSpezialProzent(1);
+						derSpieler.setSpezialZiel(0);
+					}
 					
-					derSpieler.x = dieSpezialStrecken[i].x;
-					derSpieler.y = dieSpezialStrecken[i].y;
-					derSpieler.specialziel = 1;
-				}
-				else {
-					
-					derSpieler.x = dieSpezialStrecken[i].x + (4 * 3 * dieSpezialStrecken[i].laenge);
-					derSpieler.y = dieSpezialStrecken[i].y;
-					derSpieler.specialziel = 0;
+	
+					derSpieler.lockPhysics();
+					derSpieler.setSpezialStrecke(dieSpezialStrecken[i]);
 				}
 			}
 		}
-		
-		// TODO: Prüfe, ob Sonic eine SBahn betritt
-		// wenn dieSpezialStrecken[i].isPointInRange(blabla), dann derSpieler.lockPhysics(); && derSpieler.setSpezialStrecke(blabla);
-		// Wichtig: prüfe vorher, ob die Physik nicht evtl. bereits gesperrt ist ("isPhysicsLocked()")
 	}
 	
 	
@@ -205,5 +201,6 @@ public class Spielwelt {
 		new Kollision(31.9f, 2f, 31f, 3.1f, false);
 		new Kollision(28f, 4.8f, 31, 3.1f, false);
 		new Kollision(16, 0, 19, 0, true);
+		new Kollision(-25f, -1f, -40, -1f, false);
 	}
 }

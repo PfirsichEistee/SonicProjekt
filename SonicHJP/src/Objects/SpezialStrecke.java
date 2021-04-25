@@ -5,8 +5,7 @@ import app.Kamera;
 
 public abstract class SpezialStrecke {
 	// ATTRIBUTE //
-	public float x, y;
-	public float laenge;
+	protected float x, y;
 	
 	
 	// KONSTRUKTOR //
@@ -25,4 +24,12 @@ public abstract class SpezialStrecke {
 	// Progress is the passed percentage of the track. 0.5 == sonic is halfway through
 	public abstract float getSonicX(float progress);
 	public abstract float getSonicY(float progress);
+	
+	public float getX() {
+		return x;
+	}
+	
+	public float getY() {
+		return y;
+	}
 }

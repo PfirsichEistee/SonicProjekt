@@ -2,13 +2,13 @@ public class Level {
   // ATTRIBUTE //
   public Werkzeug dasWerkzeug;
   private int auswahlWerkzeug;
+  private int toolboxPosX, toolboxPosY;
 
   // Platzierte Dinge
   public ArrayList<Objekt> liste_Objekte;
   public ArrayList<Strecke> liste_Strecken;
   public ArrayList<Spezial> liste_Spezial;
   public ArrayList<Gegner> liste_Gegner;
-  private Sonic derSonic;
 
   private PImage hintergrund;
   private boolean zeichneMap;
@@ -18,13 +18,14 @@ public class Level {
   public Level() {
     auswahlWerkzeug = 0;
     werkzeugWechseln(0);
+    toolboxPosX = width - 300;
+    toolboxPosY = height - 200;
 
 
     liste_Objekte = new ArrayList<Objekt>();
     liste_Strecken = new ArrayList<Strecke>();
     liste_Spezial = new ArrayList<Spezial>();
     liste_Gegner = new ArrayList<Gegner>();
-    derSonic = new Sonic();
 
 
 
@@ -70,9 +71,7 @@ public class Level {
     // Gegner-Liste zeichnen
     stroke(0, 0, 0, 155);
     fill(75, 75, 255, 155);
-
-    // Gegner zeichnen
-
+    
     for (int i = 0; i < liste_Gegner.size(); i++) {
       liste_Gegner.get(i).zeichnen();
     }
@@ -80,13 +79,28 @@ public class Level {
 
     // Werkzeug
     dasWerkzeug.zeichnen();
+    dasWerkzeug.getToolbox().zeichnen(toolboxPosX, toolboxPosY);
   }
 
 
   public void cursorMoved(float deltaX, float deltaY) {
     dasWerkzeug.cursorMoved(deltaX, deltaY);
+    
+    // Toolbox bewegen
+    if (dieEingabe.istMausButtonGedrueckt(0) && mouseX >= toolboxPosX && mouseX <= (toolboxPosX + 300) && mouseY >= toolboxPosY && mouseY <= (toolboxPosY + 200)) {
+      toolboxPosX += deltaX * dieKamera.pixelProEinheit;
+      toolboxPosY -= deltaY * dieKamera.pixelProEinheit;
+      
+      if (toolboxPosX > (width - 10)) toolboxPosX = width - 10;
+      else if ((toolboxPosX + 300) < 10) toolboxPosX = -290;
+      
+      if (toolboxPosY > (height - 10)) toolboxPosY = height - 10;
+      else if ((toolboxPosY + 200) < 10) toolboxPosY = -190;
+    }
   }
   public void cursorPressed(int button) {
+    if (mouseX >= toolboxPosX && mouseX <= (toolboxPosX + 300) && mouseY >= toolboxPosY && mouseY <= (toolboxPosY + 200)) return;
+    
     // button == 0 -> LINKS; button == 1 -> RECHTS; button == 2 -> MITTE
     dasWerkzeug.cursorPressed(button);
   }
@@ -95,6 +109,8 @@ public class Level {
     dasWerkzeug.cursorReleased(button);
   }
   public void cursorClicked(int button) {
+    if (mouseX >= toolboxPosX && mouseX <= (toolboxPosX + 300) && mouseY >= toolboxPosY && mouseY <= (toolboxPosY + 200)) return;
+    
     // button == 0 -> LINKS; button == 1 -> RECHTS; button == 2 -> MITTE
     dasWerkzeug.cursorClicked(button);
   }

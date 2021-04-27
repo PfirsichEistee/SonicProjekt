@@ -55,6 +55,21 @@ public class Eingabe {
   
   // Die unteren Methoden sind nur fuer diese Klasse wichtig
   public void keyPressed() {
+    switch (keyCode) {
+      case (LEFT):
+        key = 'J';
+        break;
+      case (RIGHT):
+        key = 'L';
+        break;
+      case (UP):
+        key = 'I';
+        break;
+      case (DOWN):
+        key = 'K';
+        break;
+    }
+    
     Character k = key;
     k = Character.toUpperCase(k);
     
@@ -69,6 +84,21 @@ public class Eingabe {
   }
   
   public void keyReleased() {
+    switch (keyCode) {
+      case (LEFT):
+        key = 'J';
+        break;
+      case (RIGHT):
+        key = 'L';
+        break;
+      case (UP):
+        key = 'I';
+        break;
+      case (DOWN):
+        key = 'K';
+        break;
+    }
+    
     Character k = key;
     k = Character.toUpperCase(k);
     

@@ -5,20 +5,25 @@ class WZ_Gegner extends Werkzeug{
   
   // KONSTRUKTOR //
   public WZ_Gegner() {
-    
-    
     auswahl = 0;
+    
+    // TOOLBOX
+    dieToolbox = new Toolbox("Werkzeug: Gegner");
+    
+    Toolbox_Item item = new Toolbox_Item("Typ", 0, 0, gegnerBezeichnungen.length - 1);
+    for (int i = 0; i < gegnerBezeichnungen.length; i++) {
+      item.setAnzahlText(i, gegnerBezeichnungen[i]);
+    }
+    dieToolbox.addItem(item);
+    
+    item = new Toolbox_Item("Richtung", 0, 0, 1);
+    item.setAnzahlText(0, "Links");
+    item.setAnzahlText(1, "Rechts");
+    dieToolbox.addItem(item);
   }
   
   public void zeichnen() {
-    stroke(0);
-    fill(0);
-    dieKamera.drawText(objektBezeichnungen[auswahl], dieEingabe.cursorX, dieEingabe.cursorY + 0.5f, 0.4f);
     
-    dieKamera.drawText("Richtung: "+ richtung, dieEingabe.cursorX, dieEingabe.cursorY + 0.9f, 0.4f);
-    
-    textSize(16);
-    text("Werkzeug: Gegner\nItem wechseln mit 'X'\nPfeiltasten: Auswahl Richtung \nLinks-Click: Platzieren\nRechts-Click: Loeschen", 20, height - 120);
   }
   public void cursorMoved(float deltaX, float deltaY) {
     
@@ -55,17 +60,9 @@ class WZ_Gegner extends Werkzeug{
     }
   }
   public void tasteGedrueckt(char k) {
-    if (k == 'X') {
-      auswahl++;
-      if (auswahl >= objektBezeichnungen.length)
-      auswahl = 0;
-    }
-    if(keyCode == 37){
-      richtung = 0;
-    }
-    else if(keyCode == 39){
-      richtung = 1;
-    }
+    toolboxKeyPressed(k);
+    auswahl = dieToolbox.getAnzahlVonItem(0);
+    richtung = dieToolbox.getAnzahlVonItem(1);
   }
   public void tasteLosgelassen(char k) {
     

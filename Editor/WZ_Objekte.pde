@@ -1,26 +1,47 @@
 public class WZ_Objekte extends Werkzeug {
   // ATTRIBUTE //
   private int auswahl;
+  private boolean gerundet;
+  private int lastMillis;
   
   
   // KONSTRUKTOR //
   public WZ_Objekte() {
     auswahl = 0;
+    gerundet = false;
+    lastMillis = 0;
+    
+    // TOOLBOX
+    dieToolbox = new Toolbox("Werkzeug: Objekte");
+    
+    Toolbox_Item item = new Toolbox_Item("Typ", 0, 0, objektBezeichnungen.length - 1);
+    for (int i = 0; i < objektBezeichnungen.length; i++) {
+      item.setAnzahlText(i, objektBezeichnungen[i]);
+    }
+    dieToolbox.addItem(item);
+    
+    item = new Toolbox_Item("Gerundet", 0, 0, 1);
+    item.setAnzahlText(0, "[_]");
+    item.setAnzahlText(1, "[x]");
+    dieToolbox.addItem(item);
   }
   
   
   // METHODEN //
   public void zeichnen() {
-    stroke(0);
-    fill(0);
-    dieKamera.drawText(objektBezeichnungen[auswahl], dieEingabe.cursorX, dieEingabe.cursorY + 0.5f, 0.4f);
     
-    textSize(16);
-    text("Werkzeug: Objekte\nItem wechseln mit 'X'\nLinks-Click: Platzieren\nRechts-Click: Loeschen", 20, height - 100);
   }
   
   public void cursorMoved(float deltaX, float deltaY) {
-    
+    if (dieEingabe.istMausButtonGedrueckt(0)) {
+      if ((millis() - lastMillis) >= 100 || gerundet) {
+        lastMillis = millis();
+        cursorClicked(0);
+      }
+    } else if (dieEingabe.istMausButtonGedrueckt(1) && (millis() - lastMillis) >= 10) {
+      lastMillis = millis();
+      cursorClicked(1);
+    }
   }
   public void cursorPressed(int button) {
     
@@ -31,7 +52,18 @@ public class WZ_Objekte extends Werkzeug {
   public void cursorClicked(int button) {
     if (button == 0) {
       // PLATZIEREN
-      dasLevel.liste_Objekte.add(new Objekt(auswahl, dieEingabe.cursorX, dieEingabe.cursorY));
+      float cursX = dieEingabe.cursorX;
+      float cursY = dieEingabe.cursorY;
+      if (gerundet) {
+        cursX = round(cursX);
+        cursY = round(cursY);
+        
+        for (Objekt o : dasLevel.liste_Objekte) {
+          if (o.x == cursX && o.y == cursY) return;
+        }
+      }
+      
+      dasLevel.liste_Objekte.add(new Objekt(auswahl, cursX, cursY));
     } else if (button == 1) {
       // LOESCHEN
       if (dasLevel.liste_Objekte.size() > 0) {
@@ -54,11 +86,9 @@ public class WZ_Objekte extends Werkzeug {
     }
   }
   public void tasteGedrueckt(char k) {
-    if (k == 'X') {
-      auswahl++;
-      if (auswahl >= objektBezeichnungen.length)
-      auswahl = 0;
-    }
+    toolboxKeyPressed(k);
+    auswahl = dieToolbox.getAnzahlVonItem(0);
+    gerundet = (dieToolbox.getAnzahlVonItem(1) == 0 ? false : true);
   }
   public void tasteLosgelassen(char k) {
     

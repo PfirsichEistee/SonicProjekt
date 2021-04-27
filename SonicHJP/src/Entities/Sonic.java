@@ -99,7 +99,7 @@ public class Sonic {
 		if (physicsLock) {
 			spezialUpdate(delta);
 		} else {
-			int repeat = (int)CMath.min((int)Math.ceil((Math.abs(speed) * delta) / 0.1f), 1); // fuer alle 0.1 LE updaten
+			int repeat = (int)CMath.min((int)Math.ceil((Math.abs(speed) * delta) / 0.05f), 1); // fuer alle 0.05 LE updaten
 			//System.out.println("Repeat " + repeat + "x");
 			for (int i = 0; i < repeat; i++) {
 				groundUpdate(delta / repeat);
@@ -175,9 +175,9 @@ public class Sonic {
 			
 			
 			// Update velocity
-			float acceleration = 30f;
+			float acceleration = 15f;
 			float deceleration = 50f;
-			float maxSpeed = 22f;
+			float maxSpeed = 17.5f;
 			
 			
 			// Did sonic ground JUST NOW?
@@ -237,7 +237,7 @@ public class Sonic {
 				y += groundHit.normalY * 0.1f;
 				
 				grounded = false;
-				float jumpForce = 7f;
+				float jumpForce = 10f;
 				speedX += groundHit.normalX * jumpForce;
 				speedY = groundHit.normalY * jumpForce;
 				jumpTimer = 0.5f;
@@ -316,10 +316,10 @@ public class Sonic {
 		
 		
 		// Update velocity
-		float gravity = 20f;
-		float maxSpeed = 25f;
+		float gravity = 30f;
+		float maxSpeed = 17.5f;
 		
-		speedY = CMath.move(speedY, -maxSpeed, delta * (jumpTimer > 0 ? (gravity * 0.25f) : gravity));
+		speedY = CMath.move(speedY, -maxSpeed, delta * (jumpTimer > 0 ? (gravity * 0.4f) : gravity));
 		
 
 		float inputX = (Eingabe.isKeyDown("D") ? 1 : 0);

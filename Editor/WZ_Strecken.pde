@@ -15,6 +15,24 @@ class WZ_Strecken extends Werkzeug {
     platzieren = true;
     snap = false;
     kollisionTyp = 0;
+    
+    // TOOLBOX
+    dieToolbox = new Toolbox("Werkzeug: Strecken");
+    
+    Toolbox_Item item = new Toolbox_Item("Typ", 0, 0, 1);
+    item.setAnzahlText(0, "Kollision");
+    item.setAnzahlText(1, "Platform");
+    dieToolbox.addItem(item);
+    
+    item = new Toolbox_Item("Snap", 0, 0, 1);
+    item.setAnzahlText(0, "[_]");
+    item.setAnzahlText(1, "[x]");
+    dieToolbox.addItem(item);
+    
+    item = new Toolbox_Item("Platzieren", 1, 0, 1);
+    item.setAnzahlText(0, "[_]");
+    item.setAnzahlText(1, "[x]");
+    dieToolbox.addItem(item);
   }
   
   
@@ -24,20 +42,6 @@ class WZ_Strecken extends Werkzeug {
     strokeWeight(6);
     if (newX1 != null)
       dieKamera.drawLine(newX1, newY1, newX2, newY2);
-    
-    
-    fill(0);
-    
-    if (platzieren)
-      dieKamera.drawText("Platzieren", dieEingabe.cursorX, dieEingabe.cursorY + 0.5f, 0.4f);
-    else
-      dieKamera.drawText("Bearbeiten", dieEingabe.cursorX, dieEingabe.cursorY + 0.5f, 0.4f);
-    
-    dieKamera.drawText("Snap: " + snap, dieEingabe.cursorX, dieEingabe.cursorY + 0.9f, 0.4f);
-    dieKamera.drawText("Kollision: " + ((kollisionTyp == 0) ? "Normal" : "Platform"), dieEingabe.cursorX, dieEingabe.cursorY + 1.3f, 0.4f);
-    
-    textSize(16);
-    text("Werkzeug: Strecken\nSnap wechseln mit 'X'\nBau-Modus wechseln mit 'C'\nCollision aendern mit 'V'\nLinks-Click (halten): Platzieren\nRechts-Click: Loeschen", 20, height - 140);
   }
   public void cursorMoved(float deltaX, float deltaY) {
     if (dieEingabe.istMausButtonGedrueckt(0)) {
@@ -98,12 +102,12 @@ class WZ_Strecken extends Werkzeug {
           float y1 = dasLevel.liste_Strecken.get(i).y1;
           float x2 = dasLevel.liste_Strecken.get(i).x2;
           float y2 = dasLevel.liste_Strecken.get(i).y2;
-          selectedPoint = 0;
+          int phPoint = 0;
           
           if (dist(dieEingabe.cursorX, dieEingabe.cursorY, x2, y2) < dist(dieEingabe.cursorX, dieEingabe.cursorY, x1, y1)) {
             x1 = x2;
             y1 = y2;
-            selectedPoint = 1;
+            phPoint = 1;
           }
           
           if ((dist(dieEingabe.cursorX, dieEingabe.cursorY, x1, y1) * dieKamera.pixelProEinheit) <= 30) {
@@ -111,6 +115,8 @@ class WZ_Strecken extends Werkzeug {
               selectedIndex = i;
               selX = x1;
               selY = y1;
+              selectedPoint = phPoint;
+              break;
             }
           }
         }
@@ -147,13 +153,11 @@ class WZ_Strecken extends Werkzeug {
     
   }
   public void tasteGedrueckt(char k) {
-    if (k == 'C') {
-      platzieren = !platzieren;
-    } else if (k == 'X') {
-      snap = !snap;
-    } else if (k == 'V') {
-      kollisionTyp = 1 - kollisionTyp;
-    }
+    toolboxKeyPressed(k);
+    
+    kollisionTyp = dieToolbox.getAnzahlVonItem(0);
+    snap = (dieToolbox.getAnzahlVonItem(1) == 0 ? false : true);
+    platzieren = (dieToolbox.getAnzahlVonItem(2) == 0 ? false : true);
   }
   public void tasteLosgelassen(char k) {
     

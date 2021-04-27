@@ -6,17 +6,21 @@ public class WZ_Spezial extends Werkzeug {
   // KONSTRUKTOR //
   public WZ_Spezial() {
     auswahl = 0;
+    
+    // TOOLBOX
+    dieToolbox = new Toolbox("Werkzeug: Spezial");
+    
+    Toolbox_Item item = new Toolbox_Item("Typ", 0, 0, spezialBezeichnungen.length - 1);
+    for (int i = 0; i < spezialBezeichnungen.length; i++) {
+      item.setAnzahlText(i, spezialBezeichnungen[i]);
+    }
+    dieToolbox.addItem(item);
   }
   
   
   // METHODEN //
   public void zeichnen() {
-    stroke(0);
-    fill(0);
-    dieKamera.drawText(spezialBezeichnungen[auswahl], dieEingabe.cursorX, dieEingabe.cursorY + 0.5f, 0.4f);
     
-    textSize(16);
-    text("Werkzeug: Spezial\nSpezial Item wechseln mit 'X'\nLinks-Click: Platzieren\nRechts-Click: Loeschen", 20, height - 100);
   }
   public void cursorMoved(float deltaX, float deltaY) {
     
@@ -53,11 +57,8 @@ public class WZ_Spezial extends Werkzeug {
     }
   }
   public void tasteGedrueckt(char k) {
-    if (k == 'X') {
-      auswahl++;
-      if (auswahl >= spezialBezeichnungen.length)
-        auswahl = 0;
-    }
+    toolboxKeyPressed(k);
+    auswahl = dieToolbox.getAnzahlVonItem(0);
   }
   public void tasteLosgelassen(char k) {
     

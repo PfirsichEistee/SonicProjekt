@@ -13,27 +13,17 @@ class Gegner{
   
   // METHODEN //
   public void zeichnen() {
-    stroke(0, 255, 0);
-    switch (id) {
-      case (0):
-        fill(100, 255, 100, 155);
-        break;
-      case (1):
-        fill(120, 255, 100, 155);
-        break;
-      case (2):
-        fill(140, 255, 100, 155);
-        break;
-    }
+    stroke(0, 150, 0);
+    fill(0, 150, 0);
     
-    dieKamera.drawCircle(x, y, 0.1f);
+    dieKamera.drawCircle(x, y, 0.35f);
     if(richtung == 0){
-      dieKamera.drawLine(x,y,x-0.5,y);
+      dieKamera.drawLine(x,y,x-0.7,y);
     }
     else if(richtung == 1){
-      dieKamera.drawLine(x,y,x+0.5,y);
+      dieKamera.drawLine(x,y,x+0.7,y);
     }
-    fill(0, 255, 0);
-    dieKamera.drawText(gegnerBezeichnungen[id], x - 0.5f, y + 0.3f, 0.2f);
+    
+    dieKamera.drawText(gegnerBezeichnungen[id], x - 0.5f, y + 0.55f, 0.3f);
   }
 }

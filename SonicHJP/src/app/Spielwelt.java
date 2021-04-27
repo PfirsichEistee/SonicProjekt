@@ -171,6 +171,15 @@ public class Spielwelt {
 		float phy = (float)Math.floor(dieKamera.pixelZuEinheitY(Eingabe.mouseY) * 10) / 10;
 		dieKamera.drawText("cursor: " + phx + " | " + phy, dieKamera.getX() - (dieKamera.getWidth() / 2) + 0.15f, dieKamera.getY() + (dieKamera.getHeight() / 2) - 1f);
 		
+		
+		//dieKamera.drawLine(dieKamera.getX(), dieKamera.getY(), phx, phy);
+		/*dieKamera.drawLine(phx, phy, phx, phy - 1);
+		RaycastHit hit = Kollision.raycast(phx, phy, 0, -1, true);
+		
+		if (hit != null) {
+			dieKamera.drawOval(hit.hitX - 0.2f, hit.hitY - 0.2f, 0.4f, 0.4f);
+			dieKamera.drawLine(hit.hitX, hit.hitY, hit.hitX + hit.normalX, hit.hitY + hit.normalY);
+		}*/
 	}
 	
 	private void debugUpdate() {
@@ -187,7 +196,7 @@ public class Spielwelt {
 	}
 	
 	private void debugCreateMap() {
-		new Kollision(-1, -1, 7, -3, false);
+		/*new Kollision(-1, -1, 7, -3, false);
 		new Kollision(7, -3, 10, -4, false);
 		new Kollision(10, -4, 15, -3.5f, false);
 		new Kollision(15, -3.5f, 21, -3.75f, false);
@@ -201,6 +210,6 @@ public class Spielwelt {
 		new Kollision(31.9f, 2f, 31f, 3.1f, false);
 		new Kollision(28f, 4.8f, 31, 3.1f, false);
 		new Kollision(16, 0, 19, 0, true);
-		new Kollision(-25f, -1f, -40, -1f, false);
+		new Kollision(-25f, -1f, -40, -1f, false);*/
 	}
 }

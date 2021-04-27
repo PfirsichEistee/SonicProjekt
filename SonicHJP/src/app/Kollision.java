@@ -30,7 +30,11 @@ public class Kollision {
 			
 			if (py1 == py2) {
 				// Horizontal
-				
+				if (px1 < px2) {
+					x2 = (float)Math.floor(px1 / 10f) * 10 + 10;
+					
+					new Kollision(px2, py2, x2 - 0.0001f, py2, pPlatform);
+				}
 			} else if (px1 == px2) {
 				// Vertical
 				
@@ -373,9 +377,9 @@ public class Kollision {
 	// LANGSAMES RAYCAST (vermeide es, Kollisionen ausserhalb der Chunk-Range zu platzieren aight)
 	private static RaycastHit raycastOutOfMap(float startX, float startY, float dirX, float dirY, boolean checkPlatform) {
 		if (dirX == 0)
-			dirX = 0.0001f;
+			dirX = 0.01f;
 		else if (dirY == 0)
-			dirY = 0.0001f;
+			dirY = 0.01f;
 		
 		
 		float rayM = dirY / dirX;

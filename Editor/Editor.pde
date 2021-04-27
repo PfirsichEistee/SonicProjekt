@@ -17,9 +17,6 @@ public String[] objektBezeichnungen;
 
 void setup(){
   size(1000, 800);
-  dieEingabe = new Eingabe();
-  dieKamera = new Kamera();
-  dasLevel = new Level();
   
   
   spezialBezeichnungen = new String[3];
@@ -28,16 +25,21 @@ void setup(){
   spezialBezeichnungen[2] = "Looping";
   
   gegnerBezeichnungen = new String [4];
-  gegnerBezeichnungen[0] = "Robot";
+  gegnerBezeichnungen[0] = "Roboter";
   gegnerBezeichnungen[1] = "Fisch";
   gegnerBezeichnungen[2] = "Fledermaus";
   gegnerBezeichnungen[3] = "Eggman";
   
   objektBezeichnungen = new String [4];
-  objektBezeichnungen[0] = "Ringe";
+  objektBezeichnungen[0] = "Ring";
   objektBezeichnungen[1] = "Checkpoint";
   objektBezeichnungen[2] = "Schild";
   objektBezeichnungen[3] = "Powerup"; //Unsterblichkeit
+  
+  
+  dieEingabe = new Eingabe();
+  dieKamera = new Kamera();
+  dasLevel = new Level();
 }
 
 

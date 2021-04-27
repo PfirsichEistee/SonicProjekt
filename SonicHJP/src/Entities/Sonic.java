@@ -375,16 +375,21 @@ public class Sonic {
 		
 		if (!grounded) {
 			if (speedY > 0) {
+				boolean wasHit = (hitD1 != null || hitD2 != null);
 				hitD1 = Kollision.raycast(x - radHor * 0.98f, y, 0, radVer, false);
 				hitD2 = Kollision.raycast(x + radHor * 0.98f, y, 0, radVer, false);
 				
 				if (hitD1 != null || hitD2 != null) {
-					speedY = 0;
+					RaycastHit hit = hitD1;
+					if (hitD1 == null || hitD1 != null && hitD2 != null && Math.abs(hitD2.hitY - y) < Math.abs(hitD1.hitY - y))
+						hit = hitD2;
 					
-					if (hitD1 != null)
-						y = hitD1.hitY - radVer;
-					if (hitD2 != null)
-						y = hitD2.hitY - radVer;
+					
+					if (!wasHit) {
+						speedY *= Math.sin(CMath.angleBetweenDirs(0, 1, hit.normalX, hit.normalY) * (Math.PI / 180));
+						
+						y = hit.hitY - radVer;
+					}
 				}
 			}
 		}

@@ -376,78 +376,211 @@ public class Kollision {
 	
 	// LANGSAMES RAYCAST (vermeide es, Kollisionen ausserhalb der Chunk-Range zu platzieren aight)
 	private static RaycastHit raycastOutOfMap(float startX, float startY, float dirX, float dirY, boolean checkPlatform) {
-		if (dirX == 0)
+		/*if (dirX == 0)
 			dirX = 0.01f;
 		else if (dirY == 0)
 			dirY = 0.01f;
 		
 		
 		float rayM = dirY / dirX;
-		float rayB = (startY - rayM * startX);
+		float rayB = (startY - rayM * startX);*/
 		
 		
 		RaycastHit rayhit = null;
 		
-		for (int i = 0; i < altKollisionenListe.size(); i++) {
-			Kollision col = altKollisionenListe.get(i);
-			if (!checkPlatform && col.platform)
-				continue;
+		
+		if (dirX != 0 && dirY != 0) {
+			// --- Line ---
 			
-			// Get collision values
-			float cutX = -999, cutY = -999;
-			float normalX = -1, normalY = -1;
+			float rayM = dirY / dirX;
+			float rayB = (startY - rayM * startX);
 			
-			if (col.x1 != col.x2 && col.y1 != col.y2) { // Line cuts line
-				float colM = (col.y2 - col.y1) / (col.x2 - col.x1);
-				float colB = (col.y1 - colM * col.x1);
+			// Check each line in list
+			for (int i = 0; i < altKollisionenListe.size(); i++) {
+				Kollision col = altKollisionenListe.get(i); // Store collision
+				if (!checkPlatform && col.platform) // Skip if you dont want platforms
+					continue;
 				
-				if ((rayM - colM) != 0) { // Are lines NOT parallel to each other?
-					cutX = (colB - rayB) / (rayM - colM);
+				// Prepare collision values
+				float cutX = -999, cutY = -999;
+				float normalX = -1, normalY = -1;
+				
+				
+				// What am I colliding with?
+				
+				if (col.x1 != col.x2 && col.y1 != col.y2) {
+					// --- Ray hits Line ---
+					
+					// y = mx + b
+					float colM = (col.y2 - col.y1) / (col.x2 - col.x1);
+					float colB = (col.y1 - colM * col.x1);
+					
+					// Are lines NOT parallel to each other?
+					if ((rayM - colM) != 0) {
+						// Get hit-point
+						cutX = (colB - rayB) / (rayM - colM);
+						cutY = rayM * cutX + rayB;
+						
+						// Get normal
+						float ph = -1f / colM;
+						normalX = 1f;
+						normalY = normalX * ph;
+						// Normal must have a length of exactly 1
+						normalX /= (float)Math.sqrt(normalX * normalX + normalY * normalY);
+						normalY /= (float)Math.sqrt(normalX * normalX + normalY * normalY);
+					}
+				} else if (col.y1 == col.y2) {
+					// --- Ray hits Horizontal ---
+					
+					cutY = col.y1;
+					cutX = (cutY - rayB) / rayM;
+					
+					normalX = 0f;
+					normalY = 1f;
+				} else {
+					// --- Ray hits Vertical ---
+					
+					cutX = col.x1;
 					cutY = rayM * cutX + rayB;
 					
+					normalX = 1f;
+					normalY = 0f;
+				}
+				
+
+				rayhit = raycastUpdateRayhit(rayhit, col, cutX, cutY, normalX, normalY, startX, startY, dirX, dirY);
+			}
+		} else if (dirX != 0) {
+			// --- Horizontal ---
+			
+			// Check each line in list
+			for (int i = 0; i < altKollisionenListe.size(); i++) {
+				Kollision col = altKollisionenListe.get(i); // Store collision
+				if (!checkPlatform && col.platform) // Skip if you dont want platforms
+					continue;
+				
+				// Prepare collision values
+				float cutX = -999, cutY = -999;
+				float normalX = -1, normalY = -1;
+				
+				
+				// What am I colliding with?
+				
+				if (col.x1 != col.x2 && col.y1 != col.y2) {
+					// --- Ray hits Line ---
+					
+					// y = mx + b
+					float colM = (col.y2 - col.y1) / (col.x2 - col.x1);
+					float colB = (col.y1 - colM * col.x1);
+					
+					// Get hit-point
+					cutY = startY;
+					cutX = (cutY - colB) / colM;
+					
+					// Get normal
 					float ph = -1f / colM;
 					normalX = 1f;
 					normalY = normalX * ph;
+					// Normal must have a length of exactly 1
 					normalX /= (float)Math.sqrt(normalX * normalX + normalY * normalY);
 					normalY /= (float)Math.sqrt(normalX * normalX + normalY * normalY);
+				} else if (col.x1 == col.x2) {
+					// --- Ray hits Vertical ---
+					
+					// Get hit-point
+					cutY = startY;
+					cutX = col.x1;
+					
+					// Get normal
+					normalX = 1f;
+					normalY = 0f;
 				}
-			} else if (col.x1 == col.x2) { // Line cuts vertical line
-				cutX = col.x1;
-				cutY = rayM * cutX + rayB;
+				// NO ELSE: Horizontal cannot hit Horizontal!
 				
-				normalX = 1f;
-				normalY = 0f;
-			} else { // Line cuts horizontal line
-				cutY = col.y1;
-				cutX = (cutY - rayB) / rayM;
-				
-				normalX = 0f;
-				normalY = 1f;
+
+				rayhit = raycastUpdateRayhit(rayhit, col, cutX, cutY, normalX, normalY, startX, startY, dirX, dirY);
 			}
+		} else {
+			// --- Vertical ---
 			
-			
-			// Did collision occur?
-			if (cutX != -999 || cutY != -999) {
-				// Is collision within bounds?
-				if (col.isInBoundingRect(cutX, cutY) && CMath.distance(startX, startY, cutX, cutY) <= CMath.distance(0, 0, dirX, dirY)) {
-					// Did the ray shoot in the right direction?
-					if (CMath.angleBetweenDirs(dirX, dirY, cutX - startX, cutY - startY) < 15f) {
-						// Is it a new raycast or is it nearer?
-						if (rayhit == null || CMath.distance(startX, startY, cutX, cutY) < rayhit.distance) {
-							if (CMath.angleBetweenDirs(dirX, dirY, normalX, normalY) < 90) {
-								normalX *= -1;
-								normalY *= -1;
-							}
-							
-							if (rayhit == null)
-								rayhit = new RaycastHit(0, 0, 0, 0, 0);
-							
-							rayhit.hitX = cutX;
-							rayhit.hitY = cutY;
-							rayhit.normalX = normalX;
-							rayhit.normalY = normalY;
-							rayhit.distance = CMath.distance(startX, startY, cutX, cutY);
+			// Check each line in list
+			for (int i = 0; i < altKollisionenListe.size(); i++) {
+				Kollision col = altKollisionenListe.get(i); // Store collision
+				if (!checkPlatform && col.platform) // Skip if you dont want platforms
+					continue;
+				
+				// Prepare collision values
+				float cutX = -999, cutY = -999;
+				float normalX = -1, normalY = -1;
+				
+				
+				// What am I colliding with?
+				
+				if (col.x1 != col.x2 && col.y1 != col.y2) {
+					// --- Ray hits Line ---
+					
+					// y = mx + b
+					float colM = (col.y2 - col.y1) / (col.x2 - col.x1);
+					float colB = (col.y1 - colM * col.x1);
+					
+					// Get hit-point
+					cutX = startX;
+					cutY = colM * cutX + colB;
+					
+					// Get normal
+					float ph = -1f / colM;
+					normalX = 1f;
+					normalY = normalX * ph;
+					// Normal must have a length of exactly 1
+					normalX /= (float)Math.sqrt(normalX * normalX + normalY * normalY);
+					normalY /= (float)Math.sqrt(normalX * normalX + normalY * normalY);
+				} else if (col.y1 == col.y2) {
+					// --- Ray hits Horizontal ---
+					
+					// Get hit-point
+					cutX = startX;
+					cutY = col.y1;
+					
+					// Get normal
+					normalX = 0f;
+					normalY = 1f;
+				}
+				// NO ELSE: Vertical cannot hit Vertical!
+				
+
+				rayhit = raycastUpdateRayhit(rayhit, col, cutX, cutY, normalX, normalY, startX, startY, dirX, dirY);
+			}
+		}
+		
+		
+		// Done
+		return rayhit;
+	}
+	
+	
+	// Using this to shorten the code a bit
+	private static RaycastHit raycastUpdateRayhit(RaycastHit rayhit, Kollision col, float cutX, float cutY, float normalX, float normalY, float rayStartX, float rayStartY, float rayDirX, float rayDirY) {
+		// Did collision occur?
+		if (cutX != -999 || cutY != -999) {
+			// Is collision within bounds?
+			if (col.isInBoundingRect(cutX, cutY) && CMath.distance(rayStartX, rayStartY, cutX, cutY) <= CMath.distance(0, 0, rayDirX, rayDirY)) {
+				// Did the ray shoot in the right direction?
+				if (CMath.angleBetweenDirs(rayDirX, rayDirY, cutX - rayStartX, cutY - rayStartY) < 15f) {
+					// Is it a new raycast or is it nearer?
+					if (rayhit == null || CMath.distance(rayStartX, rayStartY, cutX, cutY) < rayhit.distance) {
+						if (CMath.angleBetweenDirs(rayDirX, rayDirY, normalX, normalY) < 90) {
+							normalX *= -1;
+							normalY *= -1;
 						}
+						
+						if (rayhit == null)
+							rayhit = new RaycastHit(0, 0, 0, 0, 0);
+						
+						rayhit.hitX = cutX;
+						rayhit.hitY = cutY;
+						rayhit.normalX = normalX;
+						rayhit.normalY = normalY;
+						rayhit.distance = CMath.distance(rayStartX, rayStartY, cutX, cutY);
 					}
 				}
 			}

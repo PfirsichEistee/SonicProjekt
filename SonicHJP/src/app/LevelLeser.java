@@ -31,7 +31,7 @@ public class LevelLeser {
 					
 				} else if (split[0].equals("STK")) { // STK X1 Y1 X2 Y2 TYP
 					boolean platform = (strToInt(split[5]) == 1 ? true : false);
-					new Kollision(strToFloat(split[1]), strToFloat(split[2]), strToFloat(split[3]), strToFloat(split[4]), platform);
+					new Kollision(strToFloat(split[1]), strToFloat(split[2]), strToFloat(split[3]), strToFloat(split[4]), platform, false);
 				} else if (split[0].equals("SPC")) { // SPC X Y ID
 					
 				} else if (split[0].equals("GEG")) { // GEG X Y ID RICHTUNG

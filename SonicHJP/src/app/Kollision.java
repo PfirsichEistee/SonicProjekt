@@ -15,82 +15,85 @@ public class Kollision {
 	
 	
 	// KONSTRUKTOR //
-	public Kollision(float px1, float py1, float px2, float py2, boolean pPlatform) {
+	public Kollision(float px1, float py1, float px2, float py2, boolean pPlatform, boolean forceAlt) {
 		x1 = px1;
 		y1 = py1;
 		x2 = px2;
 		y2 = py2;
 		platform = pPlatform;
 		
-		int cx = (int)Math.floor(px1 / 10f);
-		int cy = (int)Math.floor(py1 / 10f);
 		
-		if (!(Math.floor(px1 / 10f) == Math.floor(px2 / 10f) && Math.floor(py1 / 10f) == Math.floor(py2 / 10f))) {
-			// Split Collision
+		if (!forceAlt) {
+			int cx = (int)Math.floor(px1 / 10f);
+			int cy = (int)Math.floor(py1 / 10f);
 			
-			if (py1 == py2) {
-				// Horizontal
-				if (px1 < px2) {
-					x2 = (float)Math.floor(px1 / 10f) * 10 + 10;
-					
-					new Kollision(px2, py2, x2 - 0.0001f, py2, pPlatform);
-				}
-			} else if (px1 == px2) {
-				// Vertical
+			if (!(Math.floor(px1 / 10f) == Math.floor(px2 / 10f) && Math.floor(py1 / 10f) == Math.floor(py2 / 10f))) {
+				// Split Collision
 				
-			} else {
-				// Free
-				float m = (py2 - py1) / (px2 - px1);
-				float b = py1 - m * px1;
-				
-				float testX = (cx + 1) * 10;
-				if (px2 < px1) testX = cx * 10;
-				
-				
-				if ((int)Math.floor((m * testX + b) / 10) == cy) {
-					// y doesnt change
-					
-					if (testX == (cx * 10)) {
-						new Kollision(x2, y2, testX - 0.0001f, m * testX + b, pPlatform);
-					} else {
-						new Kollision(x2, y2, testX, m * testX + b, pPlatform);
-					}
-					
-					x2 = testX;
-					y2 = m * testX + b;
-				} else {
-					float testY = (cy + 1) * 10;
-					if (py2 < py1) testY = cy * 10;
-					
-					if ((int)Math.floor(((testY - b) / m) / 10) == cx) {
-						// x doesnt change
+				if (py1 == py2) {
+					// Horizontal
+					if (px1 < px2) {
+						x2 = (float)Math.floor(px1 / 10f) * 10 + 10;
 						
-						if (testY == (cy * 10)) {
-							new Kollision(x2, y2, (testY - b) / m, testY - 0.0001f, pPlatform);
+						new Kollision(px2, py2, x2 - 0.0001f, py2, pPlatform, forceAlt);
+					}
+				} else if (px1 == px2) {
+					// Vertical
+					
+				} else {
+					// Free
+					float m = (py2 - py1) / (px2 - px1);
+					float b = py1 - m * px1;
+					
+					float testX = (cx + 1) * 10;
+					if (px2 < px1) testX = cx * 10;
+					
+					
+					if ((int)Math.floor((m * testX + b) / 10) == cy) {
+						// y doesnt change
+						
+						if (testX == (cx * 10)) {
+							new Kollision(x2, y2, testX - 0.0001f, m * testX + b, pPlatform, forceAlt);
 						} else {
-							new Kollision(x2, y2, (testY - b) / m, testY, pPlatform);
+							new Kollision(x2, y2, testX, m * testX + b, pPlatform, forceAlt);
 						}
 						
-						x2 = (testY - b) / m;
-						y2 = testY;
+						x2 = testX;
+						y2 = m * testX + b;
 					} else {
-						// both change?
-						altKollisionenListe.add(this);
-						return;
+						float testY = (cy + 1) * 10;
+						if (py2 < py1) testY = cy * 10;
+						
+						if ((int)Math.floor(((testY - b) / m) / 10) == cx) {
+							// x doesnt change
+							
+							if (testY == (cy * 10)) {
+								new Kollision(x2, y2, (testY - b) / m, testY - 0.0001f, pPlatform, forceAlt);
+							} else {
+								new Kollision(x2, y2, (testY - b) / m, testY, pPlatform, forceAlt);
+							}
+							
+							x2 = (testY - b) / m;
+							y2 = testY;
+						} else {
+							// both change?
+							altKollisionenListe.add(this);
+							return;
+						}
 					}
 				}
 			}
-		}
-		
-		if (cx >= 0 && cx < kollisionenListe.length && cy >= 0 && cy < kollisionenListe[0].length) {
-			if (kollisionenListe[cx][cy] == null) {
-				kollisionenListe[cx][cy] = new ArrayList<Kollision>();
-			}
 			
-			kollisionenListe[cx][cy].add(this);
-		} else {
-			System.out.println("[!!!] Kollision wurde ausserhalb der Chunk-Range platziert!\n\t(" + x1 + "|" + y1 + ") (" + x2 + "|" + y2 + ")");
-			altKollisionenListe.add(this);
+			if (!forceAlt && cx >= 0 && cx < kollisionenListe.length && cy >= 0 && cy < kollisionenListe[0].length) {
+				if (kollisionenListe[cx][cy] == null) {
+					kollisionenListe[cx][cy] = new ArrayList<Kollision>();
+				}
+				
+				kollisionenListe[cx][cy].add(this);
+			} else {
+				//System.out.println("[!!!] Kollision wurde ausserhalb der Chunk-Range platziert!\n\t(" + x1 + "|" + y1 + ") (" + x2 + "|" + y2 + ")");
+				altKollisionenListe.add(this);
+			}
 		}
 	}
 	

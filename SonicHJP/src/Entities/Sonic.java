@@ -24,6 +24,7 @@ public class Sonic {
 	private boolean jumpLock;
 	
 	private boolean grounded;
+	private boolean rolling;
 	
 	private SpezialStrecke dieSpezStrecke;
 	private float spezialProzent;
@@ -31,10 +32,29 @@ public class Sonic {
 	private boolean physicsLock;
 	
 	
-	private Image dasImage;
-	private int imageZaehler;
-	
 	private Kamera dieKamera;
+	
+	
+	// Animation
+	private Image dasImage;
+	private boolean imageFlip;
+	private final int[][] anim = {
+			{ 0 }, // Idle
+			{ 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49 }, // Walk
+			{ 50, 51, 52, 53, 54, 55, 56, 57 }, // Run
+			{ 58, 59, 60, 61, 62, 63, 64, 65, 66 }, // Ball
+	};
+	private int animationZustand, animationZaehler;
+	private float animationTimer;
+	
+	
+	
+	// Constants
+	private final float MAX_SPEED = 15f;
+	private final float ACCELERATION = 15f;
+	private final float DECELERATION = 50f;
+	private final float JUMP_FORCE = 10f;
+	private final float GRAVITY = 30f;
 	
 	
 	// DEBUG
@@ -63,34 +83,65 @@ public class Sonic {
 		jumpLock = false;
 		
 		grounded = true;
+		rolling = false;
 		
 		dieSpezStrecke = null;
 		physicsLock = false;
 		
 		
-		dasImage = new Image("file:files/textures/testsonic.png");
+		dasImage = new Image("file:files/textures/hdsonicsheet.png");
+		imageFlip = false;
+		animationZustand = 0;
+		animationZaehler = 0;
+		animationTimer = 0;
 	}
 	
 	
 	// METHODEN //
 	public void update(float delta) {
-		// Animation updaten
-		int zustand = 0;
-		/* Zustaende:
-		0 = Idle
-		1 = Gehen
-		2 = Rennen
-		3 = Springen/Luft
-		*/
-		if (grounded) {
-			if (Math.abs(speed) <= 0.1f)
-				zustand = 0;
-			else if (Math.abs(speed) <= 6f)
-				zustand = 1;
-			else
-				zustand = 2;
-		} else {
-			zustand = 3;
+		animationTimer += delta;
+		
+		if (animationTimer >= 0.05f) {
+			animationTimer = 0;
+			
+			// Animation updaten
+			int zustand = 0;
+			/* Zustaende:
+			0 = Idle
+			1 = Gehen
+			2 = Rennen
+			3 = Springen/Luft/Rollen
+			*/
+			if (grounded && !rolling) {
+				if (speed > 0)
+					imageFlip = true;
+				else if (speed < 0)
+					imageFlip = false;
+				
+				if (Math.abs(speed) <= 0.1f)
+					zustand = 0;
+				else if (Math.abs(speed) <= (MAX_SPEED * 0.8f))
+					zustand = 1;
+				else
+					zustand = 2;
+				
+			} else {
+				if (speedX > 0)
+					imageFlip = true;
+				else if (speedX < 0)
+					imageFlip = false;
+				
+				zustand = 3;
+			}
+			
+			if (zustand != animationZustand)
+				animationZaehler = 0;
+			
+			animationZustand = zustand;
+			
+			
+			animationZaehler++;
+			animationZaehler %= anim[animationZustand].length;
 		}
 	}
 	
@@ -102,6 +153,9 @@ public class Sonic {
 			int repeat = (int)CMath.min((int)Math.ceil((Math.abs(speed) * delta) / 0.05f), 1); // fuer alle 0.05 LE updaten
 			//System.out.println("Repeat " + repeat + "x");
 			for (int i = 0; i < repeat; i++) {
+				if (!Eingabe.isKeyDown("W") && grounded)
+					jumpLock = false;
+				
 				groundUpdate(delta / repeat);
 			}
 		}
@@ -175,15 +229,10 @@ public class Sonic {
 			
 			
 			// Update velocity
-			float acceleration = 15f;
-			float deceleration = 50f;
-			float maxSpeed = 17.5f;
-			
 			
 			// Did sonic ground JUST NOW?
 			if (!grounded) {
-				if (Eingabe.isKeyDown("W"))
-					Eingabe.onKeyUp("W");
+				rolling = false;
 				
 				if (angle <= 25) {
 					// Shallow
@@ -213,34 +262,43 @@ public class Sonic {
 			grounded = true;
 			
 			
+			// Rolling
+			if (Eingabe.isKeyDown("S") && !rolling)
+				rolling = true;
+			
+			if (rolling && Math.abs(speed) < 0.1f)
+				rolling = false;
+			
+			
 			// Update speed
 			float inputX = (Eingabe.isKeyDown("D") ? 1 : 0);
 			inputX = (Eingabe.isKeyDown("A") ? (inputX - 1) : inputX);
+			inputX *= (rolling ? 0 : 1);
 			
 			if (inputX != 0) {
 				if (speed == 0 || Math.signum(speed) == inputX) {
-					speed = CMath.move(speed, maxSpeed * inputX, acceleration * delta);
+					speed = CMath.move(speed, MAX_SPEED * inputX, ACCELERATION * delta);
 				} else {
-					speed = CMath.move(speed, 0, deceleration * delta);
+					speed = CMath.move(speed, 0, DECELERATION * delta);
 				}
 			} else {
-				speed = CMath.move(speed, 0, deceleration * 0.25f * delta);
+				speed = CMath.move(speed, 0, DECELERATION * delta * (rolling ? 0.1f : 0.5f));
 			}
+			
+			// TODO gravitation
 			
 			
 			// Jump
-			if (!Eingabe.isKeyDown("W") && jumpLock)
-				jumpLock = false;
-			
 			if (Eingabe.isKeyDown("W") && !jumpLock) {
 				x += groundHit.normalX * 0.1f;
 				y += groundHit.normalY * 0.1f;
 				
 				grounded = false;
-				float jumpForce = 10f;
-				speedX += groundHit.normalX * jumpForce;
-				speedY = groundHit.normalY * jumpForce;
+				speedX += groundHit.normalX * JUMP_FORCE;
+				speedY = groundHit.normalY * JUMP_FORCE;
 				jumpTimer = 0.5f;
+				
+				jumpLock = true;
 				
 				return;
 			} else {
@@ -311,17 +369,12 @@ public class Sonic {
 		if (!Eingabe.isKeyDown("W"))
 			jumpTimer = -1f;
 		
-		if (jumpTimer < 0 || !Eingabe.isKeyDown("W"))
-			jumpLock = true;
-		
 		
 		// Update velocity
-		float gravity = 30f;
-		float maxSpeed = 17.5f;
 		
-		speedY = CMath.move(speedY, -maxSpeed, delta * (jumpTimer > 0 ? (gravity * 0.4f) : gravity));
+		speedY = CMath.move(speedY, -MAX_SPEED, delta * (jumpTimer > 0 ? (GRAVITY * 0.4f) : GRAVITY));
 		
-
+		
 		float inputX = (Eingabe.isKeyDown("D") ? 1 : 0);
 		inputX = (Eingabe.isKeyDown("A") ? (inputX - 1) : inputX);
 		speedX += inputX * delta * 10f;
@@ -384,11 +437,12 @@ public class Sonic {
 					if (hitD1 == null || hitD1 != null && hitD2 != null && Math.abs(hitD2.hitY - y) < Math.abs(hitD1.hitY - y))
 						hit = hitD2;
 					
+					y = hit.hitY - radVer;
 					
 					if (!wasHit) {
 						speedY *= Math.sin(CMath.angleBetweenDirs(0, 1, hit.normalX, hit.normalY) * (Math.PI / 180));
 						
-						y = hit.hitY - radVer;
+						//y = hit.hitY - radVer;
 					}
 				}
 			}
@@ -399,7 +453,10 @@ public class Sonic {
 	public void draw() {
 		dieKamera.setFarbe(new Color(1f, 0.5f, 0, 0.2f));
 		
-		dieKamera.drawImage(dasImage, x - 0.9f, y + 0.9f, 1.8f, 1.8f, rotation);
+		int i = anim[animationZustand][animationZaehler];
+		dieKamera.drawImageSection(dasImage, 256 * (i % 8), 280 * (i / 8), 256, 280, 
+				x - 0.9f + (imageFlip ? 1.8f : 0), y + 0.9f + (rolling ? -0.05f : 0),
+				1.8f * (imageFlip ? -1 : 1), 1.8f, rotation);
 
 		dieKamera.setLineWidth(0.05f);
 		

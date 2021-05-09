@@ -7,7 +7,7 @@ public class Affe extends Gegner {
 	// ATTRIBUTE //
 	private static Image dasImage;
 	private int imageZaehler;
-	
+	int Zustand;
 	
 	// KONSTRUKTOR //
 	public Affe(float px, float py) {

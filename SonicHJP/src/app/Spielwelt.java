@@ -3,6 +3,9 @@ package app;
 import java.util.ArrayList;
 
 import Entities.Gegner;
+import Entities.Fisch;
+import Entities.Biene;
+import Entities.Affe;
 import Entities.Sonic;
 import Objects.Objekt;
 import Objects.Projektil;
@@ -30,6 +33,11 @@ public class Spielwelt {
 		dasLevelImage = pLevelImage;
 		dieKamera = new Kamera(pSpielerX, pSpielerY, 48);
 		derSpieler = new Sonic(pSpielerX, pSpielerY, dieKamera);
+		dieGegner = new ArrayList<Gegner>();
+		
+		dieGegner.add(new Fisch(10,10));
+		dieGegner.add(new Biene(10,10));
+		dieGegner.add(new Affe(10,10));
 		
 		dieSpezialStrecken = new SpezialStrecke[1];
 		dieSpezialStrecken[0] = new SS_SBahn(-1 - 4 * 3 * 2, -1 - 2.5f, 2);

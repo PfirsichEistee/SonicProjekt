@@ -7,7 +7,7 @@ public class Biene extends Gegner {
 	// ATTRIBUTE //
 	private static Image dasImage;
 	private int imageZaehler;
-	
+	int Zustand;
 	
 	// KONSTRUKTOR //
 	public Biene(float px, float py) {

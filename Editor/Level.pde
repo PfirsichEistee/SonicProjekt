@@ -12,6 +12,12 @@ public class Level {
 
   private PImage hintergrund;
   private boolean zeichneMap;
+  
+  
+  // Level-Config
+  public int levelMapID;
+  public int levelPixelProEinheit;
+  
 
 
   // KONSTRUKTOR //
@@ -20,15 +26,18 @@ public class Level {
     werkzeugWechseln(0);
     toolboxPosX = width - 300;
     toolboxPosY = height - 200;
-
-
+    
+    
     liste_Objekte = new ArrayList<Objekt>();
     liste_Strecken = new ArrayList<Strecke>();
     liste_Spezial = new ArrayList<Spezial>();
     liste_Gegner = new ArrayList<Gegner>();
-
-
-
+    
+    
+    levelMapID = 0;
+    levelPixelProEinheit = 32;
+    
+    
     hintergrund = loadImage("images/map_01.png"); // 88x8 chunks; 4x4 tiles per chunk
     zeichneMap = false;
   }
@@ -39,7 +48,8 @@ public class Level {
     // Hintergrund zeichnen
     if (zeichneMap) {
       tint(200, 200, 200, 155);
-      dieKamera.drawImage(hintergrund, 0, 0, 88 * 4, 8 * 4);
+      //dieKamera.drawImage(hintergrund, 0, 0, 88 * 4, 8 * 4);
+      dieKamera.drawImage(hintergrund, 0, 0, hintergrund.width / levelPixelProEinheit, hintergrund.height / levelPixelProEinheit);
     }
 
 
@@ -144,10 +154,10 @@ public class Level {
 
   private void werkzeugWechseln(int richtung) {
     auswahlWerkzeug += richtung;
-    if (auswahlWerkzeug >= 4)
+    if (auswahlWerkzeug >= 5)
       auswahlWerkzeug = 0;
     else if (auswahlWerkzeug < 0)
-      auswahlWerkzeug = 3;
+      auswahlWerkzeug = 4;
 
     println("Werkzeug gewechselt: " + auswahlWerkzeug);
 
@@ -164,6 +174,9 @@ public class Level {
         break;
       case(3):
         dasWerkzeug = new WZ_Spezial();
+        break;
+      case(4):
+        dasWerkzeug = new WZ_Config();
         break;
     }
   }
@@ -196,6 +209,9 @@ public class Level {
             liste_Spezial.add(new Spezial(strToInt(split[3]), strToFloat(split[1]), strToFloat(split[2])));
           } else if (split[0].equals("GEG")) { // GEG X Y ID RICHTUNG
             liste_Gegner.add(new Gegner(strToInt(split[3]), strToFloat(split[1]), strToFloat(split[2]), strToInt(split[4])));
+          } else if (split[0].equals("CNF")) { // GEG X Y ID RICHTUNG
+            levelMapID = strToInt(split[1]);
+            levelPixelProEinheit = strToInt(split[2]);
           }
         }
       } while (line != null);
@@ -211,6 +227,10 @@ public class Level {
   private void levelSpeichern() {
     PrintWriter writer = createWriter("level.txt");
     
+    
+    // Speichere Konfiguration
+    // CNF MAP-ID PIXEL-PRO-EINHEIT
+    writer.println("CNF " + levelMapID + " " + levelPixelProEinheit);
     
     // Speichere liste_Objekte
     // OBJ X Y ID

@@ -10,6 +10,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.image.Image;
 import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
 
@@ -58,13 +59,13 @@ public class Start extends Application {
 		// Initialize static main stuff
 		Kamera.init(gc, width, height);
 		Eingabe.init(scene);
-		Kollision.init(10, 5);
+		Kollision.init(90, 10);
 		
 		
 		// Load game
 		LevelLeser leser = new LevelLeser("files/maps/level.txt");
 		leser.erzeugeSpielwelt();
-		dieSpielwelt = new Spielwelt(null, 30, 16f, null, null, null, null, null);
+		dieSpielwelt = new Spielwelt(new Image("file:files/textures/maps/map_01.png"), 32, 30, 16f, null, null, null, null, null);
 		
 		
 		// Game loop

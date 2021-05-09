@@ -19,6 +19,7 @@ public class Sonic {
 	private float radHor, radVer; // radius horizontal/vertikal
 	private float modeRotation; // nur in 90° Schritten
 	private int modeCounter; // jeder modus muss fuer mind. 6 Updates bestehen
+	private float lastNormalX, lastNormalY;
 	
 	private float jumpTimer;
 	private boolean jumpLock;
@@ -78,6 +79,8 @@ public class Sonic {
 		radVer = 0.5f;
 		modeRotation = 0;
 		modeCounter = 0;
+		lastNormalX = 0;
+		lastNormalY = 1;
 		
 		jumpTimer = -1;
 		jumpLock = false;
@@ -194,7 +197,7 @@ public class Sonic {
 		// Check if can ground
 		if (!grounded && groundHit != null) {
 			float angle = CMath.angleBetweenDirs(0, 1, groundHit.normalX, groundHit.normalY);
-			if (angle > 45 || speedY > 0.1f) {
+			if (angle > 45 || speedY > 0.2f) {
 				groundHit = null;
 			}
 		}
@@ -225,7 +228,16 @@ public class Sonic {
 				if (modeRotation != lastModeRot) {
 					modeCounter = 0;
 				}
+				
+				if (CMath.angleBetweenDirs(lastNormalX, lastNormalY, groundHit.normalX, groundHit.normalY) > 45) {
+					grounded = false;
+					System.out.println("force unground");
+					return;
+				}
 			}
+			
+			lastNormalX = groundHit.normalX;
+			lastNormalY = groundHit.normalY;
 			
 			
 			// Update velocity
@@ -237,7 +249,7 @@ public class Sonic {
 				if (angle <= 25) {
 					// Shallow
 					speed = speedX;
-					//System.out.println("grounded SHALLOW");
+					System.out.println("grounded SHALLOW");
 				} else if (angle <= 45) {
 					// Half Steep
 					if (Math.abs(speedX) > -speedY) {
@@ -245,7 +257,7 @@ public class Sonic {
 					} else {
 						speed = speedY * (float)Math.signum(Math.sin(angle * (Math.PI / 180))) * 0.5f;
 					}
-					//System.out.println("grounded HALF STEEP");
+					System.out.println("grounded HALF STEEP");
 				} else {
 					// Full Steep
 					if (Math.abs(speedX) > -speedY) {
@@ -253,7 +265,7 @@ public class Sonic {
 					} else {
 						speed = speedY * (float)Math.signum(Math.sin(angle * (Math.PI / 180)));
 					}
-					//System.out.println("grounded FULL STEEP");
+					System.out.println("grounded FULL STEEP");
 				}
 			}
 			
@@ -315,7 +327,7 @@ public class Sonic {
 			speedY = (float)Math.cos(angle) * speed;
 			
 			if (modeRotation != 0) {
-				float minSpeed = 5f;
+				float minSpeed = MAX_SPEED * 0.5f;
 				
 				if ((float)Math.abs(modeRotation) == (float)(Math.PI / 2)) {
 					speedY -= 10f * delta;
@@ -346,11 +358,16 @@ public class Sonic {
 			
 			angle *= (Math.PI / 180.0);
 			
+			if (Math.abs(speed) < MAX_SPEED * 0.05f)
+				angle = 0;
+			
 			rotation = CMath.slerp(rotation, angle, 10f * delta);
 		} else {
 			// Sonic ungrounded
 			modeRotation = 0;
 			modeCounter = 99;
+			lastNormalX = 0;
+			lastNormalY = 1;
 			airUpdate(delta);
 			
 			grounded = false;
@@ -377,7 +394,7 @@ public class Sonic {
 		
 		float inputX = (Eingabe.isKeyDown("D") ? 1 : 0);
 		inputX = (Eingabe.isKeyDown("A") ? (inputX - 1) : inputX);
-		speedX += inputX * delta * 10f;
+		speedX = CMath.clamp(speedX + inputX * delta * 10f, -MAX_SPEED, MAX_SPEED);
 		
 		
 		// Apply velocity

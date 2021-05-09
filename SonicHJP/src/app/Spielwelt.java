@@ -18,6 +18,8 @@ import javafx.scene.paint.Color;
 public class Spielwelt {
 	// ATTRIBUTE //
 	private Image dasLevelImage;
+	private int levelPixelProEinheit;
+	private int imgWidth, imgHeight;
 	
 	private Kamera dieKamera;
 	private Sonic derSpieler;
@@ -29,8 +31,12 @@ public class Spielwelt {
 	
 	
 	// KONSTRUKTOR //
-	public Spielwelt(Image pLevelImage, float pSpielerX, float pSpielerY, SpezialStrecke[] pSpezialStrecken, ArrayList<Objekt> pDieObjekte, ArrayList<Ring> pDieRinge, ArrayList<Gegner> pDieGegner, ArrayList<Projektil> pDieProjektile) {
+	public Spielwelt(Image pLevelImage, int pLevelPixelProEinheit, float pSpielerX, float pSpielerY, SpezialStrecke[] pSpezialStrecken, ArrayList<Objekt> pDieObjekte, ArrayList<Ring> pDieRinge, ArrayList<Gegner> pDieGegner, ArrayList<Projektil> pDieProjektile) {
 		dasLevelImage = pLevelImage;
+		levelPixelProEinheit = pLevelPixelProEinheit;
+		imgWidth = (int)dasLevelImage.getWidth();
+		imgHeight = (int)dasLevelImage.getHeight();
+		
 		dieKamera = new Kamera(pSpielerX, pSpielerY, 48);
 		derSpieler = new Sonic(pSpielerX, pSpielerY, dieKamera);
 		dieGegner = new ArrayList<Gegner>();
@@ -40,7 +46,7 @@ public class Spielwelt {
 		dieGegner.add(new Affe(10,10));
 		
 		dieSpezialStrecken = new SpezialStrecke[1];
-		dieSpezialStrecken[0] = new SS_SBahn(-1 - 4 * 3 * 2, -1 - 2.5f, 2);
+		dieSpezialStrecken[0] = new SS_SBahn(144, 8, 1);
 		dieObjekte = pDieObjekte;
 		dieRinge = pDieRinge;
 		dieGegner = pDieGegner;
@@ -92,10 +98,27 @@ public class Spielwelt {
 				}
 			}
 		}
+		
+		
+		// Clamp camera
+		dieKamera.setX(CMath.clamp(dieKamera.getX(), dieKamera.getWidth() * 0.5f, (imgWidth / levelPixelProEinheit) - dieKamera.getWidth() * 0.5f));
+		dieKamera.setY(CMath.clamp(dieKamera.getY(), dieKamera.getHeight() * 0.5f, (imgHeight / levelPixelProEinheit) - dieKamera.getHeight() * 0.5f));
 	}
 	
 	
 	public void draw() {
+		int cnkX = (int)Math.floor((dieKamera.getX() - dieKamera.getWidth() * 0.5f) / 10f);
+		int cnkY = (int)Math.floor((dieKamera.getY() - dieKamera.getHeight() * 0.5f) / 10f);
+		for (int xx = cnkX; xx < (int)Math.ceil((dieKamera.getX() + dieKamera.getWidth() * 0.5f) / 10f); xx++) {
+			for (int yy = cnkY; yy < (int)Math.ceil((dieKamera.getY() + dieKamera.getHeight() * 0.5f) / 10f); yy++) {
+				if (xx >= 0 && (xx * 10 * levelPixelProEinheit) < imgWidth && yy >= 0 && (yy * 10 * levelPixelProEinheit) < imgHeight) {
+					dieKamera.drawImageSection(dasLevelImage, xx * 10 * levelPixelProEinheit, imgHeight - (yy + 1) * 10 * levelPixelProEinheit,
+							levelPixelProEinheit * 10, levelPixelProEinheit * 10, xx * 10, yy * 10, 10, 10);
+				}
+			}
+		}
+		
+		
 		if (dieSpezialStrecken != null) {
 			for (int i = 0; i < dieSpezialStrecken.length; i++) {
 				dieSpezialStrecken[i].draw(dieKamera);

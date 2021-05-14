@@ -7,7 +7,7 @@ public abstract class Gegner {
 	// ATTRIBUTE //
 	protected static Spielwelt dieSpielwelt;
 	
-	private float x, y;
+	protected float x, y;
 	
 	
 	// KONSTRUKTOR //

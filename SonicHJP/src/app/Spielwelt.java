@@ -40,8 +40,9 @@ public class Spielwelt {
 		dieKamera = new Kamera(pSpielerX, pSpielerY, 48);
 		derSpieler = new Sonic(pSpielerX, pSpielerY, dieKamera);
 		dieGegner = new ArrayList<Gegner>();
+		dieProjektile = new ArrayList<Projektil>();
 		
-		dieGegner.add(new Fisch(10,10));
+		dieGegner.add(new Fisch(11,13));
 		dieGegner.add(new Biene(10,10));
 		dieGegner.add(new Affe(10,10));
 		
@@ -49,7 +50,7 @@ public class Spielwelt {
 		dieSpezialStrecken[0] = new SS_SBahn(144, 8, 1);
 		dieObjekte = pDieObjekte;
 		dieRinge = pDieRinge;
-		dieGegner = pDieGegner;
+		//dieGegner = pDieGegner;
 		dieProjektile = pDieProjektile;
 		
 		debugCreateMap();
@@ -67,11 +68,19 @@ public class Spielwelt {
 		debugDraw(delta);
 		
 		derSpieler.update(delta);
+		
+		dieGegner.get(0).update(delta);
+		dieGegner.get(1).update(delta);
+		dieGegner.get(2).update(delta);
 	}
 	
 	
 	public void fixedUpdate(float delta) {
 		derSpieler.fixedUpdate(delta);
+		
+		dieGegner.get(0).fixedUpdate(delta);
+		dieGegner.get(1).fixedUpdate(delta);
+		dieGegner.get(2).fixedUpdate(delta);
 		
 		// Try entering spezial track
 		if (!derSpieler.isPhysicsLocked() && derSpieler.getGrounded() && Math.abs(derSpieler.getSpeedX()) > 10) {
@@ -126,6 +135,10 @@ public class Spielwelt {
 		}
 		
 		derSpieler.draw();
+		
+		dieGegner.get(0).draw(dieKamera);
+		dieGegner.get(1).draw(dieKamera);
+		dieGegner.get(2).draw(dieKamera);
 		
 		if (dieSpezialStrecken != null) {
 			for (int i = 0; i < dieSpezialStrecken.length; i++) {
@@ -242,5 +255,9 @@ public class Spielwelt {
 		new Kollision(28f, 4.8f, 31, 3.1f, false);
 		new Kollision(16, 0, 19, 0, true);
 		new Kollision(-25f, -1f, -40, -1f, false);*/
+	}
+	
+	public void setdieProjektile(float px, float py, float pSpeedX, float pSpeedY) {
+		dieProjektile.add(new Projektil(px, py, pSpeedX, pSpeedY));
 	}
 }

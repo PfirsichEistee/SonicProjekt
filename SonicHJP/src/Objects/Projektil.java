@@ -2,6 +2,7 @@ package Objects;
 
 import app.Kamera;
 import javafx.scene.image.Image;
+import javafx.scene.paint.Color;
 
 public class Projektil {
 	// ATTRIBUTE //
@@ -23,11 +24,15 @@ public class Projektil {
 	
 	// METHODEN //
 	public void update(float delta) {
-		
+		x += speedX;
+		y += speedY;
 	}
 	
 	public void draw(Kamera dieKamera) {
+		dieKamera.setFarbe(new Color(1f, 0.5f, 0, 0.2f));
+		dieKamera.setLineWidth(0.05f);
 		
+		dieKamera.drawImage(dasImage, x, y, 256, 280, 0);
 	}
 	
 	

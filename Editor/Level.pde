@@ -214,7 +214,7 @@ public class Level {
           } else if (split[0].equals("STK")) { // STK X1 Y1 X2 Y2 TYP
             liste_Strecken.add(new Strecke(strToFloat(split[1]), strToFloat(split[2]), strToFloat(split[3]), strToFloat(split[4]), strToInt(split[5])));
           } else if (split[0].equals("SPC")) { // SPC X Y ID
-            liste_Spezial.add(new Spezial(strToInt(split[3]), strToFloat(split[1]), strToFloat(split[2])));
+            liste_Spezial.add(new Spezial(strToInt(split[3]), strToFloat(split[1]), strToFloat(split[2]), strToInt(split[4])));
           } else if (split[0].equals("GEG")) { // GEG X Y ID RICHTUNG
             liste_Gegner.add(new Gegner(strToInt(split[3]), strToFloat(split[1]), strToFloat(split[2]), strToInt(split[4])));
           } else if (split[0].equals("CNF")) { // GEG X Y ID RICHTUNG SONICX SONICY
@@ -256,10 +256,10 @@ public class Level {
     }
     
     // Speichere liste_Spezial
-    // SPC X Y ID
+    // SPC X Y ID OPT
     for (int i = 0; i < liste_Spezial.size(); i++) {
       Spezial p = liste_Spezial.get(i);
-      writer.println("SPC " + p.x + " " + p.y + " " + p.id);
+      writer.println("SPC " + p.x + " " + p.y + " " + p.id + " " + p.opt);
     }
     
     // Speichere liste_Gegner

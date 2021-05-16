@@ -15,6 +15,9 @@ public class WZ_Spezial extends Werkzeug {
       item.setAnzahlText(i, spezialBezeichnungen[i]);
     }
     dieToolbox.addItem(item);
+    
+    item = new Toolbox_Item("Bahnlaenge", 1, 1, 10);
+    dieToolbox.addItem(item);
   }
   
   
@@ -34,7 +37,7 @@ public class WZ_Spezial extends Werkzeug {
   public void cursorClicked(int button) {
     if (button == 0) {
       // PLATZIEREN
-      dasLevel.liste_Spezial.add(new Spezial(auswahl, dieEingabe.cursorX, dieEingabe.cursorY));
+      dasLevel.liste_Spezial.add(new Spezial(auswahl, dieEingabe.cursorX, dieEingabe.cursorY, dieToolbox.getAnzahlVonItem(1)));
     } else if (button == 1) {
       // LOESCHEN
       if (dasLevel.liste_Spezial.size() > 0) {

@@ -2,6 +2,7 @@ public class Spezial {
   // ATTRIBUTE //
   public int id;
   public float x, y;
+  public int opt; // optional. Fuer die meisten Objekte unwichtig
   
   
   // KONSTRUKTOR //
@@ -9,6 +10,13 @@ public class Spezial {
     id = pID;
     x = px;
     y = py;
+    opt = 0;
+  }
+  public Spezial(int pID, float px, float py, int pOpt) {
+    id = pID;
+    x = px;
+    y = py;
+    opt = pOpt;
   }
   
   
@@ -29,6 +37,6 @@ public class Spezial {
     
     dieKamera.drawCircle(x, y, 0.1f);
     fill(255, 0, 0);
-    dieKamera.drawText(spezialBezeichnungen[id], x - 0.5f, y + 0.3f, 0.2f);
+    dieKamera.drawText(spezialBezeichnungen[id] + " (" + opt + ")", x - 0.5f, y + 0.3f, 0.2f);
   }
 }

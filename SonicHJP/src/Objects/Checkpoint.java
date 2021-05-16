@@ -13,7 +13,7 @@ public class Checkpoint extends Objekt {
 	
 	// KONSTRUKTOR //
 	public Checkpoint(float px, float py) {
-		super(px, py, 0.75f, 2f, false);
+		super(px, py, 0.75f, 2f);
 		aktiv = false;
 	}
 	

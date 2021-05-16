@@ -5,7 +5,9 @@ import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Scanner;
 
-import Objects.Looping;
+import Objects.Objekt;
+import Objects.Ring;
+import Objects.SS_Looping;
 import Objects.SS_SBahn;
 import Objects.SpezialStrecke;
 import javafx.scene.image.Image;
@@ -29,6 +31,7 @@ public class LevelLeser {
 		int pixelProEinheit = 32;
 		float sonicX = 0, sonicY = 0;
 		ArrayList<SpezialStrecke> spezStrecken = new ArrayList<SpezialStrecke>();
+		ArrayList<Objekt> objekte = new ArrayList<Objekt>();
 		
 		
 		Scanner scanner;
@@ -45,7 +48,11 @@ public class LevelLeser {
 					sonicX = strToFloat(split[3]);
 					sonicY = strToFloat(split[4]);
 				} else if (split[0].equals("OBJ")) { // OBJ X Y ID
-					
+					switch (strToInt(split[3])) {
+						case (0):
+							objekte.add(new Ring(strToFloat(split[1]), strToFloat(split[2])));
+							break;
+					}
 				} else if (split[0].equals("STK")) { // STK X1 Y1 X2 Y2 TYP
 					boolean platform = (strToInt(split[5]) == 1 ? true : false);
 					new Kollision(strToFloat(split[1]), strToFloat(split[2]), strToFloat(split[3]), strToFloat(split[4]), platform, false);
@@ -54,10 +61,10 @@ public class LevelLeser {
 						case (0): // Blume
 							break;
 						case (1): // Schlangenbahn
-							spezStrecken.add(new SS_SBahn(strToFloat(split[1]), strToFloat(split[2]), 1));
+							spezStrecken.add(new SS_SBahn(strToFloat(split[1]), strToFloat(split[2]) - 2.3f, strToInt(split[4])));
 							break;
 						case (2): // Looping
-							new Looping(strToFloat(split[1]), strToFloat(split[2]));
+							spezStrecken.add(new SS_Looping(strToFloat(split[1]), strToFloat(split[2])));
 							break;
 					}
 				} else if (split[0].equals("GEG")) { // GEG X Y ID RICHTUNG
@@ -74,7 +81,7 @@ public class LevelLeser {
 		for (int i = 0; i < ph.length; i++)
 			ph[i] = spezStrecken.get(i);
 		
-		return new Spielwelt(new Image("file:files/textures/maps/map_01.png"), pixelProEinheit, sonicX, sonicY, ph, null, null, null);
+		return new Spielwelt(new Image("file:files/textures/maps/map_01.png"), pixelProEinheit, sonicX, sonicY, ph, objekte, null);
 	}
 	
 	

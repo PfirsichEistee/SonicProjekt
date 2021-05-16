@@ -5,18 +5,16 @@ import app.Kamera;
 
 public abstract class Objekt {
 	// ATTRIBUTE //
-	private float x, y;
-	private float w, h;
-	private boolean kollision;
+	protected float x, y;
+	protected float w, h;
 	
 	
 	// KONSTRUKTOR //
-	public Objekt(float px, float py, float pw, float ph, boolean pKollision) {
+	public Objekt(float px, float py, float pw, float ph) {
 		x = px;
 		y = py;
 		w = pw;
 		h = ph;
-		kollision = pKollision;
 	}
 	
 	

@@ -26,6 +26,7 @@ public class Sonic {
 	
 	private boolean grounded;
 	private boolean rolling;
+	private float spinDash;
 	
 	private SpezialStrecke dieSpezStrecke;
 	private float spezialProzent;
@@ -51,8 +52,8 @@ public class Sonic {
 	
 	
 	// Constants
-	private final float MAX_SPEED = 15f;
-	private final float ACCELERATION = 15f;
+	private final float MAX_SPEED = 20f;
+	private final float ACCELERATION = 10f;
 	private final float DECELERATION = 50f;
 	private final float JUMP_FORCE = 10f;
 	private final float GRAVITY = 30f;
@@ -87,6 +88,7 @@ public class Sonic {
 		
 		grounded = true;
 		rolling = false;
+		spinDash = 0;
 		
 		dieSpezStrecke = null;
 		physicsLock = false;
@@ -136,6 +138,8 @@ public class Sonic {
 				
 				zustand = 3;
 			}
+			if (physicsLock)
+				zustand = 3;
 			
 			if (zustand != animationZustand)
 				animationZaehler = 0;
@@ -277,8 +281,27 @@ public class Sonic {
 			if (Eingabe.isKeyDown("S") && !rolling)
 				rolling = true;
 			
-			if (rolling && Math.abs(speed) < 0.1f)
-				rolling = false;
+			if (rolling && Math.abs(speed) < 0.25f)
+				spinDash = CMath.max(spinDash + delta * 2, 1.5f);
+			
+			if (rolling && Math.abs(speed) < 0.25f && !Eingabe.isKeyDown("S")) {
+				if (spinDash < 0.25f) {
+					rolling = false;
+				} else {
+					if (imageFlip) {
+						// right
+						speed = spinDash * MAX_SPEED;
+					} else {
+						// left
+						speed = spinDash * -MAX_SPEED;
+					}
+					
+					spinDash = 0;
+				}
+			}
+			
+			if (!rolling)
+				spinDash = 0;
 			
 			
 			// Update speed

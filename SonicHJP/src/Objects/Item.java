@@ -9,10 +9,12 @@ public class Item extends Objekt {
 	private static Image[] dieImages;
 	private int dieID;
 	
+	// Items sollen wie Gegner sein: keine Kollisionen! ist einfacher
+	
 	
 	// KONSTRUKTOR //
 	public Item(int pID, float px, float py) {
-		super(px, py, 0.75f, 0.75f, true);
+		super(px, py, 0.75f, 0.75f);
 		dieID = pID;
 	}
 	

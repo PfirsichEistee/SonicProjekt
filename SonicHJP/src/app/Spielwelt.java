@@ -7,9 +7,11 @@ import Entities.Fisch;
 import Entities.Biene;
 import Entities.Affe;
 import Entities.Sonic;
+import Objects.Looping;
 import Objects.Objekt;
 import Objects.Projektil;
 import Objects.Ring;
+import Objects.SS_Looping;
 import Objects.SS_SBahn;
 import Objects.SpezialStrecke;
 import javafx.scene.image.Image;
@@ -31,7 +33,7 @@ public class Spielwelt {
 	
 	
 	// KONSTRUKTOR //
-	public Spielwelt(Image pLevelImage, int pLevelPixelProEinheit, float pSpielerX, float pSpielerY, SpezialStrecke[] pSpezialStrecken, ArrayList<Objekt> pDieObjekte, ArrayList<Ring> pDieRinge, ArrayList<Gegner> pDieGegner, ArrayList<Projektil> pDieProjektile) {
+	public Spielwelt(Image pLevelImage, int pLevelPixelProEinheit, float pSpielerX, float pSpielerY, SpezialStrecke[] pSpezialStrecken, ArrayList<Objekt> pDieObjekte, ArrayList<Ring> pDieRinge, ArrayList<Gegner> pDieGegner) {
 		dasLevelImage = pLevelImage;
 		levelPixelProEinheit = pLevelPixelProEinheit;
 		imgWidth = (int)dasLevelImage.getWidth();
@@ -48,10 +50,11 @@ public class Spielwelt {
 		
 		dieSpezialStrecken = new SpezialStrecke[1];
 		dieSpezialStrecken[0] = new SS_SBahn(144, 8, 1);
+		
 		dieObjekte = pDieObjekte;
 		dieRinge = pDieRinge;
 		//dieGegner = pDieGegner;
-		dieProjektile = pDieProjektile;
+		dieProjektile = new ArrayList<Projektil>();
 		
 		debugCreateMap();
 	}
@@ -82,28 +85,57 @@ public class Spielwelt {
 		dieGegner.get(1).fixedUpdate(delta);
 		dieGegner.get(2).fixedUpdate(delta);
 		
+		
+		TriggerBox.update(derSpieler.getX(), derSpieler.getY());
+		
+		
 		// Try entering spezial track
 		if (!derSpieler.isPhysicsLocked() && derSpieler.getGrounded() && Math.abs(derSpieler.getSpeedX()) > 10) {
 			for(int i = 0; i < dieSpezialStrecken.length; i++) {
 				boolean Abfrage = dieSpezialStrecken[i].isPointInRange(derSpieler.getX(), derSpieler.getY());
 				if (Abfrage == true) {
-					if (CMath.distance(dieSpezialStrecken[i].getX(), 0, derSpieler.getX(), 0) <= 1) {
-						// Enter from left
-						if (derSpieler.getSpeedX() < 0) continue;
+					SpezialStrecke ss = dieSpezialStrecken[i];
+					
+					if (ss.getClass().isAssignableFrom(SS_SBahn.class)) {
+						if (CMath.distance(ss.getX(), 0, derSpieler.getX(), 0) <= 1) {
+							// Enter from left
+							if (derSpieler.getSpeedX() < 0) continue;
+							
+							derSpieler.setSpezialProzent(0);
+							derSpieler.setSpezialZiel(1);
+						} else {
+							// Enter from right
+							if (derSpieler.getSpeedX() > 0) continue;
+							
+							derSpieler.setSpezialProzent(1);
+							derSpieler.setSpezialZiel(0);
+						}
+					} else if (ss.getClass().isAssignableFrom(SS_Looping.class)) {
+						continue;
 						
-						derSpieler.setSpezialProzent(0);
-						derSpieler.setSpezialZiel(1);
-					} else {
-						// Enter from right
-						if (derSpieler.getSpeedX() > 0) continue;
-						
-						derSpieler.setSpezialProzent(1);
-						derSpieler.setSpezialZiel(0);
+						/*if (CMath.distance(ss.getX() - 1, 0, derSpieler.getX(), 0) <= 1) {
+							// Enter from left
+							if (derSpieler.getGrounded() && derSpieler.getSpeedX() > 0) {
+								derSpieler.setSpezialProzent(0);
+								derSpieler.setSpezialZiel(1);
+							} else {
+								continue;
+							}
+						} else if (CMath.distance(ss.getX() + 1, 0, derSpieler.getX(), 0) <= 1) {
+							// Enter from right
+							if (derSpieler.getGrounded() && derSpieler.getSpeedX() < 0) {
+								derSpieler.setSpezialProzent(1);
+								derSpieler.setSpezialZiel(0);
+							} else {
+								continue;
+							}
+						}*/
 					}
+					
 					
 	
 					derSpieler.lockPhysics();
-					derSpieler.setSpezialStrecke(dieSpezialStrecken[i]);
+					derSpieler.setSpezialStrecke(ss);
 				}
 			}
 		}
@@ -122,7 +154,7 @@ public class Spielwelt {
 			for (int yy = cnkY; yy < (int)Math.ceil((dieKamera.getY() + dieKamera.getHeight() * 0.5f) / 10f); yy++) {
 				if (xx >= 0 && (xx * 10 * levelPixelProEinheit) < imgWidth && yy >= 0 && (yy * 10 * levelPixelProEinheit) < imgHeight) {
 					dieKamera.drawImageSection(dasLevelImage, xx * 10 * levelPixelProEinheit, imgHeight - (yy + 1) * 10 * levelPixelProEinheit,
-							levelPixelProEinheit * 10, levelPixelProEinheit * 10, xx * 10, yy * 10, 10, 10);
+						levelPixelProEinheit * 10, levelPixelProEinheit * 10, xx * 10, yy * 10, 10, 10);
 				}
 			}
 		}
@@ -216,14 +248,14 @@ public class Spielwelt {
 		dieKamera.drawText("cursor: " + phx + " | " + phy, dieKamera.getX() - (dieKamera.getWidth() / 2) + 0.15f, dieKamera.getY() + (dieKamera.getHeight() / 2) - 1f);
 		
 		
-		//dieKamera.drawLine(dieKamera.getX(), dieKamera.getY(), phx, phy);
-		/*dieKamera.drawLine(phx, phy, phx, phy - 1);
-		RaycastHit hit = Kollision.raycast(phx, phy, 0, -1, true);
+		dieKamera.drawLine(dieKamera.getX(), dieKamera.getY(), phx, phy);
+		dieKamera.drawLine(phx, phy, phx + 1, phy);
+		RaycastHit hit = Kollision.raycast(phx, phy, 1, 0, true);
 		
 		if (hit != null) {
 			dieKamera.drawOval(hit.hitX - 0.2f, hit.hitY - 0.2f, 0.4f, 0.4f);
 			dieKamera.drawLine(hit.hitX, hit.hitY, hit.hitX + hit.normalX, hit.hitY + hit.normalY);
-		}*/
+		}
 	}
 	
 	private void debugUpdate() {

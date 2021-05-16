@@ -52,7 +52,6 @@ public class SS_SBahn extends SpezialStrecke {
 		} else {
 			return false;
 		}
-		
 	}
 	
 	@Override

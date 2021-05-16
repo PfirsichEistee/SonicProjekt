@@ -12,6 +12,12 @@ class WZ_Config extends Werkzeug {
     
     item = new Toolbox_Item("Pixel pro Einheit", dasLevel.levelPixelProEinheit, 8, 256);
     dieToolbox.addItem(item);
+    
+    item = new Toolbox_Item("Sonic X", dasLevel.sonicSpawnX, 0, 1000);
+    dieToolbox.addItem(item);
+    
+    item = new Toolbox_Item("Sonic Y", dasLevel.sonicSpawnY, 0, 1000);
+    dieToolbox.addItem(item);
   }
   
   public void zeichnen() {
@@ -33,6 +39,8 @@ class WZ_Config extends Werkzeug {
     toolboxKeyPressed(k);
     dasLevel.levelMapID = dieToolbox.getAnzahlVonItem(0);
     dasLevel.levelPixelProEinheit = dieToolbox.getAnzahlVonItem(1);
+    dasLevel.sonicSpawnX = dieToolbox.getAnzahlVonItem(2);
+    dasLevel.sonicSpawnY = dieToolbox.getAnzahlVonItem(3);
   }
   public void tasteLosgelassen(char k) {
     

@@ -12,6 +12,8 @@ public class SS_Looping extends SpezialStrecke {
 	// KONSTRUKTOR //
 	public SS_Looping(float px, float py) {
 		super(px, py);
+		
+		// radius = 2.75
 	}
 	
 	
@@ -28,6 +30,9 @@ public class SS_Looping extends SpezialStrecke {
 	
 	@Override
 	public boolean isPointInRange(float px, float py) {
+		if(CMath.distance(x - 1, y, px, py) < 1 || CMath.distance(x + 1, y, px, py) < 1) {
+			return true;
+		}
 		return false;
 	}
 	

@@ -231,7 +231,6 @@ public class Sonic {
 				
 				if (CMath.angleBetweenDirs(lastNormalX, lastNormalY, groundHit.normalX, groundHit.normalY) > 45) {
 					grounded = false;
-					System.out.println("force unground");
 					return;
 				}
 			}
@@ -249,7 +248,7 @@ public class Sonic {
 				if (angle <= 25) {
 					// Shallow
 					speed = speedX;
-					System.out.println("grounded SHALLOW");
+					//System.out.println("grounded SHALLOW");
 				} else if (angle <= 45) {
 					// Half Steep
 					if (Math.abs(speedX) > -speedY) {
@@ -257,7 +256,7 @@ public class Sonic {
 					} else {
 						speed = speedY * (float)Math.signum(Math.sin(angle * (Math.PI / 180))) * 0.5f;
 					}
-					System.out.println("grounded HALF STEEP");
+					//System.out.println("grounded HALF STEEP");
 				} else {
 					// Full Steep
 					if (Math.abs(speedX) > -speedY) {
@@ -265,7 +264,7 @@ public class Sonic {
 					} else {
 						speed = speedY * (float)Math.signum(Math.sin(angle * (Math.PI / 180)));
 					}
-					System.out.println("grounded FULL STEEP");
+					//System.out.println("grounded FULL STEEP");
 				}
 			}
 			

@@ -94,7 +94,7 @@ public class Kamera {
 	}
 	
 	public void drawRect(float px, float py, float pw, float ph) {
-		gc.fillRect(einheitZuPixelX(px), einheitZuPixelY(py), pw * pixelProEinheit, -ph * pixelProEinheit);
+		gc.fillRect(einheitZuPixelX(px), einheitZuPixelY(py) - ph * pixelProEinheit, pw * pixelProEinheit, ph * pixelProEinheit);
 	}
 	
 	public void drawOval(float px, float py, float pw, float ph) {

@@ -35,11 +35,23 @@ public class Kollision {
 					if (px1 < px2) {
 						x2 = (float)Math.floor(px1 / 10f) * 10 + 10;
 						
+						new Kollision(px2, py2, x2 + 0.0001f, py2, pPlatform, forceAlt);
+					} else {
+						x2 = (float)Math.floor(px1 / 10f) * 10;
+						
 						new Kollision(px2, py2, x2 - 0.0001f, py2, pPlatform, forceAlt);
 					}
 				} else if (px1 == px2) {
 					// Vertical
-					
+					if (py1 < py2) {
+						y2 = (float)Math.floor(py1 / 10f) * 10 + 10;
+						
+						new Kollision(px2, py2, px2, y2 + 0.0001f, pPlatform, forceAlt);
+					} else {
+						y2 = (float)Math.floor(py1 / 10f) * 10;
+						
+						new Kollision(px2, py2, px1, y2 - 0.0001f, pPlatform, forceAlt);
+					}
 				} else {
 					// Free
 					float m = (py2 - py1) / (px2 - px1);
@@ -91,9 +103,11 @@ public class Kollision {
 				
 				kollisionenListe[cx][cy].add(this);
 			} else {
-				//System.out.println("[!!!] Kollision wurde ausserhalb der Chunk-Range platziert!\n\t(" + x1 + "|" + y1 + ") (" + x2 + "|" + y2 + ")");
+				System.out.println("[!!!] Kollision wurde ausserhalb der Chunk-Range platziert!\n\t(" + x1 + "|" + y1 + ") (" + x2 + "|" + y2 + ")");
 				altKollisionenListe.add(this);
 			}
+		} else {
+			altKollisionenListe.add(this);
 		}
 	}
 	
@@ -610,6 +624,17 @@ public class Kollision {
 	
 	public static int getHeight() {
 		return kollisionenListe[0].length;
+	}
+	
+	public static void altAdd(Kollision k) {
+		altKollisionenListe.add(k);
+	}
+	public static void altRemove(Kollision k) {
+		for (int i = 0; i < altKollisionenListe.size(); i++) {
+			if (altKollisionenListe.get(i) == k) {
+				altKollisionenListe.remove(i);
+			}
+		}
 	}
 	
 	

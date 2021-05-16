@@ -64,8 +64,8 @@ public class Start extends Application {
 		
 		// Load game
 		LevelLeser leser = new LevelLeser("files/maps/level.txt");
-		leser.erzeugeSpielwelt();
-		dieSpielwelt = new Spielwelt(new Image("file:files/textures/maps/map_01.png"), 32, 30, 16f, null, null, null, null, null);
+		dieSpielwelt = leser.erzeugeSpielwelt();
+		//dieSpielwelt = new Spielwelt(new Image("file:files/textures/maps/map_01.png"), 32, 30, 16f, null, null, null, null);
 		
 		
 		// Game loop

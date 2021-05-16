@@ -17,6 +17,7 @@ public class Level {
   // Level-Config
   public int levelMapID;
   public int levelPixelProEinheit;
+  public int sonicSpawnX, sonicSpawnY;
   
 
 
@@ -36,6 +37,8 @@ public class Level {
     
     levelMapID = 0;
     levelPixelProEinheit = 32;
+    sonicSpawnX = 10;
+    sonicSpawnY = 10;
     
     
     hintergrund = loadImage("images/map_01.png"); // 88x8 chunks; 4x4 tiles per chunk
@@ -85,6 +88,11 @@ public class Level {
     for (int i = 0; i < liste_Gegner.size(); i++) {
       liste_Gegner.get(i).zeichnen();
     }
+    
+    // Sonic
+    stroke(0);
+    fill(255, 0, 0, 155);
+    dieKamera.drawCircle((float)sonicSpawnX, (float)sonicSpawnY, 0.5f);
 
 
     // Werkzeug
@@ -209,9 +217,11 @@ public class Level {
             liste_Spezial.add(new Spezial(strToInt(split[3]), strToFloat(split[1]), strToFloat(split[2])));
           } else if (split[0].equals("GEG")) { // GEG X Y ID RICHTUNG
             liste_Gegner.add(new Gegner(strToInt(split[3]), strToFloat(split[1]), strToFloat(split[2]), strToInt(split[4])));
-          } else if (split[0].equals("CNF")) { // GEG X Y ID RICHTUNG
+          } else if (split[0].equals("CNF")) { // GEG X Y ID RICHTUNG SONICX SONICY
             levelMapID = strToInt(split[1]);
             levelPixelProEinheit = strToInt(split[2]);
+            sonicSpawnX = strToInt(split[3]);
+            sonicSpawnY = strToInt(split[4]);
           }
         }
       } while (line != null);
@@ -229,8 +239,8 @@ public class Level {
     
     
     // Speichere Konfiguration
-    // CNF MAP-ID PIXEL-PRO-EINHEIT
-    writer.println("CNF " + levelMapID + " " + levelPixelProEinheit);
+    // CNF MAP-ID PIXEL-PRO-EINHEIT SONICX SONICY
+    writer.println("CNF " + levelMapID + " " + levelPixelProEinheit + " " + sonicSpawnX + " " + sonicSpawnY);
     
     // Speichere liste_Objekte
     // OBJ X Y ID

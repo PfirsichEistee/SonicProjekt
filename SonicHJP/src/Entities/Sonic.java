@@ -45,6 +45,7 @@ public class Sonic {
 			{ 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49 }, // Walk
 			{ 50, 51, 52, 53, 54, 55, 56, 57 }, // Run
 			{ 58, 59, 60, 61, 62, 63, 64, 65, 66 }, // Ball
+			{ 67, 68, 69, 70, 71, 72, 73 }, // Spin-Dash
 	};
 	private int animationZustand, animationZaehler;
 	private float animationTimer;
@@ -53,7 +54,7 @@ public class Sonic {
 	
 	// Constants
 	private final float MAX_SPEED = 20f;
-	private final float ACCELERATION = 10f;
+	private final float ACCELERATION = 7f;
 	private final float DECELERATION = 50f;
 	private final float JUMP_FORCE = 10f;
 	private final float GRAVITY = 30f;
@@ -116,6 +117,7 @@ public class Sonic {
 			1 = Gehen
 			2 = Rennen
 			3 = Springen/Luft/Rollen
+			4 = Spin Dash
 			*/
 			if (grounded && !rolling) {
 				if (speed > 0)
@@ -125,7 +127,7 @@ public class Sonic {
 				
 				if (Math.abs(speed) <= 0.1f)
 					zustand = 0;
-				else if (Math.abs(speed) <= (MAX_SPEED * 0.8f))
+				else if (Math.abs(speed) <= (MAX_SPEED * 0.6f))
 					zustand = 1;
 				else
 					zustand = 2;
@@ -140,6 +142,9 @@ public class Sonic {
 			}
 			if (physicsLock)
 				zustand = 3;
+			
+			if (grounded && spinDash > 0)
+				zustand = 4;
 			
 			if (zustand != animationZustand)
 				animationZaehler = 0;
@@ -579,6 +584,18 @@ public class Sonic {
 	}
 	public void setSpezialZiel(float pZiel) {
 		spezialZiel = pZiel;
+	}
+	
+	public boolean isDeadly() {
+		if (rolling || !grounded) {
+			return true;
+		}
+		return false;
+	}
+	
+	public void setForce(float px, float py) {
+		speedX = px;
+		speedY = py;
 	}
 	
 	

@@ -2,6 +2,7 @@ package Objects;
 
 import Entities.Sonic;
 import app.Kamera;
+import app.Particle;
 import javafx.scene.image.Image;
 
 public class Ring extends Objekt {
@@ -24,6 +25,6 @@ public class Ring extends Objekt {
 	
 	@Override
 	public void onPlayerCollide(Sonic derSpieler) {
-		
+		new Particle(1, x + 0.5f, y + 0.5f, 1);
 	}
 }

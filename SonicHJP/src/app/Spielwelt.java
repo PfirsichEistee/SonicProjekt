@@ -7,6 +7,7 @@ import Entities.Fisch;
 import Entities.Biene;
 import Entities.Affe;
 import Entities.Sonic;
+import Objects.Item;
 import Objects.Objekt;
 import Objects.Projektil;
 import Objects.Ring;
@@ -28,6 +29,8 @@ public class Spielwelt {
 	private ArrayList<Objekt> dieObjekte;
 	private ArrayList<Gegner> dieGegner;
 	private ArrayList<Projektil> dieProjektile;
+	
+	private Background derHintergrund;
 	
 	private float animTimer;
 	
@@ -53,8 +56,11 @@ public class Spielwelt {
 		
 		dieSpezialStrecken = pSpezialStrecken;
 		dieObjekte = pDieObjekte;
+		dieObjekte.add(new Item(0, 16, 15));
 		//dieGegner = pDieGegner;
 		dieProjektile = new ArrayList<Projektil>();
+		
+		derHintergrund = new Background(dieKamera);
 		
 		animTimer = 0;
 	}
@@ -82,6 +88,12 @@ public class Spielwelt {
 			
 			Ring.imageZaehler++;
 			Ring.imageZaehler %= 16;
+			
+			Item.imageZaehler++;
+			
+			for (int i = 0; i < Particle.particleList.size(); i++) {
+				Particle.particleList.get(i).update();
+			}
 		}
 	}
 	
@@ -93,9 +105,7 @@ public class Spielwelt {
 		dieGegner.get(1).fixedUpdate(delta);
 		dieGegner.get(2).fixedUpdate(delta);
 		
-		
 		TriggerBox.update(derSpieler.getX(), derSpieler.getY());
-		
 		
 		// Try entering spezial track
 		if (!derSpieler.isPhysicsLocked() && derSpieler.getGrounded() && Math.abs(derSpieler.getSpeedX()) > 10) {
@@ -130,6 +140,24 @@ public class Spielwelt {
 			}
 		}
 		
+		// Items
+		for (int i = (dieObjekte.size() - 1); i >= 0; i--) {
+			Objekt obj = dieObjekte.get(i);
+			if (obj.isPointInside(derSpieler.getX() + 0.3f, derSpieler.getY() + 0.3f)) {
+				if (!obj.playerWasInside) {
+					obj.playerWasInside = true;
+					
+					obj.onPlayerCollide(derSpieler);
+					
+					if (obj.getClass() == Ring.class) {
+						dieObjekte.remove(i);
+					}
+				}
+			} else {
+				obj.playerWasInside = false;
+			}
+		}
+		
 		
 		// Clamp camera
 		dieKamera.setX(CMath.clamp(dieKamera.getX(), dieKamera.getWidth() * 0.5f, (imgWidth / levelPixelProEinheit) - dieKamera.getWidth() * 0.5f));
@@ -138,6 +166,8 @@ public class Spielwelt {
 	
 	
 	public void draw() {
+		derHintergrund.draw();
+		
 		int cnkX = (int)Math.floor((dieKamera.getX() - dieKamera.getWidth() * 0.5f) / 10f);
 		int cnkY = (int)Math.floor((dieKamera.getY() - dieKamera.getHeight() * 0.5f) / 10f);
 		for (int xx = cnkX; xx < (int)Math.ceil((dieKamera.getX() + dieKamera.getWidth() * 0.5f) / 10f); xx++) {
@@ -171,8 +201,13 @@ public class Spielwelt {
 			}
 		}
 		
+
+		for (int i = 0; i < Particle.particleList.size(); i++) {
+			Particle.particleList.get(i).draw(dieKamera);
+		}
 		
-		debugDraw();
+		
+		//debugDraw();
 	}
 	
 	

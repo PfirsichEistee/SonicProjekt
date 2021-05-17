@@ -130,10 +130,21 @@ public class Kamera {
 		return pixelProEinheit;
 	}
 	
+	public GraphicsContext getGraphicsContext() {
+		return gc;
+	}
+	
 	public float getWidth() {
 		return screenWidth / pixelProEinheit;
 	}
 	public float getHeight() {
 		return screenHeight / pixelProEinheit;
+	}
+	
+	public float getScreenWidth() {
+		return screenWidth;
+	}
+	public float getScreenHeight() {
+		return screenHeight;
 	}
 }

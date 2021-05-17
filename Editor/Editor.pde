@@ -19,10 +19,11 @@ void setup(){
   size(1000, 800);
   
   
-  spezialBezeichnungen = new String[3];
+  spezialBezeichnungen = new String[4];
   spezialBezeichnungen[0] = "Blume";
   spezialBezeichnungen[1] = "Schlangenbahn";
   spezialBezeichnungen[2] = "Looping";
+  spezialBezeichnungen[3] = "Wandlicht";
   
   gegnerBezeichnungen = new String [4];
   gegnerBezeichnungen[0] = "Roboter";

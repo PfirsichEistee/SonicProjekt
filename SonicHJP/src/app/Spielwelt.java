@@ -7,6 +7,7 @@ import Entities.Fisch;
 import Entities.Biene;
 import Entities.Affe;
 import Entities.Sonic;
+import Objects.DekoObjekt;
 import Objects.Item;
 import Objects.Objekt;
 import Objects.Projektil;
@@ -14,6 +15,7 @@ import Objects.Ring;
 import Objects.SS_Looping;
 import Objects.SS_SBahn;
 import Objects.SpezialStrecke;
+import Objects.Waterfall;
 import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
 
@@ -28,18 +30,21 @@ public class Spielwelt {
 	private SpezialStrecke[] dieSpezialStrecken;
 	private ArrayList<Objekt> dieObjekte;
 	private ArrayList<Gegner> dieGegner;
+	private ArrayList<DekoObjekt> dieDekos;
+	private ArrayList<Waterfall> dieWasserfaelle;
 	private ArrayList<Projektil> dieProjektile;
 	
 	private Background derHintergrund;
 	
 	private float animTimer;
+	private int animSlow;
 	
 	// DEBUG
 	private float debugDelta;
 	
 	
 	// KONSTRUKTOR //
-	public Spielwelt(Image pLevelImage, int pLevelPixelProEinheit, float pSpielerX, float pSpielerY, SpezialStrecke[] pSpezialStrecken, ArrayList<Objekt> pDieObjekte, ArrayList<Gegner> pDieGegner) {
+	public Spielwelt(Image pLevelImage, int pLevelPixelProEinheit, float pSpielerX, float pSpielerY, SpezialStrecke[] pSpezialStrecken, ArrayList<Objekt> pDieObjekte, ArrayList<Gegner> pDieGegner, ArrayList<DekoObjekt> pDieDekos, ArrayList<Waterfall> pDieWasserfaelle) {
 		dasLevelImage = pLevelImage;
 		levelPixelProEinheit = pLevelPixelProEinheit;
 		imgWidth = (int)dasLevelImage.getWidth();
@@ -48,6 +53,8 @@ public class Spielwelt {
 		dieKamera = new Kamera(pSpielerX, pSpielerY, 48);
 		derSpieler = new Sonic(pSpielerX, pSpielerY, dieKamera);
 		dieGegner = new ArrayList<Gegner>();
+		dieDekos = pDieDekos;
+		dieWasserfaelle = pDieWasserfaelle;
 		dieProjektile = new ArrayList<Projektil>();
 		
 		dieGegner.add(new Fisch(11,13));
@@ -63,6 +70,7 @@ public class Spielwelt {
 		derHintergrund = new Background(dieKamera);
 		
 		animTimer = 0;
+		animSlow = 0;
 	}
 	
 	
@@ -85,11 +93,25 @@ public class Spielwelt {
 		animTimer += delta;
 		if (animTimer >= 0.05f) {
 			animTimer = 0;
+			animSlow++;
+			
+			if (animSlow == 4) {
+				animSlow = 0;
+				
+				Waterfall.imageZaehler++;
+				Waterfall.imageZaehler %= 2;
+				
+				Item.imageZaehler++;
+				Item.imageZaehler %= 4;
+				
+				DekoObjekt.imageZaehler++;
+				DekoObjekt.imageZaehler %= 4;
+			}
+			
 			
 			Ring.imageZaehler++;
 			Ring.imageZaehler %= 16;
 			
-			Item.imageZaehler++;
 			
 			for (int i = 0; i < Particle.particleList.size(); i++) {
 				Particle.particleList.get(i).update();
@@ -143,7 +165,7 @@ public class Spielwelt {
 		// Items
 		for (int i = (dieObjekte.size() - 1); i >= 0; i--) {
 			Objekt obj = dieObjekte.get(i);
-			if (obj.isPointInside(derSpieler.getX() + 0.3f, derSpieler.getY() + 0.3f)) {
+			if (obj.isPointInside(derSpieler.getX(), derSpieler.getY())) {
 				if (!obj.playerWasInside) {
 					obj.playerWasInside = true;
 					
@@ -179,14 +201,20 @@ public class Spielwelt {
 			}
 		}
 		
-		if (dieSpezialStrecken != null) {
-			for (int i = 0; i < dieSpezialStrecken.length; i++) {
-				dieSpezialStrecken[i].draw(dieKamera);
-			}
+		for (int i = 0; i < dieSpezialStrecken.length; i++) {
+			dieSpezialStrecken[i].draw(dieKamera);
+		}
+		
+		for (int i = 0; i < dieWasserfaelle.size(); i++) {
+			dieWasserfaelle.get(i).draw(dieKamera);
 		}
 		
 		for (int i = 0; i < dieObjekte.size(); i++) {
 			dieObjekte.get(i).draw(dieKamera);
+		}
+		
+		for (int i = 0; i < dieDekos.size(); i++) {
+			dieDekos.get(i).draw(dieKamera);
 		}
 		
 		derSpieler.draw();

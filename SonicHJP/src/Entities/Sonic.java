@@ -501,7 +501,7 @@ public class Sonic {
 		dieKamera.drawImageSection(dasImage, 256 * (i % 8), 280 * (i / 8), 256, 280, 
 				x - 0.9f + (imageFlip ? 1.8f : 0), y + 0.9f + (rolling ? -0.05f : 0),
 				1.8f * (imageFlip ? -1 : 1), 1.8f, rotation);
-
+		
 		dieKamera.setLineWidth(0.05f);
 		
 		// LR

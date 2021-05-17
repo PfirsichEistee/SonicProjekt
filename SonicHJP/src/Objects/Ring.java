@@ -20,11 +20,11 @@ public class Ring extends Objekt {
 	// METHODEN //
 	@Override
 	public void draw(Kamera dieKamera) {
-		dieKamera.drawImageSection(dasImage, (imageZaehler % 4) * 64, (imageZaehler / 4) * 64, 64, 64, x - 0.35f, y - 0.35f, 0.7f, 0.7f);
+		dieKamera.drawImageSection(dasImage, (imageZaehler % 4) * 64, (imageZaehler / 4) * 64, 64, 64, x + (w - 0.7f) / 2, y + (h - 0.7f) / 2, 0.7f, 0.7f);
 	}
 	
 	@Override
 	public void onPlayerCollide(Sonic derSpieler) {
-		new Particle(1, x + 0.5f, y + 0.5f, 1);
+		new Particle(1, x + (w / 2), y + (h / 2), 1);
 	}
 }

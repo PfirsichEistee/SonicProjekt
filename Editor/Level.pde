@@ -9,6 +9,7 @@ public class Level {
   public ArrayList<Strecke> liste_Strecken;
   public ArrayList<Spezial> liste_Spezial;
   public ArrayList<Gegner> liste_Gegner;
+  public ArrayList<Wasserfall> liste_Wasserfall;
 
   private PImage hintergrund;
   private boolean zeichneMap;
@@ -33,6 +34,7 @@ public class Level {
     liste_Strecken = new ArrayList<Strecke>();
     liste_Spezial = new ArrayList<Spezial>();
     liste_Gegner = new ArrayList<Gegner>();
+    liste_Wasserfall = new ArrayList<Wasserfall>();
     
     
     levelMapID = 0;
@@ -87,6 +89,11 @@ public class Level {
     
     for (int i = 0; i < liste_Gegner.size(); i++) {
       liste_Gegner.get(i).zeichnen();
+    }
+    
+    // Wasserfaelle zeichnen
+    for (int i = 0; i < liste_Wasserfall.size(); i++) {
+      liste_Wasserfall.get(i).zeichnen();
     }
     
     // Sonic
@@ -162,10 +169,10 @@ public class Level {
 
   private void werkzeugWechseln(int richtung) {
     auswahlWerkzeug += richtung;
-    if (auswahlWerkzeug >= 5)
+    if (auswahlWerkzeug >= 6)
       auswahlWerkzeug = 0;
     else if (auswahlWerkzeug < 0)
-      auswahlWerkzeug = 4;
+      auswahlWerkzeug = 5;
 
     println("Werkzeug gewechselt: " + auswahlWerkzeug);
 
@@ -185,6 +192,9 @@ public class Level {
         break;
       case(4):
         dasWerkzeug = new WZ_Config();
+        break;
+      case(5):
+        dasWerkzeug = new WZ_Wasserfall();
         break;
     }
   }
@@ -222,6 +232,8 @@ public class Level {
             levelPixelProEinheit = strToInt(split[2]);
             sonicSpawnX = strToInt(split[3]);
             sonicSpawnY = strToInt(split[4]);
+          } else if (split[0].equals("WTR")) { // WTR X Y LAENGE HOEHE
+            liste_Wasserfall.add(new Wasserfall(strToFloat(split[1]), strToFloat(split[2]), strToInt(split[3]), strToInt(split[4])));
           }
         }
       } while (line != null);
@@ -267,6 +279,13 @@ public class Level {
     for (int i = 0; i < liste_Gegner.size(); i++) {
       Gegner p = liste_Gegner.get(i);
       writer.println("GEG " + p.x + " " + p.y + " " + p.id + " " + p.richtung);
+    }
+    
+    // Speichere liste_Wasserfall
+    // WTR X Y LAENGE HOEHE
+    for (int i = 0; i < liste_Wasserfall.size(); i++) {
+      Wasserfall p = liste_Wasserfall.get(i);
+      writer.println("WTR " + p.x + " " + p.y + " " + p.laenge + " " + p.hoehe);
     }
     
     

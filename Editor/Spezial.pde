@@ -26,12 +26,17 @@ public class Spezial {
     switch (id) {
       case (0):
         fill(255, 100, 100, 155);
+        dieKamera.drawRect(x, y, 0.6f, -0.6f);
         break;
       case (1):
         fill(225, 120, 100, 155);
         break;
       case (2):
         fill(205, 140, 100, 155);
+        break;
+      case (3):
+        fill(255, 100, 100, 155);
+        dieKamera.drawRect(x, y, 0.6f, -0.6f);
         break;
     }
     

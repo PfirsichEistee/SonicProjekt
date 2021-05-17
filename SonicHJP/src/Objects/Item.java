@@ -10,7 +10,6 @@ public class Item extends Objekt {
 	// ATTRIBUTE //
 	private static Image dasImage = new Image("file:files/textures/items/tv.png");
 	public static int imageZaehler = 0;
-	private static int phZaehler = 0;
 	private int dieID;
 	
 	private boolean dead;
@@ -35,15 +34,9 @@ public class Item extends Objekt {
 			return;
 		}
 		
-		if (imageZaehler == 4) {
-			phZaehler++;
-			phZaehler %= 4;
-			imageZaehler = 0;
-		}
+		dieKamera.drawImageSection(dasImage, imageZaehler * 26, 0, 26, 26, x, y, 1, 1);
 		
-		dieKamera.drawImageSection(dasImage, phZaehler * 26, 0, 26, 26, x, y, 1, 1);
-		
-		if ((phZaehler % 2) == 0) {
+		if ((imageZaehler % 2) == 0) {
 			dieKamera.drawImageSection(dasImage, 0, 26, 14, 14, x + 0.175f, y + 0.3f, 0.65f, 0.65f);
 		}
 	}

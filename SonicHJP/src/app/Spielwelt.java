@@ -7,13 +7,15 @@ import Entities.Fisch;
 import Entities.Biene;
 import Entities.Affe;
 import Entities.Sonic;
-import Objects.Looping;
+import Objects.DekoObjekt;
+import Objects.Item;
 import Objects.Objekt;
 import Objects.Projektil;
 import Objects.Ring;
 import Objects.SS_Looping;
 import Objects.SS_SBahn;
 import Objects.SpezialStrecke;
+import Objects.Waterfall;
 import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
 
@@ -27,13 +29,22 @@ public class Spielwelt {
 	private Sonic derSpieler;
 	private SpezialStrecke[] dieSpezialStrecken;
 	private ArrayList<Objekt> dieObjekte;
-	private ArrayList<Ring> dieRinge;
 	private ArrayList<Gegner> dieGegner;
+	private ArrayList<DekoObjekt> dieDekos;
+	private ArrayList<Waterfall> dieWasserfaelle;
 	private ArrayList<Projektil> dieProjektile;
+	
+	private Background derHintergrund;
+	
+	private float animTimer;
+	private int animSlow;
+	
+	// DEBUG
+	private float debugDelta;
 	
 	
 	// KONSTRUKTOR //
-	public Spielwelt(Image pLevelImage, int pLevelPixelProEinheit, float pSpielerX, float pSpielerY, SpezialStrecke[] pSpezialStrecken, ArrayList<Objekt> pDieObjekte, ArrayList<Ring> pDieRinge, ArrayList<Gegner> pDieGegner) {
+	public Spielwelt(Image pLevelImage, int pLevelPixelProEinheit, float pSpielerX, float pSpielerY, SpezialStrecke[] pSpezialStrecken, ArrayList<Objekt> pDieObjekte, ArrayList<Gegner> pDieGegner, ArrayList<DekoObjekt> pDieDekos, ArrayList<Waterfall> pDieWasserfaelle) {
 		dasLevelImage = pLevelImage;
 		levelPixelProEinheit = pLevelPixelProEinheit;
 		imgWidth = (int)dasLevelImage.getWidth();
@@ -42,21 +53,24 @@ public class Spielwelt {
 		dieKamera = new Kamera(pSpielerX, pSpielerY, 48);
 		derSpieler = new Sonic(pSpielerX, pSpielerY, dieKamera);
 		dieGegner = new ArrayList<Gegner>();
+		dieDekos = pDieDekos;
+		dieWasserfaelle = pDieWasserfaelle;
 		dieProjektile = new ArrayList<Projektil>();
 		
 		dieGegner.add(new Fisch(11,13));
 		dieGegner.add(new Biene(10,10));
 		dieGegner.add(new Affe(10,10));
 		
-		dieSpezialStrecken = new SpezialStrecke[1];
-		dieSpezialStrecken[0] = new SS_SBahn(144, 8, 1);
-		
+		dieSpezialStrecken = pSpezialStrecken;
 		dieObjekte = pDieObjekte;
-		dieRinge = pDieRinge;
+		dieObjekte.add(new Item(0, 16, 15));
 		//dieGegner = pDieGegner;
 		dieProjektile = new ArrayList<Projektil>();
 		
-		debugCreateMap();
+		derHintergrund = new Background(dieKamera);
+		
+		animTimer = 0;
+		animSlow = 0;
 	}
 	
 	
@@ -68,13 +82,41 @@ public class Spielwelt {
 	
 	public void update(float delta) {
 		debugUpdate();
-		debugDraw(delta);
+		debugDelta = delta;
 		
 		derSpieler.update(delta);
 		
 		dieGegner.get(0).update(delta);
 		dieGegner.get(1).update(delta);
 		dieGegner.get(2).update(delta);
+		
+		animTimer += delta;
+		if (animTimer >= 0.05f) {
+			animTimer = 0;
+			animSlow++;
+			
+			if (animSlow == 4) {
+				animSlow = 0;
+				
+				Waterfall.imageZaehler++;
+				Waterfall.imageZaehler %= 2;
+				
+				Item.imageZaehler++;
+				Item.imageZaehler %= 4;
+				
+				DekoObjekt.imageZaehler++;
+				DekoObjekt.imageZaehler %= 4;
+			}
+			
+			
+			Ring.imageZaehler++;
+			Ring.imageZaehler %= 16;
+			
+			
+			for (int i = 0; i < Particle.particleList.size(); i++) {
+				Particle.particleList.get(i).update();
+			}
+		}
 	}
 	
 	
@@ -85,9 +127,7 @@ public class Spielwelt {
 		dieGegner.get(1).fixedUpdate(delta);
 		dieGegner.get(2).fixedUpdate(delta);
 		
-		
 		TriggerBox.update(derSpieler.getX(), derSpieler.getY());
-		
 		
 		// Try entering spezial track
 		if (!derSpieler.isPhysicsLocked() && derSpieler.getGrounded() && Math.abs(derSpieler.getSpeedX()) > 10) {
@@ -112,24 +152,6 @@ public class Spielwelt {
 						}
 					} else if (ss.getClass().isAssignableFrom(SS_Looping.class)) {
 						continue;
-						
-						/*if (CMath.distance(ss.getX() - 1, 0, derSpieler.getX(), 0) <= 1) {
-							// Enter from left
-							if (derSpieler.getGrounded() && derSpieler.getSpeedX() > 0) {
-								derSpieler.setSpezialProzent(0);
-								derSpieler.setSpezialZiel(1);
-							} else {
-								continue;
-							}
-						} else if (CMath.distance(ss.getX() + 1, 0, derSpieler.getX(), 0) <= 1) {
-							// Enter from right
-							if (derSpieler.getGrounded() && derSpieler.getSpeedX() < 0) {
-								derSpieler.setSpezialProzent(1);
-								derSpieler.setSpezialZiel(0);
-							} else {
-								continue;
-							}
-						}*/
 					}
 					
 					
@@ -137,6 +159,24 @@ public class Spielwelt {
 					derSpieler.lockPhysics();
 					derSpieler.setSpezialStrecke(ss);
 				}
+			}
+		}
+		
+		// Items
+		for (int i = (dieObjekte.size() - 1); i >= 0; i--) {
+			Objekt obj = dieObjekte.get(i);
+			if (obj.isPointInside(derSpieler.getX(), derSpieler.getY())) {
+				if (!obj.playerWasInside) {
+					obj.playerWasInside = true;
+					
+					obj.onPlayerCollide(derSpieler);
+					
+					if (obj.getClass() == Ring.class) {
+						dieObjekte.remove(i);
+					}
+				}
+			} else {
+				obj.playerWasInside = false;
 			}
 		}
 		
@@ -148,6 +188,8 @@ public class Spielwelt {
 	
 	
 	public void draw() {
+		derHintergrund.draw();
+		
 		int cnkX = (int)Math.floor((dieKamera.getX() - dieKamera.getWidth() * 0.5f) / 10f);
 		int cnkY = (int)Math.floor((dieKamera.getY() - dieKamera.getHeight() * 0.5f) / 10f);
 		for (int xx = cnkX; xx < (int)Math.ceil((dieKamera.getX() + dieKamera.getWidth() * 0.5f) / 10f); xx++) {
@@ -159,11 +201,20 @@ public class Spielwelt {
 			}
 		}
 		
+		for (int i = 0; i < dieSpezialStrecken.length; i++) {
+			dieSpezialStrecken[i].draw(dieKamera);
+		}
 		
-		if (dieSpezialStrecken != null) {
-			for (int i = 0; i < dieSpezialStrecken.length; i++) {
-				dieSpezialStrecken[i].draw(dieKamera);
-			}
+		for (int i = 0; i < dieWasserfaelle.size(); i++) {
+			dieWasserfaelle.get(i).draw(dieKamera);
+		}
+		
+		for (int i = 0; i < dieObjekte.size(); i++) {
+			dieObjekte.get(i).draw(dieKamera);
+		}
+		
+		for (int i = 0; i < dieDekos.size(); i++) {
+			dieDekos.get(i).draw(dieKamera);
 		}
 		
 		derSpieler.draw();
@@ -177,6 +228,14 @@ public class Spielwelt {
 				dieSpezialStrecken[i].lateDraw(dieKamera);
 			}
 		}
+		
+
+		for (int i = 0; i < Particle.particleList.size(); i++) {
+			Particle.particleList.get(i).draw(dieKamera);
+		}
+		
+		
+		//debugDraw();
 	}
 	
 	
@@ -191,7 +250,7 @@ public class Spielwelt {
 		
 	}
 	
-	private void debugDraw(float delta) {
+	private void debugDraw() {
 		// grid
 		int ph = (int)Math.floor(dieKamera.getX() - (dieKamera.getWidth() / 2));
 		for (int x = ph; x <= (ph + (int)Math.ceil(dieKamera.getWidth())); x++) {
@@ -220,13 +279,13 @@ public class Spielwelt {
 		}
 		
 		
-		for (int xx = 0; xx < 15; xx++) {
+		for (int xx = 0; xx < 25; xx++) {
 			int clr = xx % 2;
 			for (int yy = 0; yy < 5; yy++) {
 				clr = (clr + yy) % 2;
 				
-				if (clr == 0) dieKamera.setFarbe(new Color(1, 0, 0, 0.4f));
-				else dieKamera.setFarbe(new Color(1, 1, 0, 0.4f));
+				if (clr == 0) dieKamera.setFarbe(new Color(1, 0, 0, 0.1f));
+				else dieKamera.setFarbe(new Color(1, 1, 0, 0.1f));
 				
 				dieKamera.drawRect(xx * 10, yy * 10, 10, 10);
 			}
@@ -239,23 +298,22 @@ public class Spielwelt {
 		Kollision.drawDebug(dieKamera);
 		
 		
-		// kollision test
 		dieKamera.setFarbe(Color.DARKRED);
-		float phfps = (float)Math.floor((1f / delta) * 10) / 10;
+		float phfps = (float)Math.floor((1f / debugDelta) * 10) / 10;
 		dieKamera.drawText(phfps + " FPS", dieKamera.getX() - (dieKamera.getWidth() / 2) + 0.15f, dieKamera.getY() + (dieKamera.getHeight() / 2) - 0.5f);
 		float phx = (float)Math.floor(dieKamera.pixelZuEinheitX(Eingabe.mouseX) * 10) / 10;
 		float phy = (float)Math.floor(dieKamera.pixelZuEinheitY(Eingabe.mouseY) * 10) / 10;
 		dieKamera.drawText("cursor: " + phx + " | " + phy, dieKamera.getX() - (dieKamera.getWidth() / 2) + 0.15f, dieKamera.getY() + (dieKamera.getHeight() / 2) - 1f);
 		
 		
-		dieKamera.drawLine(dieKamera.getX(), dieKamera.getY(), phx, phy);
+		/*dieKamera.drawLine(dieKamera.getX(), dieKamera.getY(), phx, phy);
 		dieKamera.drawLine(phx, phy, phx + 1, phy);
 		RaycastHit hit = Kollision.raycast(phx, phy, 1, 0, true);
 		
 		if (hit != null) {
 			dieKamera.drawOval(hit.hitX - 0.2f, hit.hitY - 0.2f, 0.4f, 0.4f);
 			dieKamera.drawLine(hit.hitX, hit.hitY, hit.hitX + hit.normalX, hit.hitY + hit.normalY);
-		}
+		}*/
 	}
 	
 	private void debugUpdate() {
@@ -269,24 +327,6 @@ public class Spielwelt {
 		} else if (Eingabe.isKeyDown("W")) {
 			dieKamera.setY(dieKamera.getY() + 0.1f);
 		}*/
-	}
-	
-	private void debugCreateMap() {
-		/*new Kollision(-1, -1, 7, -3, false);
-		new Kollision(7, -3, 10, -4, false);
-		new Kollision(10, -4, 15, -3.5f, false);
-		new Kollision(15, -3.5f, 21, -3.75f, false);
-		new Kollision(21, -3.75f, 27, -4.5f, false);
-		new Kollision(27, -4.5f, 30, -4f, false);
-		new Kollision(30, -4, 31, -3, false);
-		new Kollision(31, -3, 32, -1.5f, false);
-		new Kollision(35, -1, 48, 1, false);
-		new Kollision(32, -1.5f, 32.1f, 0.5f, false);
-		new Kollision(32.1f, 0.5f, 31.9f, 2f, false);
-		new Kollision(31.9f, 2f, 31f, 3.1f, false);
-		new Kollision(28f, 4.8f, 31, 3.1f, false);
-		new Kollision(16, 0, 19, 0, true);
-		new Kollision(-25f, -1f, -40, -1f, false);*/
 	}
 	
 	public void setdieProjektile(float px, float py, float pSpeedX, float pSpeedY) {

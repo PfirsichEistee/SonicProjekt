@@ -26,18 +26,18 @@ void setup(){
   spezialBezeichnungen[3] = "Wandlicht";
   
   gegnerBezeichnungen = new String [4];
-  gegnerBezeichnungen[0] = "Roboter";
+  gegnerBezeichnungen[0] = "Biene";
   gegnerBezeichnungen[1] = "Fisch";
-  gegnerBezeichnungen[2] = "Fledermaus";
-  gegnerBezeichnungen[3] = "Eggman";
+  gegnerBezeichnungen[2] = "Affe";
+  gegnerBezeichnungen[3] = "Kaefer";
   
   objektBezeichnungen = new String [8];
   objektBezeichnungen[0] = "Ring";
   objektBezeichnungen[1] = "Checkpoint";
-  objektBezeichnungen[2] = "Schild";
-  objektBezeichnungen[3] = "Powerup"; //Unsterblichkeit
+  objektBezeichnungen[2] = "Ring (TV-Box)";
+  objektBezeichnungen[3] = "Schild";
   objektBezeichnungen[4] = "Speed"; // gotta go fast
-  objektBezeichnungen[5] = "Ring (TV-Box)";
+  objektBezeichnungen[5] = "Powerup"; //Unsterblichkeit
   objektBezeichnungen[6] = "Lvl-Up";
   objektBezeichnungen[7] = "Eggman (Trap)"; // wirkt, wie wenn Sonic einen Gegner beruehrt haette
   

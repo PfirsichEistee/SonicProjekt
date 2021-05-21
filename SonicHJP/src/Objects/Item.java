@@ -37,7 +37,7 @@ public class Item extends Objekt {
 		dieKamera.drawImageSection(dasImage, imageZaehler * 26, 0, 26, 26, x, y, 1, 1);
 		
 		if ((imageZaehler % 2) == 0) {
-			dieKamera.drawImageSection(dasImage, 0, 26, 14, 14, x + 0.175f, y + 0.3f, 0.65f, 0.65f);
+			dieKamera.drawImageSection(dasImage, 14 * dieID, 26, 14, 14, x + 0.175f, y + 0.3f, 0.65f, 0.65f);
 		}
 	}
 	
@@ -48,6 +48,27 @@ public class Item extends Objekt {
 			new Particle(0, x + 0.5f, y + 0.5f, 1.5f);
 			
 			derSpieler.setForce(derSpieler.getSpeedX(), CMath.min(derSpieler.getSpeedY(), 0) + 6f);
+			
+			switch (dieID) {
+				case(0): // Rings
+					derSpieler.setRingCount(derSpieler.getRingCount() + 10);
+					break;
+				case(1): // Shield
+					derSpieler.setShieldBonus();
+					break;
+				case(2): // Speed
+					derSpieler.setSpeedBonus();
+					break;
+				case(3): // Invincibility
+					derSpieler.setInvincibleBonus();
+					break;
+				case(4): // Lvl Up
+					derSpieler.setLiveCount(derSpieler.getLiveCount() + 10);
+					break;
+				case(5): // Eggman
+					derSpieler.setKnockback(derSpieler.getSpeedX() * 0.75f, 6f);
+					break;
+			}
 		}
 	}
 }

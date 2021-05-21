@@ -6,7 +6,7 @@ import javafx.scene.paint.Color;
 
 public class Fisch extends Gegner {
 	// ATTRIBUTE //
-	private static Image dasImage;
+	private static Image dasImage = new Image("file:files/textures/enemies/fisch.png");
 	private int imageZaehler;
 	private float start;
 	private float speedY;
@@ -21,8 +21,6 @@ public class Fisch extends Gegner {
 		
 		start = py;
 		speedY = -3f;
-		
-		dasImage = new Image("file:files/textures/testsonic.png");
 	}
 	
 	
@@ -49,7 +47,7 @@ public class Fisch extends Gegner {
 		dieKamera.setFarbe(new Color(1f, 0.5f, 0, 0.2f));
 		dieKamera.setLineWidth(0.05f);
 		
-		dieKamera.drawImage(dasImage, x, y, 256, 280, 0);
+		dieKamera.drawImageSection(dasImage, 0, 0, 32, 23, x - 0.5f, y - 0.355f, 1f, 0.71f, (float)Math.PI / 2); // Rotiert wird mit Bogenmaß. PI == 180°
 	}
 	
 	

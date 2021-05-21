@@ -5,7 +5,13 @@ import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Scanner;
 
+import Entities.Affe;
+import Entities.Biene;
+import Entities.Fisch;
+import Entities.Gegner;
+import Entities.Kaefer;
 import Objects.DekoObjekt;
+import Objects.Item;
 import Objects.Objekt;
 import Objects.Ring;
 import Objects.SS_Looping;
@@ -34,6 +40,7 @@ public class LevelLeser {
 		float sonicX = 0, sonicY = 0;
 		ArrayList<SpezialStrecke> spezStrecken = new ArrayList<SpezialStrecke>();
 		ArrayList<Objekt> objekte = new ArrayList<Objekt>();
+		ArrayList<Gegner> gegner = new ArrayList<Gegner>();
 		ArrayList<DekoObjekt> dekos = new ArrayList<DekoObjekt>();
 		ArrayList<Waterfall> wasserfaelle = new ArrayList<Waterfall>();
 		
@@ -56,6 +63,14 @@ public class LevelLeser {
 						case (0):
 							objekte.add(new Ring(strToFloat(split[1]), strToFloat(split[2])));
 							break;
+						case (2):
+						case (3):
+						case (4):
+						case (5):
+						case (6):
+						case (7):
+							objekte.add(new Item(strToInt(split[3]) - 2, strToFloat(split[1]), strToFloat(split[2])));
+							break;
 					}
 				} else if (split[0].equals("STK")) { // STK X1 Y1 X2 Y2 TYP
 					boolean platform = (strToInt(split[5]) == 1 ? true : false);
@@ -76,7 +91,20 @@ public class LevelLeser {
 							break;
 					}
 				} else if (split[0].equals("GEG")) { // GEG X Y ID RICHTUNG
-					
+					switch (strToInt(split[3])) {
+						case(0): // Biene
+							gegner.add(new Biene(strToFloat(split[1]), strToFloat(split[2])));
+							break;
+						case(1): // Fisch
+							gegner.add(new Fisch(strToFloat(split[1]), strToFloat(split[2])));
+							break;
+						case(2): // Affe
+							gegner.add(new Affe(strToFloat(split[1]), strToFloat(split[2])));
+							break;
+						case(3): // Kaefer
+							gegner.add(new Kaefer(strToFloat(split[1]), strToFloat(split[2])));
+							break;
+					}
 				} else if (split[0].equals("WTR")) { // WTR X Y LAENGE HOEHE
 					wasserfaelle.add(new Waterfall(strToFloat(split[1]), strToFloat(split[2]), strToInt(split[3]), strToInt(split[4])));
 				}
@@ -91,7 +119,7 @@ public class LevelLeser {
 		for (int i = 0; i < ph.length; i++)
 			ph[i] = spezStrecken.get(i);
 		
-		return new Spielwelt(new Image("file:files/textures/maps/map_01.png"), pixelProEinheit, sonicX, sonicY, ph, objekte, null, dekos, wasserfaelle);
+		return new Spielwelt(new Image("file:files/textures/maps/map_01.png"), pixelProEinheit, sonicX, sonicY, ph, objekte, gegner, dekos, wasserfaelle);
 	}
 	
 	

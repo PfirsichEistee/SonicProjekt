@@ -26,5 +26,7 @@ public class Ring extends Objekt {
 	@Override
 	public void onPlayerCollide(Sonic derSpieler) {
 		new Particle(1, x + (w / 2), y + (h / 2), 1);
+		
+		derSpieler.setRingCount(derSpieler.getRingCount() + 1);
 	}
 }

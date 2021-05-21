@@ -147,4 +147,17 @@ public class Kamera {
 	public float getScreenHeight() {
 		return screenHeight;
 	}
+	
+	public boolean isInView(float px, float py) {
+		float w = getWidth();
+		float h = getHeight();
+		px += w / 2;
+		py += h / 2;
+		
+		if (px > (x - 2) && px < (x + w + 2) && py > (y - 2) && py < (y + h + 2)) {
+			return true;
+		}
+		
+		return false;
+	}
 }

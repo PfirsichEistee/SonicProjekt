@@ -3,6 +3,7 @@ package app;
 import java.util.ArrayList;
 
 import Entities.Gegner;
+import Entities.Kaefer;
 import Entities.Fisch;
 import Entities.Biene;
 import Entities.Affe;
@@ -52,25 +53,23 @@ public class Spielwelt {
 		
 		dieKamera = new Kamera(pSpielerX, pSpielerY, 48);
 		derSpieler = new Sonic(pSpielerX, pSpielerY, dieKamera);
-		dieGegner = new ArrayList<Gegner>();
-		dieDekos = pDieDekos;
-		dieWasserfaelle = pDieWasserfaelle;
-		dieProjektile = new ArrayList<Projektil>();
-		
-		dieGegner.add(new Fisch(11,13));
-		dieGegner.add(new Biene(10,10));
-		dieGegner.add(new Affe(10,10));
+		derHintergrund = new Background(dieKamera);
 		
 		dieSpezialStrecken = pSpezialStrecken;
+		dieGegner = pDieGegner;
 		dieObjekte = pDieObjekte;
-		dieObjekte.add(new Item(0, 16, 15));
-		//dieGegner = pDieGegner;
+		dieDekos = pDieDekos;
+		dieWasserfaelle = pDieWasserfaelle;
+		
+		
 		dieProjektile = new ArrayList<Projektil>();
 		
-		derHintergrund = new Background(dieKamera);
 		
 		animTimer = 0;
 		animSlow = 0;
+		
+		// Klassenattribute
+		Gegner.setSpielwelt(this);
 	}
 	
 	
@@ -86,9 +85,12 @@ public class Spielwelt {
 		
 		derSpieler.update(delta);
 		
-		dieGegner.get(0).update(delta);
-		dieGegner.get(1).update(delta);
-		dieGegner.get(2).update(delta);
+		for (Gegner g : dieGegner) {
+			g.update(delta);
+		}
+		for (Projektil p : dieProjektile) {
+			p.update(delta);
+		}
 		
 		animTimer += delta;
 		if (animTimer >= 0.05f) {
@@ -106,6 +108,9 @@ public class Spielwelt {
 				
 				DekoObjekt.imageZaehler++;
 				DekoObjekt.imageZaehler %= 4;
+				
+				Projektil.imageZaehler++;
+				Projektil.imageZaehler %= 2;
 			}
 			
 			
@@ -123,60 +128,96 @@ public class Spielwelt {
 	public void fixedUpdate(float delta) {
 		derSpieler.fixedUpdate(delta);
 		
-		dieGegner.get(0).fixedUpdate(delta);
-		dieGegner.get(1).fixedUpdate(delta);
-		dieGegner.get(2).fixedUpdate(delta);
-		
-		TriggerBox.update(derSpieler.getX(), derSpieler.getY());
-		
-		// Try entering spezial track
-		if (!derSpieler.isPhysicsLocked() && derSpieler.getGrounded() && Math.abs(derSpieler.getSpeedX()) > 10) {
-			for(int i = 0; i < dieSpezialStrecken.length; i++) {
-				boolean Abfrage = dieSpezialStrecken[i].isPointInRange(derSpieler.getX(), derSpieler.getY());
-				if (Abfrage == true) {
-					SpezialStrecke ss = dieSpezialStrecken[i];
-					
-					if (ss.getClass().isAssignableFrom(SS_SBahn.class)) {
-						if (CMath.distance(ss.getX(), 0, derSpieler.getX(), 0) <= 1) {
-							// Enter from left
-							if (derSpieler.getSpeedX() < 0) continue;
-							
-							derSpieler.setSpezialProzent(0);
-							derSpieler.setSpezialZiel(1);
-						} else {
-							// Enter from right
-							if (derSpieler.getSpeedX() > 0) continue;
-							
-							derSpieler.setSpezialProzent(1);
-							derSpieler.setSpezialZiel(0);
-						}
-					} else if (ss.getClass().isAssignableFrom(SS_Looping.class)) {
-						continue;
-					}
-					
-					
-	
-					derSpieler.lockPhysics();
-					derSpieler.setSpezialStrecke(ss);
-				}
+		for (Gegner g : dieGegner) {
+			if (dieKamera.isInView(g.getX(), g.getY())) {
+				g.fixedUpdate(delta);
 			}
 		}
 		
-		// Items
-		for (int i = (dieObjekte.size() - 1); i >= 0; i--) {
-			Objekt obj = dieObjekte.get(i);
-			if (obj.isPointInside(derSpieler.getX(), derSpieler.getY())) {
-				if (!obj.playerWasInside) {
-					obj.playerWasInside = true;
-					
-					obj.onPlayerCollide(derSpieler);
-					
-					if (obj.getClass() == Ring.class) {
-						dieObjekte.remove(i);
+		
+		if (!derSpieler.getKnockback()) {
+			TriggerBox.update(derSpieler.getX(), derSpieler.getY());
+			
+			
+			// Try entering spezial track
+			if (!derSpieler.isPhysicsLocked() && derSpieler.getGrounded() && Math.abs(derSpieler.getSpeedX()) > 10) {
+				for(int i = 0; i < dieSpezialStrecken.length; i++) {
+					boolean Abfrage = dieSpezialStrecken[i].isPointInRange(derSpieler.getX(), derSpieler.getY());
+					if (Abfrage == true) {
+						SpezialStrecke ss = dieSpezialStrecken[i];
+						
+						if (ss.getClass().isAssignableFrom(SS_SBahn.class)) {
+							if (CMath.distance(ss.getX(), 0, derSpieler.getX(), 0) <= 1) {
+								// Enter from left
+								if (derSpieler.getSpeedX() < 0) continue;
+								
+								derSpieler.setSpezialProzent(0);
+								derSpieler.setSpezialZiel(1);
+							} else {
+								// Enter from right
+								if (derSpieler.getSpeedX() > 0) continue;
+								
+								derSpieler.setSpezialProzent(1);
+								derSpieler.setSpezialZiel(0);
+							}
+						} else if (ss.getClass().isAssignableFrom(SS_Looping.class)) {
+							continue;
+						}
+						
+						
+		
+						derSpieler.lockPhysics();
+						derSpieler.setSpezialStrecke(ss);
 					}
 				}
-			} else {
-				obj.playerWasInside = false;
+			}
+			
+			// Objekte
+			for (int i = (dieObjekte.size() - 1); i >= 0; i--) {
+				Objekt obj = dieObjekte.get(i);
+				if (obj.isPointInside(derSpieler.getX(), derSpieler.getY())) {
+					if (!obj.playerWasInside) {
+						obj.playerWasInside = true;
+						
+						obj.onPlayerCollide(derSpieler);
+						
+						if (obj.getClass() == Ring.class) {
+							dieObjekte.remove(i);
+						}
+					}
+				} else {
+					obj.playerWasInside = false;
+				}
+			}
+			
+			// Check intersections between player and enemies
+			for (int i = (dieGegner.size() - 1); i >= 0; i--) {
+				if (dieGegner.get(i).isTouchingPlayer()) {
+					Gegner g = dieGegner.get(i);
+					if (derSpieler.isDeadly()) {
+						new Particle(0, g.getX(), g.getY(), 1.5f);
+						derSpieler.setForce(derSpieler.getSpeedX(), CMath.min(derSpieler.getSpeedY(), 0) + 6f);
+						
+						dieGegner.remove(i);
+					} else {
+						float ph = (derSpieler.getX() - g.getX());
+						if (ph == 0) ph = -0.1f;
+						derSpieler.setKnockback(ph * 5f, 6f);
+					}
+				}
+			}
+			
+			// Check projectiles
+			for (int i = (dieProjektile.size() - 1); i >= 0; i--) {
+				if (dieProjektile.get(i).isNextTo(derSpieler.getX(), derSpieler.getY())) {
+					if (!derSpieler.isDeadly()) {
+						derSpieler.setKnockback(derSpieler.getSpeedX() * 0.75f, 6f);
+					}
+					
+					if (dieProjektile.get(i).timer > 5f) {
+						dieProjektile.remove(i);
+					}
+				}
 			}
 		}
 		
@@ -209,19 +250,23 @@ public class Spielwelt {
 			dieWasserfaelle.get(i).draw(dieKamera);
 		}
 		
-		for (int i = 0; i < dieObjekte.size(); i++) {
-			dieObjekte.get(i).draw(dieKamera);
-		}
-		
 		for (int i = 0; i < dieDekos.size(); i++) {
 			dieDekos.get(i).draw(dieKamera);
 		}
 		
+		for (int i = 0; i < dieObjekte.size(); i++) {
+			dieObjekte.get(i).draw(dieKamera);
+		}
+		
+		for (Gegner g : dieGegner) {
+			g.draw(dieKamera);
+		}
+		
 		derSpieler.draw();
 		
-		dieGegner.get(0).draw(dieKamera);
-		dieGegner.get(1).draw(dieKamera);
-		dieGegner.get(2).draw(dieKamera);
+		for (Projektil p : dieProjektile) {
+			p.draw(dieKamera);
+		}
 		
 		if (dieSpezialStrecken != null) {
 			for (int i = 0; i < dieSpezialStrecken.length; i++) {
@@ -239,6 +284,13 @@ public class Spielwelt {
 	}
 	
 	
+	// Beeinflussen der Spielwelt
+	public void addProjectile(Projektil p) {
+		dieProjektile.add(p);
+	}
+	
+	
+	// Etc
 	public Sonic getSpieler() {
 		return derSpieler;
 	}

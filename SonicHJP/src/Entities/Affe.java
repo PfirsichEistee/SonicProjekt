@@ -1,17 +1,20 @@
 package Entities;
 
+import Objects.Projektil;
 import app.Kamera;
 import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
 
 public class Affe extends Gegner {
 	// ATTRIBUTE //
-	private static Image dasImage;
+	private static Image dasImage = new Image("file:files/textures/enemies/affe.png");
 	private int imageZaehler;
 	private int Zustand;
 	private int Blickrichtung;
 	private float start;
 	private float speedY;
+	
+	private float testShit = 0;
 	
 	// KONSTRUKTOR //
 	public Affe(float px, float py) {
@@ -28,7 +31,11 @@ public class Affe extends Gegner {
 	// METHODEN
 	@Override
 	public void update(float delta) {
-		
+		testShit += Math.random() * delta * 3;
+		if (testShit > 1) {
+			testShit = 0;
+			dieSpielwelt.addProjectile(new Projektil(x, y, 0, -15));
+		}
 	}
 	
 	@Override
@@ -55,7 +62,7 @@ public class Affe extends Gegner {
 		dieKamera.setFarbe(new Color(1f, 0.5f, 0, 0.2f));
 		dieKamera.setLineWidth(0.05f);
 		
-		dieKamera.drawImage(dasImage, x, y, 256, 280, 0);
+		dieKamera.drawImageSection(dasImage, 0, 0, 32, 48, x - 0.5f, y - 0.75f, 1f, 1.5f);
 	}
 	
 	

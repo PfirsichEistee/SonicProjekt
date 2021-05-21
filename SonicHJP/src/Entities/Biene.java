@@ -6,7 +6,7 @@ import javafx.scene.paint.Color;
 
 public class Biene extends Gegner {
 	// ATTRIBUTE //
-	private static Image dasImage;
+	private static Image dasImage = new Image("file:files/textures/enemies/biene.png");
 	private int imageZaehler;
 	private int Zustand;
 	private int Blickrichtung;
@@ -60,7 +60,7 @@ public class Biene extends Gegner {
 		dieKamera.setFarbe(new Color(1f, 0.5f, 0, 0.2f));
 		dieKamera.setLineWidth(0.05f);
 		
-		dieKamera.drawImage(dasImage, x, y, 256, 280, 0);
+		dieKamera.drawImageSection(dasImage, 0, 0, 48, 48, x - 0.8f, y - 0.8f, 1.6f, 1.6f);
 	}
 	
 	

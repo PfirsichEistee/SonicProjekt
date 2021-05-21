@@ -37,8 +37,19 @@ public class Sonic {
 	private Kamera dieKamera;
 	
 	
+	// Gameplay
+	private int liveCount;
+	private int ringCount;
+	private float speedBonus;
+	private float invincibleBonus;
+	private boolean shieldBonus;
+	
+	private boolean knockbackActive;
+	
+	
+	
 	// Animation
-	private Image dasImage;
+	private static Image dasImage = new Image("file:files/textures/hdsonicsheet.png");
 	private boolean imageFlip;
 	private final int[][] anim = {
 			{ 0 }, // Idle
@@ -46,9 +57,12 @@ public class Sonic {
 			{ 50, 51, 52, 53, 54, 55, 56, 57 }, // Run
 			{ 58, 59, 60, 61, 62, 63, 64, 65, 66 }, // Ball
 			{ 67, 68, 69, 70, 71, 72, 73 }, // Spin-Dash
+			{ 193 }, // Knockback (hit)
 	};
 	private int animationZustand, animationZaehler;
 	private float animationTimer;
+	private static Image dasEffektImage = new Image("file:files/textures/misc/soniceffects.png");
+	private int effektZaehler;
 	
 	
 	
@@ -95,16 +109,34 @@ public class Sonic {
 		physicsLock = false;
 		
 		
-		dasImage = new Image("file:files/textures/hdsonicsheet.png");
 		imageFlip = false;
 		animationZustand = 0;
 		animationZaehler = 0;
 		animationTimer = 0;
+		effektZaehler = 0;
+		
+		
+		// Gameplay
+		liveCount = 3;
+		ringCount = 0;
+		speedBonus = -1;
+		invincibleBonus = -1;
+		shieldBonus = false;
+		
+		knockbackActive = false;
 	}
 	
 	
 	// METHODEN //
 	public void update(float delta) {
+		// Buffs
+		if (speedBonus > 0)
+			speedBonus -= delta;
+		if (invincibleBonus > 0)
+			invincibleBonus -= delta;
+		
+		
+		// Animationen
 		animationTimer += delta;
 		
 		if (animationTimer >= 0.05f) {
@@ -118,6 +150,7 @@ public class Sonic {
 			2 = Rennen
 			3 = Springen/Luft/Rollen
 			4 = Spin Dash
+			5 = Knockback
 			*/
 			if (grounded && !rolling) {
 				if (speed > 0)
@@ -146,6 +179,9 @@ public class Sonic {
 			if (grounded && spinDash > 0)
 				zustand = 4;
 			
+			if (knockbackActive)
+				zustand = 5;
+			
 			if (zustand != animationZustand)
 				animationZaehler = 0;
 			
@@ -154,6 +190,9 @@ public class Sonic {
 			
 			animationZaehler++;
 			animationZaehler %= anim[animationZustand].length;
+			
+			effektZaehler++;
+			effektZaehler %= 3;
 		}
 	}
 	
@@ -161,6 +200,8 @@ public class Sonic {
 	public void fixedUpdate(float delta) {
 		if (physicsLock) {
 			spezialUpdate(delta);
+		} else if (knockbackActive) {
+			knockbackUpdate(delta);
 		} else {
 			int repeat = (int)CMath.min((int)Math.ceil((Math.abs(speed) * delta) / 0.05f), 1); // fuer alle 0.05 LE updaten
 			//System.out.println("Repeat " + repeat + "x");
@@ -316,9 +357,9 @@ public class Sonic {
 			
 			if (inputX != 0) {
 				if (speed == 0 || Math.signum(speed) == inputX) {
-					speed = CMath.move(speed, MAX_SPEED * inputX, ACCELERATION * delta);
+					speed = CMath.move(speed, MAX_SPEED * inputX, ACCELERATION * delta * (speedBonus > 0 ? 3f : 1f));
 				} else {
-					speed = CMath.move(speed, 0, DECELERATION * delta);
+					speed = CMath.move(speed, 0, DECELERATION * delta * (speedBonus > 0 ? 2f : 1f));
 				}
 			} else {
 				speed = CMath.move(speed, 0, DECELERATION * delta * (rolling ? 0.1f : 0.5f));
@@ -421,12 +462,17 @@ public class Sonic {
 		
 		float inputX = (Eingabe.isKeyDown("D") ? 1 : 0);
 		inputX = (Eingabe.isKeyDown("A") ? (inputX - 1) : inputX);
-		speedX = CMath.clamp(speedX + inputX * delta * 10f, -MAX_SPEED, MAX_SPEED);
+		speedX = CMath.clamp(speedX + inputX * delta * 10f * (speedBonus > 0 ? 2f : 1f), -MAX_SPEED, MAX_SPEED);
 		
 		
 		// Apply velocity
 		x += speedX * delta;
 		y += speedY * delta;
+		
+		
+		// Dead?
+		if (y < 0)
+			die();
 	}
 	
 	
@@ -439,6 +485,40 @@ public class Sonic {
 		
 		if (spezialProzent == spezialZiel) {
 			unlockPhysics();
+		}
+	}
+	
+	
+	private void knockbackUpdate(float delta) {
+		speedX = CMath.move(speedX, 0, delta * 5f);
+		speedY = CMath.move(speedY, -MAX_SPEED, delta * GRAVITY * 0.3f);
+
+		// Apply velocity
+		x += speedX * delta;
+		y += speedY * delta;
+		
+		if (speedY < 0) {
+			if (shieldBonus || ringCount > 0) {
+				RaycastHit hit = Kollision.raycast(x, y, 0, -radVer * 1.25f, true);
+				
+				if (hit != null) {
+					knockbackActive = false;
+					
+					if (shieldBonus) {
+						shieldBonus = false;
+					} else {
+						// TODO DROP RINGS!!
+						ringCount = 0;
+					}
+				} else if (Kollision.raycast(x, y, -radHor * 1.25f, 0, true) != null || Kollision.raycast(x, y, radHor * 1.25f, 0, true) != null) {
+					speedX = 0;
+				}
+				
+				if (y < 0)
+					die();
+			} else if (y < 0) {
+				die();
+			}
 		}
 	}
 	
@@ -502,6 +582,13 @@ public class Sonic {
 				x - 0.9f + (imageFlip ? 1.8f : 0), y + 0.9f + (rolling ? -0.05f : 0),
 				1.8f * (imageFlip ? -1 : 1), 1.8f, rotation);
 		
+		if (shieldBonus)
+			dieKamera.drawImageSection(dasEffektImage, 39 * effektZaehler, 0, 39, 39, x - 0.7f, y - 0.7f, 1.4f, 1.4f);
+		if (invincibleBonus > 0)
+			dieKamera.drawImageSection(dasEffektImage, 39 * effektZaehler, 39, 39, 39, x - 0.7f, y - 0.7f, 1.4f, 1.4f);
+		
+		
+		if (true) return;
 		dieKamera.setLineWidth(0.05f);
 		
 		// LR
@@ -547,6 +634,13 @@ public class Sonic {
 	}
 	
 	
+	private void die() {
+		System.out.println("Game over");
+		System.exit(0);
+	}
+	
+	
+	
 	public void lockPhysics() {
 		physicsLock = true;
 	}
@@ -586,16 +680,33 @@ public class Sonic {
 		spezialZiel = pZiel;
 	}
 	
-	public boolean isDeadly() {
-		if (rolling || !grounded) {
-			return true;
-		}
-		return false;
-	}
-	
 	public void setForce(float px, float py) {
 		speedX = px;
 		speedY = py;
+	}
+	
+	
+	
+	// Gameplay
+	public int getLiveCount() { return liveCount; }
+	public void setLiveCount(int p) { liveCount = p; }
+	public int getRingCount() { return ringCount; }
+	public void setRingCount(int p) { ringCount = p; }
+	public void setSpeedBonus() { speedBonus = 5f; }
+	public void setInvincibleBonus() { invincibleBonus = 5f; }
+	public void setShieldBonus() { shieldBonus = true; }
+	public boolean getKnockback() { return knockbackActive; }
+	public void setKnockback(float px, float py) {
+		setForce(px, py);
+		knockbackActive = true;
+		rotation = 0;
+		speed = 0;
+	}
+	public boolean isDeadly() {
+		if (rolling || !grounded || invincibleBonus > 0 || physicsLock) {
+			return true;
+		}
+		return false;
 	}
 	
 	

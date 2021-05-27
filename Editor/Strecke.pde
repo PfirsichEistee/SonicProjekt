@@ -19,7 +19,7 @@ public class Strecke {
     if (typ == 0)
       stroke(75, 75, 255);
     else
-      stroke(75, 200, 75);
+      stroke(255, 200, 75);
     
     strokeWeight(6);
     

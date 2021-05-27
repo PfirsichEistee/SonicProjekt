@@ -32,19 +32,43 @@ public class WZ_Objekte extends Werkzeug {
     
   }
   
+  boolean lockMoveClick = false;
+  float startClickX = -999;
+  float startClickY = -999;
   public void cursorMoved(float deltaX, float deltaY) {
+    if (lockMoveClick) {
+      float cursX = dieEingabe.cursorX;
+      float cursY = dieEingabe.cursorY;
+      
+      if (dist(startClickX, startClickY, cursX, cursY) > 0.4f) {
+        lockMoveClick = false;
+      }
+      
+      return;
+    }
+    
     if (dieEingabe.istMausButtonGedrueckt(0)) {
       if ((millis() - lastMillis) >= 100 || gerundet) {
         lastMillis = millis();
         cursorClicked(0);
+        
+        startClickX = dieEingabe.cursorX;
+        startClickY = dieEingabe.cursorY;
+        lockMoveClick = true;
       }
-    } else if (dieEingabe.istMausButtonGedrueckt(1) && (millis() - lastMillis) >= 10) {
+    } else if (dieEingabe.istMausButtonGedrueckt(1) && (millis() - lastMillis) >= 100) {
       lastMillis = millis();
       cursorClicked(1);
+      
+      startClickX = dieEingabe.cursorX;
+      startClickY = dieEingabe.cursorY;
+      lockMoveClick = true;
     }
   }
   public void cursorPressed(int button) {
-    
+    startClickX = dieEingabe.cursorX;
+    startClickY = dieEingabe.cursorY;
+    lockMoveClick = true;
   }
   public void cursorReleased(int button) {
     

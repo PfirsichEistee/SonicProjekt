@@ -251,7 +251,8 @@ public class Spielwelt {
 		}
 		
 		for (int i = 0; i < dieDekos.size(); i++) {
-			dieDekos.get(i).draw(dieKamera);
+			if (dieDekos.get(i).id != -1)
+				dieDekos.get(i).draw(dieKamera);
 		}
 		
 		for (int i = 0; i < dieObjekte.size(); i++) {
@@ -263,6 +264,11 @@ public class Spielwelt {
 		}
 		
 		derSpieler.draw();
+		
+		for (int i = 0; i < dieDekos.size(); i++) {
+			if (dieDekos.get(i).id == -1)
+				dieDekos.get(i).draw(dieKamera);
+		}
 		
 		for (Projektil p : dieProjektile) {
 			p.draw(dieKamera);

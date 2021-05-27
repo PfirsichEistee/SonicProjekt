@@ -12,6 +12,7 @@ import Entities.Gegner;
 import Entities.Kaefer;
 import Objects.DekoObjekt;
 import Objects.Item;
+import Objects.Looping;
 import Objects.Objekt;
 import Objects.Ring;
 import Objects.SS_Looping;
@@ -43,6 +44,10 @@ public class LevelLeser {
 		ArrayList<Gegner> gegner = new ArrayList<Gegner>();
 		ArrayList<DekoObjekt> dekos = new ArrayList<DekoObjekt>();
 		ArrayList<Waterfall> wasserfaelle = new ArrayList<Waterfall>();
+		ArrayList<LoopPlaceholder> loops = new ArrayList<LoopPlaceholder>();
+		
+		// Optionale Texturen
+		Image emeraldLooping = new Image("file:files/textures/loops/emerald.png");
 		
 		
 		Scanner scanner;
@@ -84,7 +89,8 @@ public class LevelLeser {
 							spezStrecken.add(new SS_SBahn(strToFloat(split[1]), strToFloat(split[2]) - 2.3f, strToInt(split[4])));
 							break;
 						case (2): // Looping
-							spezStrecken.add(new SS_Looping(strToFloat(split[1]), strToFloat(split[2])));
+							//spezStrecken.add(new SS_Looping(strToFloat(split[1]), strToFloat(split[2])));
+							dekos.add(new DekoObjekt(strToFloat(split[1]) - 1, strToFloat(split[2]) + 3.25f, 5, 8, emeraldLooping));
 							break;
 						case (3): // Wandlicht
 							dekos.add(new DekoObjekt(4, strToFloat(split[1]), strToFloat(split[2])));
@@ -107,19 +113,83 @@ public class LevelLeser {
 					}
 				} else if (split[0].equals("WTR")) { // WTR X Y LAENGE HOEHE
 					wasserfaelle.add(new Waterfall(strToFloat(split[1]), strToFloat(split[2]), strToInt(split[3]), strToInt(split[4])));
+				} else if (split[0].equals("LPS")) { // LPS X1 Y1 X2 Y2 ID TYP
+					LoopPlaceholder lp = null;
+					for (LoopPlaceholder phLP : loops) {
+						if (phLP.id == strToInt(split[5])) {
+							lp = phLP;
+							break;
+						}
+					}
+					if (lp == null) {
+						lp = new LoopPlaceholder(strToInt(split[5]));
+						loops.add(lp);
+					}
+					
+					switch (strToInt(split[6])) {
+						case(0):
+							lp.leftCollision.add(new Kollision(strToFloat(split[1]), strToFloat(split[2]), strToFloat(split[3]), strToFloat(split[4]), false, true));
+							break;
+						case(1):
+							lp.rightCollision.add(new Kollision(strToFloat(split[1]), strToFloat(split[2]), strToFloat(split[3]), strToFloat(split[4]), false, true));
+							break;
+						case(2):
+							// Not using static collisions anymore
+							break;
+					}
+				} else if (split[0].equals("LPB")) { // LPB X Y W H ID TYP
+					LoopPlaceholder lp = null;
+					for (LoopPlaceholder phLP : loops) {
+						if (phLP.id == strToInt(split[5])) {
+							lp = phLP;
+							break;
+						}
+					}
+					if (lp == null) {
+						lp = new LoopPlaceholder(strToInt(split[5]));
+						loops.add(lp);
+					}
+					
+					switch (strToInt(split[6])) {
+						case(3): // left trigger box
+							for (int i = 0; i < 4; i++)
+								lp.triggerBoxValues[i] = strToFloat(split[i + 1]);
+							break;
+						case(4): // right trigger box
+							for (int i = 0; i < 4; i++)
+								lp.triggerBoxValues[i + 4] = strToFloat(split[i + 1]);
+							break;
+						case(5): // upper trigger box
+							for (int i = 0; i < 4; i++)
+								lp.triggerBoxValues[i + 8] = strToFloat(split[i + 1]);
+							break;
+					}
 				}
 			}
 			
 			scanner.close();
 		} catch (FileNotFoundException e) {
-			System.out.println("Kollisionen konnten nicht erzeugt werden!");
+			System.out.println("Fehler beim Lesen der Level-Datei!");
 		}
 		
-		SpezialStrecke[] ph = new SpezialStrecke[spezStrecken.size()];
-		for (int i = 0; i < ph.length; i++)
-			ph[i] = spezStrecken.get(i);
+		// Spezial Strecken
+		SpezialStrecke[] finalSpezialStrecken = new SpezialStrecke[spezStrecken.size()];
+		for (int i = 0; i < finalSpezialStrecken.length; i++)
+			finalSpezialStrecken[i] = spezStrecken.get(i);
 		
-		return new Spielwelt(new Image("file:files/textures/maps/map_01.png"), pixelProEinheit, sonicX, sonicY, ph, objekte, gegner, dekos, wasserfaelle);
+		// Loopings
+		Looping[] finalLooping = new Looping[loops.size()]; // TODO
+		for (int i = 0; i < loops.size(); i++) {
+			LoopPlaceholder lp = loops.get(i);
+			finalLooping[i] = new Looping(lp.getLeftCollision(), lp.getRightCollision());
+			new TriggerBox(lp.triggerBoxValues[0], lp.triggerBoxValues[1], lp.triggerBoxValues[2], lp.triggerBoxValues[3], finalLooping[i], "enterLeft");
+			new TriggerBox(lp.triggerBoxValues[4], lp.triggerBoxValues[5], lp.triggerBoxValues[6], lp.triggerBoxValues[7], finalLooping[i], "enterRight");
+			new TriggerBox(lp.triggerBoxValues[8], lp.triggerBoxValues[9], lp.triggerBoxValues[10], lp.triggerBoxValues[11], finalLooping[i], "flip");
+		}
+		
+		
+		
+		return new Spielwelt(new Image("file:files/textures/maps/map_01.png"), pixelProEinheit, sonicX, sonicY, finalSpezialStrecken, objekte, gegner, dekos, wasserfaelle);
 	}
 	
 	
@@ -139,6 +209,39 @@ public class LevelLeser {
 	}
 }
 
+
+class LoopPlaceholder {
+	public int id;
+	public ArrayList<Kollision> leftCollision;
+	public ArrayList<Kollision> rightCollision;
+	public float[] triggerBoxValues;
+	
+	public LoopPlaceholder(int pID) {
+		id = pID;
+		leftCollision = new ArrayList<Kollision>();
+		rightCollision = new ArrayList<Kollision>();
+		triggerBoxValues = new float[4 * 3];
+		for (int i = 0; i < triggerBoxValues.length; i++)
+			triggerBoxValues[i] = 0;
+	}
+	
+	public Kollision[] getLeftCollision() {
+		Kollision[] ph = new Kollision[leftCollision.size()];
+		
+		for (int i = 0; i < ph.length; i++)
+			ph[i] = leftCollision.get(i);
+		
+		return ph;
+	}
+	public Kollision[] getRightCollision() {
+		Kollision[] ph = new Kollision[rightCollision.size()];
+		
+		for (int i = 0; i < ph.length; i++)
+			ph[i] = rightCollision.get(i);
+		
+		return ph;
+	}
+}
 
 
 

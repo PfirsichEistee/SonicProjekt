@@ -23,7 +23,12 @@ public class WZ_Spezial extends Werkzeug {
   
   // METHODEN //
   public void zeichnen() {
-    
+    if (auswahl == 2) {
+      fill(255, 0, 0, 100);
+      stroke(0, 0, 0, 0);
+      
+      dieKamera.drawCircle(dieEingabe.cursorX, dieEingabe.cursorY, 3);
+    }
   }
   public void cursorMoved(float deltaX, float deltaY) {
     

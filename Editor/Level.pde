@@ -10,6 +10,8 @@ public class Level {
   public ArrayList<Spezial> liste_Spezial;
   public ArrayList<Gegner> liste_Gegner;
   public ArrayList<Wasserfall> liste_Wasserfall;
+  public ArrayList<LoopingStrecke> liste_LoopingStrecken;
+  public ArrayList<LoopingBox> liste_LoopingBox;
 
   private PImage hintergrund;
   private boolean zeichneMap;
@@ -35,6 +37,8 @@ public class Level {
     liste_Spezial = new ArrayList<Spezial>();
     liste_Gegner = new ArrayList<Gegner>();
     liste_Wasserfall = new ArrayList<Wasserfall>();
+    liste_LoopingStrecken = new ArrayList<LoopingStrecke>();
+    liste_LoopingBox = new ArrayList<LoopingBox>();
     
     
     levelMapID = 0;
@@ -70,6 +74,16 @@ public class Level {
     strokeWeight(6);
     for (int i = 0; i < liste_Strecken.size(); i++) {
       liste_Strecken.get(i).zeichnen();
+    }
+
+    // LoopingStrecken-Liste zeichnen
+    for (int i = 0; i < liste_LoopingStrecken.size(); i++) {
+      liste_LoopingStrecken.get(i).zeichnen();
+    }
+    
+    // LoopingBox-Liste zeichnen
+    for (int i = 0; i < liste_LoopingBox.size(); i++) {
+      liste_LoopingBox.get(i).zeichnen();
     }
 
 
@@ -169,10 +183,10 @@ public class Level {
 
   private void werkzeugWechseln(int richtung) {
     auswahlWerkzeug += richtung;
-    if (auswahlWerkzeug >= 6)
+    if (auswahlWerkzeug >= 7)
       auswahlWerkzeug = 0;
     else if (auswahlWerkzeug < 0)
-      auswahlWerkzeug = 5;
+      auswahlWerkzeug = 6;
 
     println("Werkzeug gewechselt: " + auswahlWerkzeug);
 
@@ -191,10 +205,13 @@ public class Level {
         dasWerkzeug = new WZ_Spezial();
         break;
       case(4):
-        dasWerkzeug = new WZ_Config();
+        dasWerkzeug = new WZ_Looping();
         break;
       case(5):
         dasWerkzeug = new WZ_Wasserfall();
+        break;
+      case(6):
+        dasWerkzeug = new WZ_Config();
         break;
     }
   }
@@ -206,6 +223,9 @@ public class Level {
     liste_Strecken.clear();
     liste_Spezial.clear();
     liste_Gegner.clear();
+    liste_Wasserfall.clear();
+    liste_LoopingStrecken.clear();
+    liste_LoopingBox.clear();
     
     
     BufferedReader reader = createReader("level.txt");
@@ -234,6 +254,10 @@ public class Level {
             sonicSpawnY = strToInt(split[4]);
           } else if (split[0].equals("WTR")) { // WTR X Y LAENGE HOEHE
             liste_Wasserfall.add(new Wasserfall(strToFloat(split[1]), strToFloat(split[2]), strToInt(split[3]), strToInt(split[4])));
+          } else if (split[0].equals("LPS")) { // LPS X1 Y1 X2 Y2 ID TYP
+            liste_LoopingStrecken.add(new LoopingStrecke(strToFloat(split[1]), strToFloat(split[2]), strToFloat(split[3]), strToFloat(split[4]), strToInt(split[5]), strToInt(split[6])));
+          } else if (split[0].equals("LPB")) { // LPB X Y W H ID TYP
+            liste_LoopingBox.add(new LoopingBox(strToFloat(split[1]), strToFloat(split[2]), strToFloat(split[3]), strToFloat(split[4]), strToInt(split[5]), strToInt(split[6])));
           }
         }
       } while (line != null);
@@ -286,6 +310,20 @@ public class Level {
     for (int i = 0; i < liste_Wasserfall.size(); i++) {
       Wasserfall p = liste_Wasserfall.get(i);
       writer.println("WTR " + p.x + " " + p.y + " " + p.laenge + " " + p.hoehe);
+    }
+    
+    // Speichere liste_LoopingStrecken
+    // LPS X1 Y1 X2 Y2 ID TYP
+    for (int i = 0; i < liste_LoopingStrecken.size(); i++) {
+      LoopingStrecke p = liste_LoopingStrecken.get(i);
+      writer.println("LPS " + p.x1 + " " + p.y1 + " " + p.x2 + " " + p.y2 + " " + p.id + " " + p.typ);
+    }
+    
+    // Speichere liste_LoopingBox
+    // LPB X Y W H ID TYP
+    for (int i = 0; i < liste_LoopingBox.size(); i++) {
+      LoopingBox p = liste_LoopingBox.get(i);
+      writer.println("LPB " + p.x + " " + p.y + " " + p.w + " " + p.h + " " + p.id + " " + p.typ);
     }
     
     

@@ -46,6 +46,8 @@ public class Sonic {
 	
 	private boolean knockbackActive;
 	
+	private long lastHit;
+	
 	
 	
 	// Animation
@@ -124,6 +126,8 @@ public class Sonic {
 		shieldBonus = false;
 		
 		knockbackActive = false;
+		
+		lastHit = 0;
 	}
 	
 	
@@ -265,6 +269,7 @@ public class Sonic {
 			// Update rotation mode
 			modeCounter++;
 			float angle = CMath.angleBetweenDirs(0, 1, groundHit.normalX, groundHit.normalY);
+			float directedAngle = angle * (CMath.angleBetweenDirs(1, 0, groundHit.normalX, groundHit.normalY) < 90 ? -1 : 1);
 			if (modeCounter >= 6) {
 				float lastModeRot = modeRotation;
 				
@@ -304,7 +309,8 @@ public class Sonic {
 					if (Math.abs(speedX) > -speedY) {
 						speed = speedX;
 					} else {
-						speed = speedY * (float)Math.signum(Math.sin(angle * (Math.PI / 180))) * 0.5f;
+						speed = speedY * (float)Math.signum(Math.sin(directedAngle * (Math.PI / 180))) * 0.5f;
+						//speed = speedY * (float)Math.sin(angle * (Math.PI / 180)) * 0.5f * -(float)Math.signum(speedX);
 					}
 					//System.out.println("grounded HALF STEEP");
 				} else {
@@ -312,7 +318,8 @@ public class Sonic {
 					if (Math.abs(speedX) > -speedY) {
 						speed = speedX;
 					} else {
-						speed = speedY * (float)Math.signum(Math.sin(angle * (Math.PI / 180)));
+						speed = speedY * (float)Math.signum(Math.sin(directedAngle * (Math.PI / 180)));
+						//speed = speedY * (float)Math.sin(angle * (Math.PI / 180)) * -(float)Math.signum(speedX);
 					}
 					//System.out.println("grounded FULL STEEP");
 				}
@@ -343,6 +350,8 @@ public class Sonic {
 					}
 					
 					spinDash = 0;
+					
+					return; // Max-Speed * Big-Delta-Time = teleport through wall. Let the next Fixed-Update lower delta-time
 				}
 			}
 			
@@ -368,8 +377,9 @@ public class Sonic {
 			// TODO gravitation
 			
 			
+			
 			// Jump
-			if (Eingabe.isKeyDown("W") && !jumpLock) {
+			if ((Eingabe.isKeyDown("W") || Eingabe.isKeyDown(" ")) && !jumpLock) {
 				x += groundHit.normalX * 0.1f;
 				y += groundHit.normalY * 0.1f;
 				
@@ -451,7 +461,7 @@ public class Sonic {
 		// Update Jump
 		jumpTimer -= delta;
 		
-		if (!Eingabe.isKeyDown("W"))
+		if (!(Eingabe.isKeyDown("W") || Eingabe.isKeyDown(" ")))
 			jumpTimer = -1f;
 		
 		
@@ -662,6 +672,13 @@ public class Sonic {
 		return y;
 	}
 	
+	public void setX(float px) {
+		x = px;
+	}
+	public void setY(float py) {
+		y = py;
+	}
+	
 	public float getSpeedX() {
 		return speedX;
 	}
@@ -701,6 +718,16 @@ public class Sonic {
 		knockbackActive = true;
 		rotation = 0;
 		speed = 0;
+	}
+	public void hit() {
+		if (invincibleBonus > 0 || physicsLock || knockbackActive || (System.currentTimeMillis() - lastHit) < 5000)
+			return;
+		
+		setForce(0, 3f);
+		knockbackActive = true;
+		rotation = 0;
+		speed = 0;
+		lastHit = System.currentTimeMillis();
 	}
 	public boolean isDeadly() {
 		if (rolling || !grounded || invincibleBonus > 0 || physicsLock) {

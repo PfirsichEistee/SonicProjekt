@@ -19,11 +19,15 @@ void setup(){
   size(1000, 800);
   
   
-  spezialBezeichnungen = new String[4];
+  spezialBezeichnungen = new String[8];
   spezialBezeichnungen[0] = "Blume";
   spezialBezeichnungen[1] = "Schlangenbahn";
   spezialBezeichnungen[2] = "Looping";
   spezialBezeichnungen[3] = "Wandlicht";
+  spezialBezeichnungen[4] = "Lava-Oberflaeche";
+  spezialBezeichnungen[5] = "Lava-Pool";
+  spezialBezeichnungen[6] = "Lava-Pool (Gross)";
+  spezialBezeichnungen[7] = "Deadzone";
   
   gegnerBezeichnungen = new String [4];
   gegnerBezeichnungen[0] = "Biene";

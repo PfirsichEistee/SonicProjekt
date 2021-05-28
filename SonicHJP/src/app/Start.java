@@ -12,6 +12,7 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 
 public class Start extends Application {
@@ -63,13 +64,28 @@ public class Start extends Application {
 		
 		
 		// Load game
-		LevelLeser leser = new LevelLeser("files/maps/level.txt");
+		LevelLeser leser = new LevelLeser("files/maps/map_02.txt");
 		dieSpielwelt = leser.erzeugeSpielwelt();
 		//dieSpielwelt = new Spielwelt(new Image("file:files/textures/maps/map_01.png"), 32, 30, 16f, null, null, null, null);
 		
 		
 		// Game loop
 		runGame();
+		
+		
+		// Mouse Debug
+		scene.setOnMouseClicked(new EventHandler<MouseEvent>() {
+			@Override
+			public void handle(MouseEvent event) {
+				float px = dieSpielwelt.getKamera().pixelZuEinheitX((float)event.getX());
+				float py = dieSpielwelt.getKamera().pixelZuEinheitY((float)event.getY());
+				
+				dieSpielwelt.getSpieler().setX(px);
+				dieSpielwelt.getSpieler().setY(py);
+				
+				System.out.println("Debug Teleport " + px + " " + py);
+			}
+		});
 	}
 	
 	

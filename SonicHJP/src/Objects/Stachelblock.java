@@ -12,6 +12,8 @@ public class Stachelblock extends Objekt {
 	// KONSTRUKTOR //
 	public Stachelblock(float px, float py) {
 		super(px, py, 0.75f, 0.75f);
+		
+		// mit raycast rotation bestimmen
 	}
 	
 	

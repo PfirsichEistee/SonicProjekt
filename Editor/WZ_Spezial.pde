@@ -1,11 +1,14 @@
 public class WZ_Spezial extends Werkzeug {
   // ATTRIBUTE //
   private int auswahl;
+  private float cursX, cursY;
   
   
   // KONSTRUKTOR //
   public WZ_Spezial() {
     auswahl = 0;
+    cursX = 0;
+    cursY = 0;
     
     // TOOLBOX
     dieToolbox = new Toolbox("Werkzeug: Spezial");
@@ -16,18 +19,47 @@ public class WZ_Spezial extends Werkzeug {
     }
     dieToolbox.addItem(item);
     
-    item = new Toolbox_Item("Bahnlaenge", 1, 1, 10);
+    item = new Toolbox_Item("Bahnlaenge", 1, 1, 99);
+    dieToolbox.addItem(item);
+    
+    item = new Toolbox_Item("Grid-Snap", 0, 0, 1);
+    item.setAnzahlText(0, "[_]");
+    item.setAnzahlText(1, "[x]");
     dieToolbox.addItem(item);
   }
   
   
   // METHODEN //
   public void zeichnen() {
+    if (dieToolbox.getAnzahlVonItem(2) == 0) {
+      cursX = dieEingabe.cursorX;
+      cursY = dieEingabe.cursorY;
+    } else {
+      cursX = floor(dieEingabe.cursorX * 2) / 2.0;
+      cursY = floor(dieEingabe.cursorY * 2) / 2.0;
+    }
+    
     if (auswahl == 2) {
       fill(255, 0, 0, 100);
       stroke(0, 0, 0, 0);
       
-      dieKamera.drawCircle(dieEingabe.cursorX, dieEingabe.cursorY, 3);
+      dieKamera.drawCircle(cursX, cursY, 3);
+    } else if (auswahl == 4) {
+      fill(255, 0, 0, 100);
+      stroke(0, 0, 0, 0);
+      dieKamera.drawRect(cursX, cursY + 0.5f, 1, 0.5f);
+    } else if (auswahl == 5) {
+      fill(255, 0, 0, 100);
+      stroke(0, 0, 0, 0);
+      dieKamera.drawRect(cursX, cursY + 1, 4, 1);
+    } else if (auswahl == 6) {
+      fill(255, 0, 0, 100);
+      stroke(0, 0, 0, 0);
+      dieKamera.drawRect(cursX, cursY + 4, 8, 4);
+    } else if (auswahl == 7) {
+      fill(255, 0, 0, 100);
+      stroke(0, 0, 0, 0);
+      dieKamera.drawRect(cursX, cursY + 1, dieToolbox.getAnzahlVonItem(1), 1);
     }
   }
   public void cursorMoved(float deltaX, float deltaY) {
@@ -42,7 +74,7 @@ public class WZ_Spezial extends Werkzeug {
   public void cursorClicked(int button) {
     if (button == 0) {
       // PLATZIEREN
-      dasLevel.liste_Spezial.add(new Spezial(auswahl, dieEingabe.cursorX, dieEingabe.cursorY, dieToolbox.getAnzahlVonItem(1)));
+      dasLevel.liste_Spezial.add(new Spezial(auswahl, cursX, cursY, dieToolbox.getAnzahlVonItem(1)));
     } else if (button == 1) {
       // LOESCHEN
       if (dasLevel.liste_Spezial.size() > 0) {

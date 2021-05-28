@@ -38,6 +38,22 @@ public class Spezial {
         fill(255, 100, 100, 155);
         dieKamera.drawRect(x, y, 0.6f, -0.6f);
         break;
+      case (4):
+        fill(255, 100, 100, 155);
+        dieKamera.drawRect(x, y + 0.5, 1, 0.5f);
+        break;
+      case (5):
+        fill(255, 100, 100, 155);
+        dieKamera.drawRect(x, y + 1, 4, 1);
+        break;
+      case (6):
+        fill(255, 100, 100, 155);
+        dieKamera.drawRect(x, y + 4, 8, 4);
+        break;
+      case (7):
+        fill(100, 100, 255, 155);
+        dieKamera.drawRect(x, y + 1, opt, 1);
+        break;
     }
     
     dieKamera.drawCircle(x, y, 0.1f);

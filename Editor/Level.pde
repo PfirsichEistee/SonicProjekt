@@ -47,7 +47,7 @@ public class Level {
     sonicSpawnY = 10;
     
     
-    hintergrund = loadImage("images/map_01.png"); // 88x8 chunks; 4x4 tiles per chunk
+    hintergrund = loadImage("images/map_02.png"); // 88x8 chunks; 4x4 tiles per chunk
     zeichneMap = false;
   }
 
@@ -243,7 +243,7 @@ public class Level {
             liste_Objekte.add(new Objekt(strToInt(split[3]), strToFloat(split[1]), strToFloat(split[2])));
           } else if (split[0].equals("STK")) { // STK X1 Y1 X2 Y2 TYP
             liste_Strecken.add(new Strecke(strToFloat(split[1]), strToFloat(split[2]), strToFloat(split[3]), strToFloat(split[4]), strToInt(split[5])));
-          } else if (split[0].equals("SPC")) { // SPC X Y ID
+          } else if (split[0].equals("SPC")) { // SPC X Y ID OPT
             liste_Spezial.add(new Spezial(strToInt(split[3]), strToFloat(split[1]), strToFloat(split[2]), strToInt(split[4])));
           } else if (split[0].equals("GEG")) { // GEG X Y ID RICHTUNG
             liste_Gegner.add(new Gegner(strToInt(split[3]), strToFloat(split[1]), strToFloat(split[2]), strToInt(split[4])));

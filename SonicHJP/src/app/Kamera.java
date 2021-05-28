@@ -160,4 +160,17 @@ public class Kamera {
 		
 		return false;
 	}
+	
+	public boolean isInView(float px, float py, float pw, float ph) {
+		float w = getWidth();
+		float h = getHeight();
+		px += w / 2;
+		py += h / 2;
+		
+		if (px < (x + w) && (px + pw) > x && py < (y + h) && (py + ph) > y) {
+			return true;
+		}
+		
+		return false;
+	}
 }

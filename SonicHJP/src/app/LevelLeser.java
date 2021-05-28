@@ -10,6 +10,7 @@ import Entities.Biene;
 import Entities.Fisch;
 import Entities.Gegner;
 import Entities.Kaefer;
+import Entities.Sonic;
 import Objects.DekoObjekt;
 import Objects.Item;
 import Objects.Looping;
@@ -45,6 +46,7 @@ public class LevelLeser {
 		ArrayList<DekoObjekt> dekos = new ArrayList<DekoObjekt>();
 		ArrayList<Waterfall> wasserfaelle = new ArrayList<Waterfall>();
 		ArrayList<LoopPlaceholder> loops = new ArrayList<LoopPlaceholder>();
+		ArrayList<DeadzonePlaceholder> deadzones = new ArrayList<DeadzonePlaceholder>();
 		
 		// Optionale Texturen
 		Image emeraldLooping = new Image("file:files/textures/loops/emerald.png");
@@ -80,7 +82,7 @@ public class LevelLeser {
 				} else if (split[0].equals("STK")) { // STK X1 Y1 X2 Y2 TYP
 					boolean platform = (strToInt(split[5]) == 1 ? true : false);
 					new Kollision(strToFloat(split[1]), strToFloat(split[2]), strToFloat(split[3]), strToFloat(split[4]), platform, false);
-				} else if (split[0].equals("SPC")) { // SPC X Y ID
+				} else if (split[0].equals("SPC")) { // SPC X Y ID OPT
 					switch (strToInt(split[3])) {
 						case (0): // Blume
 							dekos.add(new DekoObjekt((int)Math.floor(Math.random() * 4), strToFloat(split[1]), strToFloat(split[2])));
@@ -90,10 +92,22 @@ public class LevelLeser {
 							break;
 						case (2): // Looping
 							//spezStrecken.add(new SS_Looping(strToFloat(split[1]), strToFloat(split[2])));
-							dekos.add(new DekoObjekt(strToFloat(split[1]) - 1, strToFloat(split[2]) + 3.25f, 5, 8, emeraldLooping));
+							dekos.add(new DekoObjekt(strToFloat(split[1]) - 1, strToFloat(split[2]) + 3.25f, 5, 8, emeraldLooping, true));
 							break;
 						case (3): // Wandlicht
 							dekos.add(new DekoObjekt(4, strToFloat(split[1]), strToFloat(split[2])));
+							break;
+						case (4): // Lava Oberflaeche
+							dekos.add(new DekoObjekt(5, strToFloat(split[1]), strToFloat(split[2])));
+							break;
+						case (5): // Lava Pool
+							dekos.add(new DekoObjekt(6, strToFloat(split[1]), strToFloat(split[2])));
+							break;
+						case (6): // Lava Pool (Gross)
+							dekos.add(new DekoObjekt(7, strToFloat(split[1]), strToFloat(split[2])));
+							break;
+						case (7): // Deadzone
+							deadzones.add(new DeadzonePlaceholder(strToFloat(split[1]), strToFloat(split[2]), strToFloat(split[4]), 1));
 							break;
 					}
 				} else if (split[0].equals("GEG")) { // GEG X Y ID RICHTUNG
@@ -189,7 +203,17 @@ public class LevelLeser {
 		
 		
 		
-		return new Spielwelt(new Image("file:files/textures/maps/map_01.png"), pixelProEinheit, sonicX, sonicY, finalSpezialStrecken, objekte, gegner, dekos, wasserfaelle);
+		Spielwelt dieSpielwelt = new Spielwelt(new Image("file:files/textures/maps/map_0" + (mapID + 1) + ".png"), pixelProEinheit, sonicX, sonicY, finalSpezialStrecken, objekte, gegner, dekos, wasserfaelle);
+		
+		Sonic derSpieler = dieSpielwelt.getSpieler();
+		
+		
+		for (DeadzonePlaceholder dz : deadzones) {
+			dz.makeTriggerBox(derSpieler);
+		}
+		
+		
+		return dieSpielwelt;
 	}
 	
 	
@@ -240,6 +264,21 @@ class LoopPlaceholder {
 			ph[i] = rightCollision.get(i);
 		
 		return ph;
+	}
+}
+
+class DeadzonePlaceholder {
+	public float x, y, w, h;
+	
+	public DeadzonePlaceholder(float px, float py, float pw, float ph) {
+		x = px;
+		y = py;
+		w = pw;
+		h = ph;
+	}
+	
+	public void makeTriggerBox(Sonic derSpieler) {
+		new TriggerBox(x, y, w, h, derSpieler, "hit");
 	}
 }
 

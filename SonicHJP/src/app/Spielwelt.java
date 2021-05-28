@@ -251,8 +251,7 @@ public class Spielwelt {
 		}
 		
 		for (int i = 0; i < dieDekos.size(); i++) {
-			if (dieDekos.get(i).id != -1)
-				dieDekos.get(i).draw(dieKamera);
+			dieDekos.get(i).draw(dieKamera);
 		}
 		
 		for (int i = 0; i < dieObjekte.size(); i++) {
@@ -266,8 +265,7 @@ public class Spielwelt {
 		derSpieler.draw();
 		
 		for (int i = 0; i < dieDekos.size(); i++) {
-			if (dieDekos.get(i).id == -1)
-				dieDekos.get(i).draw(dieKamera);
+			dieDekos.get(i).lateDraw(dieKamera);
 		}
 		
 		for (Projektil p : dieProjektile) {
@@ -299,6 +297,9 @@ public class Spielwelt {
 	// Etc
 	public Sonic getSpieler() {
 		return derSpieler;
+	}
+	public Kamera getKamera() {
+		return dieKamera;
 	}
 	
 	

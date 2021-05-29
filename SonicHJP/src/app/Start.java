@@ -2,30 +2,32 @@ package app;
 
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.event.EventHandler;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.Group;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.image.Image;
-import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 
 public class Start extends Application {
-	private int width = 800;
-	private int height = 600;
-	private float timePerFixedUpdate = 1f / 60f;
+	private static Start start;
+	
+	private final int width = 800;
+	private final int height = 600;
+	private final float timePerFixedUpdate = 1f / 60f;
+	
+	private GUI_Launcher launcher;
+	private Stage gameStage;
 	
 	private Canvas canvas;
 	private GraphicsContext gc;
+	private AnimationTimer animTimer;
 	
-	private LevelLeser derLevelLeser;
 	private Spielwelt dieSpielwelt;
-	private Daten[] dieDaten;
 	
 	
 	
@@ -40,21 +42,43 @@ public class Start extends Application {
 	
 	@Override
 	public void start(Stage primaryStage) throws Exception {
+		start = this;
+		
+		FXMLLoader loader = new FXMLLoader(getClass().getResource("launcher.fxml"));
+		
+		Scene scene = new Scene((Parent)loader.load());
+		launcher = (GUI_Launcher)loader.getController();
+		launcher.setStart(this);
+		launcher.setPrimaryStage(primaryStage);
+		
+		primaryStage.setScene(scene);
+		primaryStage.setTitle("Sonic HJP Launcher");
+		
+		primaryStage.setResizable(false);
+		
+		primaryStage.show();
+	}
+	
+	
+	public void startGame(Stage pGameStage, int mapID) throws Exception {
+		gameStage = pGameStage;
+		
 		// Create Window
 		Group root = new Group();
 		canvas = new Canvas(width, height);
 		gc = canvas.getGraphicsContext2D();
+		gc.setImageSmoothing(false);
 		root.getChildren().add(canvas);
 		
 		Scene scene = new Scene((Parent)root);
 		
-		primaryStage.setScene(scene);
-		primaryStage.setTitle("Sonic the Hedgehog HJP");
+		gameStage.setScene(scene);
+		gameStage.setTitle("Sonic the Hedgehog HJP");
 		//primaryStage.setWidth(width);
 		//primaryStage.setHeight(height);
-		primaryStage.setResizable(false);
+		gameStage.setResizable(false);
 		
-		primaryStage.show();
+		gameStage.show();
 		
 		
 		// Initialize static main stuff
@@ -64,13 +88,22 @@ public class Start extends Application {
 		
 		
 		// Load game
-		LevelLeser leser = new LevelLeser("files/maps/map_02.txt");
+		LevelLeser leser = new LevelLeser("files/maps/map_0" + mapID + ".txt");
 		dieSpielwelt = leser.erzeugeSpielwelt();
 		//dieSpielwelt = new Spielwelt(new Image("file:files/textures/maps/map_01.png"), 32, 30, 16f, null, null, null, null);
 		
 		
 		// Game loop
 		runGame();
+		
+		
+		// Close Event
+		gameStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
+			@Override
+			public void handle(WindowEvent event) {
+				quit();
+			}
+		});
 		
 		
 		// Mouse Debug
@@ -95,7 +128,7 @@ public class Start extends Application {
 		
 		
 		// LOOPS
-		AnimationTimer animTimer = new AnimationTimer() {
+		animTimer = new AnimationTimer() {
 			private long lastNanoSecs = -1;
 			private float fixedUpdateTimer;
 			
@@ -125,6 +158,13 @@ public class Start extends Application {
 			}
 		};
 		animTimer.start();
+	}
+	
+	
+	public static void quit() {
+		start.animTimer.stop();
+		start.launcher.show();
+		start.gameStage.close();
 	}
 }
 

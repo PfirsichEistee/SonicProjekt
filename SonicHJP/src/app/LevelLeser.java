@@ -14,6 +14,7 @@ import Entities.Sonic;
 import Objects.DekoObjekt;
 import Objects.Item;
 import Objects.Looping;
+import Objects.MovingPlatform;
 import Objects.Objekt;
 import Objects.Ring;
 import Objects.SS_Looping;
@@ -47,6 +48,7 @@ public class LevelLeser {
 		ArrayList<Waterfall> wasserfaelle = new ArrayList<Waterfall>();
 		ArrayList<LoopPlaceholder> loops = new ArrayList<LoopPlaceholder>();
 		ArrayList<DeadzonePlaceholder> deadzones = new ArrayList<DeadzonePlaceholder>();
+		ArrayList<MovingPlatform> platformen = new ArrayList<MovingPlatform>();
 		
 		// Optionale Texturen
 		Image emeraldLooping = new Image("file:files/textures/loops/emerald.png");
@@ -178,6 +180,15 @@ public class LevelLeser {
 								lp.triggerBoxValues[i + 8] = strToFloat(split[i + 1]);
 							break;
 					}
+				} else if (split[0].equals("MOV")) { // MOV ID X Y TAR-X TAR-Y
+					switch (strToInt(split[1])) {
+						case(0):
+							platformen.add( new MovingPlatform(0, strToFloat(split[2]), strToFloat(split[3]), 2, 4.25f, strToFloat(split[4]), strToFloat(split[5])) );
+							break;
+						case(1):
+							platformen.add( new MovingPlatform(1, strToFloat(split[2]), strToFloat(split[3]), 1.5f, 0.5f, strToFloat(split[4]), strToFloat(split[5])) );
+							break;
+					}
 				}
 			}
 			
@@ -204,10 +215,9 @@ public class LevelLeser {
 		
 		
 		Spielwelt dieSpielwelt = new Spielwelt(new Image("file:files/textures/maps/map_0" + (mapID + 1) + ".png"), pixelProEinheit, sonicX, sonicY, finalSpezialStrecken, objekte, gegner, dekos, wasserfaelle);
+		dieSpielwelt.setPlatformen(platformen);
 		
 		Sonic derSpieler = dieSpielwelt.getSpieler();
-		
-		
 		for (DeadzonePlaceholder dz : deadzones) {
 			dz.makeTriggerBox(derSpieler);
 		}

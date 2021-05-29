@@ -213,6 +213,7 @@ public class Kollision {
 									rayhit.normalX = normalX;
 									rayhit.normalY = normalY;
 									rayhit.distance = CMath.distance(startX, startY, cutX, cutY);
+									rayhit.sourceCollision = null;
 								}
 							}
 						}
@@ -368,6 +369,7 @@ public class Kollision {
 									rayhit.normalX = normalX;
 									rayhit.normalY = normalY;
 									rayhit.distance = CMath.distance(startX, startY, cutX, cutY);
+									rayhit.sourceCollision = null;
 								}
 							}
 						}
@@ -598,6 +600,7 @@ public class Kollision {
 						rayhit.normalX = normalX;
 						rayhit.normalY = normalY;
 						rayhit.distance = CMath.distance(rayStartX, rayStartY, cutX, cutY);
+						rayhit.sourceCollision = col;
 					}
 				}
 			}

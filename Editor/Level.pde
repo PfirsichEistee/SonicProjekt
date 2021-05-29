@@ -12,6 +12,8 @@ public class Level {
   public ArrayList<Wasserfall> liste_Wasserfall;
   public ArrayList<LoopingStrecke> liste_LoopingStrecken;
   public ArrayList<LoopingBox> liste_LoopingBox;
+  public ArrayList<Platform> liste_Platformen;
+  
 
   private PImage hintergrund;
   private boolean zeichneMap;
@@ -39,6 +41,7 @@ public class Level {
     liste_Wasserfall = new ArrayList<Wasserfall>();
     liste_LoopingStrecken = new ArrayList<LoopingStrecke>();
     liste_LoopingBox = new ArrayList<LoopingBox>();
+    liste_Platformen = new ArrayList<Platform>();
     
     
     levelMapID = 0;
@@ -84,6 +87,11 @@ public class Level {
     // LoopingBox-Liste zeichnen
     for (int i = 0; i < liste_LoopingBox.size(); i++) {
       liste_LoopingBox.get(i).zeichnen();
+    }
+    
+    // Platform-Liste zeichnen
+    for (int i = 0; i < liste_Platformen.size(); i++) {
+      liste_Platformen.get(i).zeichnen();
     }
 
 
@@ -183,10 +191,10 @@ public class Level {
 
   private void werkzeugWechseln(int richtung) {
     auswahlWerkzeug += richtung;
-    if (auswahlWerkzeug >= 7)
+    if (auswahlWerkzeug >= 8)
       auswahlWerkzeug = 0;
     else if (auswahlWerkzeug < 0)
-      auswahlWerkzeug = 6;
+      auswahlWerkzeug = 7;
 
     println("Werkzeug gewechselt: " + auswahlWerkzeug);
 
@@ -213,6 +221,9 @@ public class Level {
       case(6):
         dasWerkzeug = new WZ_Config();
         break;
+      case(7):
+        dasWerkzeug = new WZ_Platform();
+        break;
     }
   }
   
@@ -226,6 +237,7 @@ public class Level {
     liste_Wasserfall.clear();
     liste_LoopingStrecken.clear();
     liste_LoopingBox.clear();
+    liste_Platformen.clear();
     
     
     BufferedReader reader = createReader("level.txt");
@@ -258,6 +270,8 @@ public class Level {
             liste_LoopingStrecken.add(new LoopingStrecke(strToFloat(split[1]), strToFloat(split[2]), strToFloat(split[3]), strToFloat(split[4]), strToInt(split[5]), strToInt(split[6])));
           } else if (split[0].equals("LPB")) { // LPB X Y W H ID TYP
             liste_LoopingBox.add(new LoopingBox(strToFloat(split[1]), strToFloat(split[2]), strToFloat(split[3]), strToFloat(split[4]), strToInt(split[5]), strToInt(split[6])));
+          } else if (split[0].equals("MOV")) { // MOV ID X Y TAR-X TAR-Y
+            liste_Platformen.add(new Platform( strToInt(split[1]), strToFloat(split[2]), strToFloat(split[3]), (strToFloat(split[4]) - strToFloat(split[2])), (strToFloat(split[5]) - strToFloat(split[3])) ));
           }
         }
       } while (line != null);
@@ -324,6 +338,12 @@ public class Level {
     for (int i = 0; i < liste_LoopingBox.size(); i++) {
       LoopingBox p = liste_LoopingBox.get(i);
       writer.println("LPB " + p.x + " " + p.y + " " + p.w + " " + p.h + " " + p.id + " " + p.typ);
+    }
+    
+    // Speichere liste_Platformen
+    // MOV ID X Y TAR-X TAR-Y
+    for (Platform p : liste_Platformen) {
+      writer.println("MOV " + p.id + " " + p.x + " " + p.y + " " + p.targetX + " " + p.targetY);
     }
     
     

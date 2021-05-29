@@ -1,11 +1,13 @@
 package Entities;
 
+import Objects.MovingPlatform;
 import Objects.SpezialStrecke;
 import app.CMath;
 import app.Eingabe;
 import app.Kamera;
 import app.Kollision;
 import app.RaycastHit;
+import app.Start;
 import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
 
@@ -253,6 +255,19 @@ public class Sonic {
 			float angle = CMath.angleBetweenDirs(0, 1, groundHit.normalX, groundHit.normalY);
 			if (angle > 45 || speedY > 0.2f) {
 				groundHit = null;
+			}
+		}
+		
+		
+		// Check if ground is a moving platform
+		if (groundHit != null && groundHit.sourceCollision != null) {
+			for (MovingPlatform plat : MovingPlatform.list) {
+				if (plat.isCollision(groundHit.sourceCollision)) {
+					x += plat.getDeltaX();
+					y += plat.getDeltaY();
+					
+					break;
+				}
 			}
 		}
 		
@@ -646,7 +661,7 @@ public class Sonic {
 	
 	private void die() {
 		System.out.println("Game over");
-		System.exit(0);
+		Start.quit();
 	}
 	
 	

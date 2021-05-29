@@ -10,6 +10,7 @@ import Entities.Affe;
 import Entities.Sonic;
 import Objects.DekoObjekt;
 import Objects.Item;
+import Objects.MovingPlatform;
 import Objects.Objekt;
 import Objects.Projektil;
 import Objects.Ring;
@@ -31,6 +32,7 @@ public class Spielwelt {
 	private SpezialStrecke[] dieSpezialStrecken;
 	private ArrayList<Objekt> dieObjekte;
 	private ArrayList<Gegner> dieGegner;
+	private ArrayList<MovingPlatform> diePlatformen;
 	private ArrayList<DekoObjekt> dieDekos;
 	private ArrayList<Waterfall> dieWasserfaelle;
 	private ArrayList<Projektil> dieProjektile;
@@ -57,11 +59,10 @@ public class Spielwelt {
 		
 		dieSpezialStrecken = pSpezialStrecken;
 		dieGegner = pDieGegner;
+		//diePlatformen = new ArrayList<MovingPlatform>();
 		dieObjekte = pDieObjekte;
 		dieDekos = pDieDekos;
 		dieWasserfaelle = pDieWasserfaelle;
-		
-		
 		dieProjektile = new ArrayList<Projektil>();
 		
 		
@@ -126,6 +127,10 @@ public class Spielwelt {
 	
 	
 	public void fixedUpdate(float delta) {
+		for (MovingPlatform mp : diePlatformen) {
+			mp.fixedUpdate(delta);
+		}
+		
 		derSpieler.fixedUpdate(delta);
 		
 		for (Gegner g : dieGegner) {
@@ -246,6 +251,10 @@ public class Spielwelt {
 			dieSpezialStrecken[i].draw(dieKamera);
 		}
 		
+		for (MovingPlatform mp : diePlatformen) {
+			mp.draw(dieKamera);
+		}
+		
 		for (int i = 0; i < dieWasserfaelle.size(); i++) {
 			dieWasserfaelle.get(i).draw(dieKamera);
 		}
@@ -300,6 +309,11 @@ public class Spielwelt {
 	}
 	public Kamera getKamera() {
 		return dieKamera;
+	}
+	
+	// Setter
+	public void setPlatformen(ArrayList<MovingPlatform> pDiePlatformen) {
+		diePlatformen = pDiePlatformen;
 	}
 	
 	

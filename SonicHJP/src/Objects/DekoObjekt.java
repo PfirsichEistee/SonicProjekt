@@ -6,8 +6,8 @@ import javafx.scene.paint.Color;
 
 public class DekoObjekt {
 	// ATTRIBUTE //
-	private static Image imgDefault = new Image("file:files/textures/decorative/decorative.png");
-	private static Image imgLava = new Image("file:files/textures/decorative/lava.png");
+	private static Image imgDefault = new Image("file:files/textures/misc/decorative.png");
+	private static Image imgLava = new Image("file:files/textures/misc/lava.png");
 	public static int imageZaehler; // 0 <= imageZaehler < 4
 	
 	public int id;

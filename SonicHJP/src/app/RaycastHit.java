@@ -5,6 +5,7 @@ public class RaycastHit {
 	public float hitX, hitY;
 	public float normalX, normalY;
 	public float distance;
+	public Kollision sourceCollision; // if collider was platform && inside alternative array, this will be filled. otherwise null
 	
 	
 	// KONSTRUKTOR //
@@ -14,6 +15,7 @@ public class RaycastHit {
 		normalX = pNormalX;
 		normalY = pNormalY;
 		distance = pDistance;
+		sourceCollision = null;
 	}
 	
 	

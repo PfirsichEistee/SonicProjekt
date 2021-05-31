@@ -13,8 +13,13 @@ public class Affe extends Gegner {
 	private int Blickrichtung;
 	private float start;
 	private float speedY;
+	private int animationsZaehler;
+	private float animationTimer;
 	
-	private float testShit = 0;
+	private final int[][] anim = {
+			{ 0, 1 }, //Klettern
+			{ 0, 2, 1} //Projektil werfen
+	};
 	
 	// KONSTRUKTOR //
 	public Affe(float px, float py) {
@@ -24,17 +29,25 @@ public class Affe extends Gegner {
 		y = py;
 		
 		start = py;
-		speedY = -1f;
+		speedY = -2f;
 	}
 	
 	
 	// METHODEN
 	@Override
 	public void update(float delta) {
-		testShit += Math.random() * delta * 3;
-		if (testShit > 1) {
-			testShit = 0;
-			dieSpielwelt.addProjectile(new Projektil(x, y, 0, -15));
+		animationTimer += delta;
+		
+		imageZaehler = anim[0][animationsZaehler];
+		
+		if (animationTimer >= 0.15f) {
+			animationTimer = 0;
+			if(animationsZaehler == 1) {
+				animationsZaehler = 0;
+			}
+			else {
+				animationsZaehler ++;
+			}
 		}
 	}
 	
@@ -52,7 +65,12 @@ public class Affe extends Gegner {
 			}
 		}
 		else if(Zustand == 1) { //Projektil in Blickrichtung
-			//dieSpielwelt.setdieProjektile(x, y, 2f, 0f);
+			if(derSpieler.getX() > x) {
+				dieSpielwelt.addProjectile(new Projektil(x, y, 15, 0));
+			}
+			else if(derSpieler.getX() < x) {
+				dieSpielwelt.addProjectile(new Projektil(x, y, -15, 0));
+			}
 			Zustand = 0;
 		}		
 	}
@@ -62,7 +80,7 @@ public class Affe extends Gegner {
 		dieKamera.setFarbe(new Color(1f, 0.5f, 0, 0.2f));
 		dieKamera.setLineWidth(0.05f);
 		
-		dieKamera.drawImageSection(dasImage, 0, 0, 32, 48, x - 0.5f, y - 0.75f, 1f, 1.5f);
+		dieKamera.drawImageSection(dasImage, imageZaehler * 32, 0, 32, 48, x - 0.5f, y - 0.75f, 1f, 1.5f);
 	}
 	
 	

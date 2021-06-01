@@ -219,7 +219,7 @@ public class Spielwelt {
 						derSpieler.setKnockback(derSpieler.getSpeedX() * 0.75f, 6f);
 					}
 					
-					if (dieProjektile.get(i).timer > 5f) {
+					if (dieProjektile.get(i).timer > 2f) {
 						dieProjektile.remove(i);
 					}
 				}

@@ -94,7 +94,7 @@ public class LevelLeser {
 							break;
 						case (2): // Looping
 							//spezStrecken.add(new SS_Looping(strToFloat(split[1]), strToFloat(split[2])));
-							dekos.add(new DekoObjekt(strToFloat(split[1]) - 1, strToFloat(split[2]) + 3.25f, 5, 8, emeraldLooping, true));
+							dekos.add(new DekoObjekt(strToFloat(split[1]) - 1, strToFloat(split[2]) - 4.8f, 5, 8, emeraldLooping, true));
 							break;
 						case (3): // Wandlicht
 							dekos.add(new DekoObjekt(4, strToFloat(split[1]), strToFloat(split[2])));

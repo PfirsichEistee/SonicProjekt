@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import javafx.event.EventHandler;
 import javafx.scene.Scene;
+import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 
@@ -18,13 +19,13 @@ public class Eingabe {
 		scene.setOnKeyPressed(new EventHandler<KeyEvent>() {
 			@Override
 			public void handle(KeyEvent event) {
-				onKeyDown(event.getText().toUpperCase());
+				onKeyDown(getText(event));
 			}
 		});
 		scene.setOnKeyReleased(new EventHandler<KeyEvent>() {
 			@Override
 			public void handle(KeyEvent event) {
-				onKeyUp(event.getText().toUpperCase());
+				onKeyUp(getText(event));
 			}
 		});
 		
@@ -72,5 +73,24 @@ public class Eingabe {
 				return;
 			}
 		}
+	}
+	
+	
+	private static String getText(KeyEvent e) {
+		String txt = e.getText().toUpperCase();
+		if (txt.length() == 0) {
+			if (e.getCode() == KeyCode.LEFT)
+				txt = "LEFT";
+			else if (e.getCode() == KeyCode.RIGHT)
+				txt = "RIGHT";
+			else if (e.getCode() == KeyCode.UP)
+				txt = "UP";
+			else if (e.getCode() == KeyCode.DOWN)
+				txt = "DOWN";
+			else if (e.getCode() == KeyCode.SHIFT)
+				txt = "SHIFT";
+		}
+		
+		return txt;
 	}
 }

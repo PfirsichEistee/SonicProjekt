@@ -496,8 +496,16 @@ public class Sonic {
 		
 		
 		// Dead?
-		if (y < 0)
-			die();
+		if (y < 0) {
+			if (!knockbackActive) {
+				y = 0.05f;
+				speedY = 0;
+				setKnockback(0, 6f);
+			} else {
+				if (y < -3)
+					die();
+			}
+		}
 	}
 	
 	
@@ -538,13 +546,11 @@ public class Sonic {
 				} else if (Kollision.raycast(x, y, -radHor * 1.25f, 0, true) != null || Kollision.raycast(x, y, radHor * 1.25f, 0, true) != null) {
 					speedX = 0;
 				}
-				
-				if (y < 0)
-					die();
-			} else if (y < 0) {
-				die();
 			}
 		}
+		
+		if (y < -3)
+			die();
 	}
 	
 	
@@ -604,58 +610,13 @@ public class Sonic {
 		
 		int i = anim[animationZustand][animationZaehler];
 		dieKamera.drawImageSection(dasImage, 256 * (i % 8), 280 * (i / 8), 256, 280, 
-				x - 0.9f + (imageFlip ? 1.8f : 0), y + 0.9f + (rolling ? -0.05f : 0),
+				x - 0.9f + (imageFlip ? 1.8f : 0), y - 0.9f + (rolling ? -0.05f : 0),
 				1.8f * (imageFlip ? -1 : 1), 1.8f, rotation);
 		
 		if (shieldBonus)
 			dieKamera.drawImageSection(dasEffektImage, 39 * effektZaehler, 0, 39, 39, x - 0.7f, y - 0.7f, 1.4f, 1.4f);
 		if (invincibleBonus > 0)
 			dieKamera.drawImageSection(dasEffektImage, 39 * effektZaehler, 39, 39, 39, x - 0.7f, y - 0.7f, 1.4f, 1.4f);
-		
-		
-		if (true) return;
-		dieKamera.setLineWidth(0.05f);
-		
-		// LR
-		dieKamera.setFarbe(Color.RED);
-		debugDrawRay(x, y, radHor * (float)Math.cos(modeRotation), radHor * (float)Math.sin(modeRotation));
-		
-		dieKamera.setFarbe(Color.PURPLE);
-		debugDrawRay(x, y, -radHor * (float)Math.cos(modeRotation), -radHor * (float)Math.sin(modeRotation));
-		
-		// Decke
-		dieKamera.setFarbe(Color.GREEN);
-		debugDrawRay(x - radHor * (float)Math.cos(modeRotation), y - radHor * (float)Math.sin(modeRotation),
-				-radVer * (float)Math.sin(modeRotation), radVer * (float)Math.cos(modeRotation));
-		
-		dieKamera.setFarbe(Color.DARKGREEN);
-		debugDrawRay(x + radHor * (float)Math.cos(modeRotation), y + radHor * (float)Math.sin(modeRotation),
-				-radVer * (float)Math.sin(modeRotation), radVer * (float)Math.cos(modeRotation));
-		
-		// Boden
-		dieKamera.setFarbe(Color.BLUE);
-		debugDrawRay(x - radHor * (float)Math.cos(modeRotation), y - radHor * (float)Math.sin(modeRotation),
-				radVer * (float)Math.sin(modeRotation), -radVer * (float)Math.cos(modeRotation));
-		
-		dieKamera.setFarbe(Color.AQUA);
-		debugDrawRay(x + radHor * (float)Math.cos(modeRotation), y + radHor * (float)Math.sin(modeRotation),
-				radVer * (float)Math.sin(modeRotation), -radVer * (float)Math.cos(modeRotation));
-		
-		
-		
-		dieKamera.setFarbe(Color.RED);
-		if (hitB1 != null)
-			//dieKamera.drawRect(hitB1.hitX - 0.1f, hitB1.hitY - 0.1f, 0.2f, 0.2f);
-		if (hitB2 != null)
-			//dieKamera.drawRect(hitB2.hitX - 0.1f, hitB2.hitY - 0.1f, 0.2f, 0.2f);
-		if (hitD1 != null)
-			dieKamera.drawRect(hitD1.hitX - 0.1f, hitD1.hitY - 0.1f, 0.2f, 0.2f);
-		if (hitD2 != null)
-			dieKamera.drawRect(hitD2.hitX - 0.1f, hitD2.hitY - 0.1f, 0.2f, 0.2f);
-		if (hitL != null)
-			dieKamera.drawRect(hitL.hitX - 0.1f, hitL.hitY - 0.1f, 0.2f, 0.2f);
-		if (hitR != null)
-			dieKamera.drawRect(hitR.hitX - 0.1f, hitR.hitY - 0.1f, 0.2f, 0.2f);
 	}
 	
 	
@@ -752,6 +713,55 @@ public class Sonic {
 	}
 	
 	
+	public void debugHeal() {
+		knockbackActive = false;
+		physicsLock = false;
+		invincibleBonus = 3;
+	}
+	public void debugDraw() {
+		dieKamera.setLineWidth(0.05f);
+		
+		// LR
+		dieKamera.setFarbe(Color.RED);
+		debugDrawRay(x, y, radHor * (float)Math.cos(modeRotation), radHor * (float)Math.sin(modeRotation));
+		
+		dieKamera.setFarbe(Color.PURPLE);
+		debugDrawRay(x, y, -radHor * (float)Math.cos(modeRotation), -radHor * (float)Math.sin(modeRotation));
+		
+		// Decke
+		dieKamera.setFarbe(Color.GREEN);
+		debugDrawRay(x - radHor * (float)Math.cos(modeRotation), y - radHor * (float)Math.sin(modeRotation),
+				-radVer * (float)Math.sin(modeRotation), radVer * (float)Math.cos(modeRotation));
+		
+		dieKamera.setFarbe(Color.DARKGREEN);
+		debugDrawRay(x + radHor * (float)Math.cos(modeRotation), y + radHor * (float)Math.sin(modeRotation),
+				-radVer * (float)Math.sin(modeRotation), radVer * (float)Math.cos(modeRotation));
+		
+		// Boden
+		dieKamera.setFarbe(Color.BLUE);
+		debugDrawRay(x - radHor * (float)Math.cos(modeRotation), y - radHor * (float)Math.sin(modeRotation),
+				radVer * (float)Math.sin(modeRotation), -radVer * (float)Math.cos(modeRotation));
+		
+		dieKamera.setFarbe(Color.AQUA);
+		debugDrawRay(x + radHor * (float)Math.cos(modeRotation), y + radHor * (float)Math.sin(modeRotation),
+				radVer * (float)Math.sin(modeRotation), -radVer * (float)Math.cos(modeRotation));
+		
+		
+		
+		dieKamera.setFarbe(Color.RED);
+		if (hitB1 != null)
+			//dieKamera.drawRect(hitB1.hitX - 0.1f, hitB1.hitY - 0.1f, 0.2f, 0.2f);
+		if (hitB2 != null)
+			//dieKamera.drawRect(hitB2.hitX - 0.1f, hitB2.hitY - 0.1f, 0.2f, 0.2f);
+		if (hitD1 != null)
+			dieKamera.drawRect(hitD1.hitX - 0.1f, hitD1.hitY - 0.1f, 0.2f, 0.2f);
+		if (hitD2 != null)
+			dieKamera.drawRect(hitD2.hitX - 0.1f, hitD2.hitY - 0.1f, 0.2f, 0.2f);
+		if (hitL != null)
+			dieKamera.drawRect(hitL.hitX - 0.1f, hitL.hitY - 0.1f, 0.2f, 0.2f);
+		if (hitR != null)
+			dieKamera.drawRect(hitR.hitX - 0.1f, hitR.hitY - 0.1f, 0.2f, 0.2f);
+	}
 	private void debugDrawRay(float px, float py, float dx, float dy) {
 		dieKamera.drawLine(px, py, px + dx, py + dy);
 	}

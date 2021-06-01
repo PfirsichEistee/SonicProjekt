@@ -9,6 +9,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
@@ -110,6 +111,7 @@ public class Start extends Application {
 		scene.setOnMouseClicked(new EventHandler<MouseEvent>() {
 			@Override
 			public void handle(MouseEvent event) {
+				if (event.getButton() != MouseButton.SECONDARY) return;
 				float px = dieSpielwelt.getKamera().pixelZuEinheitX((float)event.getX());
 				float py = dieSpielwelt.getKamera().pixelZuEinheitY((float)event.getY());
 				
@@ -125,6 +127,10 @@ public class Start extends Application {
 	private void runGame() {
 		// START
 		dieSpielwelt.start();
+		
+		
+		// Debug
+		DevTools devTools = new DevTools(dieSpielwelt);
 		
 		
 		// LOOPS
@@ -143,6 +149,7 @@ public class Start extends Application {
 				
 				
 				float delta = (float)(currentNanoSecs - lastNanoSecs) / 1000000000f;
+				delta *= devTools.deltaMult;
 				lastNanoSecs = currentNanoSecs;
 				
 				dieSpielwelt.update(delta);
@@ -153,8 +160,10 @@ public class Start extends Application {
 					
 					dieSpielwelt.fixedUpdate(timePerFixedUpdate);
 				}
+				devTools.update(delta);
 				
 				dieSpielwelt.draw();
+				devTools.draw(delta);
 			}
 		};
 		animTimer.start();

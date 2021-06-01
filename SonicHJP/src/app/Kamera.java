@@ -58,7 +58,7 @@ public class Kamera {
 		pw *= pixelProEinheit;
 		ph *= pixelProEinheit;
 		
-		gc.translate(einheitZuPixelX(px) + (pw / 2), einheitZuPixelY(py) + (ph / 2));
+		gc.translate(einheitZuPixelX(px) + (pw / 2), einheitZuPixelY(py) - (ph / 2));
 		gc.rotate(pRotation * (180.0 / Math.PI));
 		gc.drawImage(pImage, -pw / 2, -ph / 2, pw, ph);
 		
@@ -71,7 +71,7 @@ public class Kamera {
 		pw *= pixelProEinheit;
 		ph *= pixelProEinheit;
 		
-		gc.translate(einheitZuPixelX(px) + (pw / 2), einheitZuPixelY(py) + (ph / 2));
+		gc.translate(einheitZuPixelX(px) + (pw / 2), einheitZuPixelY(py) - (ph / 2));
 		gc.rotate(pRotation * (180.0 / Math.PI));
 		gc.drawImage(pImage, imgX, imgY, imgW, imgH, -pw / 2, -ph / 2, pw, ph);
 		
@@ -128,6 +128,9 @@ public class Kamera {
 	
 	public float getPixelProEinheit() {
 		return pixelProEinheit;
+	}
+	public void setPixelProEinheit(float p) {
+		pixelProEinheit = p;
 	}
 	
 	public GraphicsContext getGraphicsContext() {

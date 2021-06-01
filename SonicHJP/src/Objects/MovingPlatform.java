@@ -71,7 +71,7 @@ public class MovingPlatform {
 	
 	
 	public void draw(Kamera dieKamera) {
-		dieKamera.drawImage(dasImage[id], (targetX - x) * progress + x, (targetY - y) * progress + y, w, h, 0);
+		dieKamera.drawImage(dasImage[id], (targetX - x) * progress + x, (targetY - y) * progress + y - h, w, h, 0);
 	}
 	
 	

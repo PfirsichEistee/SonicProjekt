@@ -10,6 +10,9 @@ import app.RaycastHit;
 import app.Start;
 import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
+import javafx.scene.text.TextAlignment;
+import ui.Core;
+import ui.Text;
 
 public class Sonic {
 	// ATTRIBUTE //
@@ -42,6 +45,7 @@ public class Sonic {
 	// Gameplay
 	private int liveCount;
 	private int ringCount;
+	private int scoreCount;
 	private float speedBonus;
 	private float invincibleBonus;
 	private boolean shieldBonus;
@@ -76,6 +80,11 @@ public class Sonic {
 	private final float DECELERATION = 50f;
 	private final float JUMP_FORCE = 10f;
 	private final float GRAVITY = 30f;
+	
+	
+	// UI
+	private Text uiText;
+	private float uiTimer;
 	
 	
 	// DEBUG
@@ -123,6 +132,7 @@ public class Sonic {
 		// Gameplay
 		liveCount = 3;
 		ringCount = 0;
+		scoreCount = 0;
 		speedBonus = -1;
 		invincibleBonus = -1;
 		shieldBonus = false;
@@ -130,6 +140,15 @@ public class Sonic {
 		knockbackActive = false;
 		
 		lastHit = 0;
+		
+		
+		// UI
+		Text ph = new Text("SCORE\nTIME\nRINGS", 15, 40, 100, 1, 32);
+		ph.setColor(Color.LIGHTYELLOW);
+		Core.append(ph);
+		uiText = new Text("0\n0' 00''00\n0", 200, 40, 200, 1, 32);
+		uiText.setTextAlignment(TextAlignment.RIGHT);
+		Core.append(uiText);
 	}
 	
 	
@@ -200,6 +219,15 @@ public class Sonic {
 			effektZaehler++;
 			effektZaehler %= 3;
 		}
+		
+		// UI
+		uiTimer += delta;
+		int m = (int)Math.floor(uiTimer / 60);
+		int s = (int)Math.floor(uiTimer) - m * 60;
+		//int ms = (int)(uiTimer * 1000) % 1000;
+		
+		// SCORE\nTIME\nRINGS
+		uiText.setText(intToString(scoreCount, 6) + "\n" + intToString(m, 2) + "\t" + intToString(s, 2) + "\n" + intToString(ringCount, 3));
 	}
 	
 	
@@ -685,6 +713,7 @@ public class Sonic {
 	public void setLiveCount(int p) { liveCount = p; }
 	public int getRingCount() { return ringCount; }
 	public void setRingCount(int p) { ringCount = p; }
+	public void addPoints(int p) { scoreCount += p; }
 	public void setSpeedBonus() { speedBonus = 5f; }
 	public void setInvincibleBonus() { invincibleBonus = 5f; }
 	public void setShieldBonus() { shieldBonus = true; }
@@ -716,6 +745,16 @@ public class Sonic {
 			return false;
 		}
 		return true;
+	}
+	
+	
+	// UI
+	public String intToString(int v, int chars) {
+		String txt = "" + v;
+		while (txt.length() < chars) {
+			txt = "0" + txt;
+		}
+		return txt;
 	}
 	
 	

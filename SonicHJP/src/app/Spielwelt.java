@@ -193,6 +193,10 @@ public class Spielwelt {
 						
 						if (obj.getClass() == Ring.class) {
 							dieObjekte.remove(i);
+							derSpieler.addPoints(10);
+						} else {
+							if (!derSpieler.getKnockback())
+							derSpieler.addPoints(100);
 						}
 					}
 				} else {
@@ -209,6 +213,7 @@ public class Spielwelt {
 						derSpieler.setForce(derSpieler.getSpeedX(), CMath.min(derSpieler.getSpeedY(), 0) + 6f);
 						
 						dieGegner.remove(i);
+						derSpieler.addPoints(250);
 					} else {
 						float ph = (derSpieler.getX() - g.getX());
 						if (ph == 0) ph = -0.1f;

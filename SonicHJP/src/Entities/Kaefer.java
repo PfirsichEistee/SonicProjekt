@@ -67,6 +67,9 @@ public class Kaefer extends Gegner {
 				}
 			}
 		}
+		
+		minX += 0.5f;
+		maxX -= 0.5f;
 	}
 	@Override
 	public void update(float delta) {

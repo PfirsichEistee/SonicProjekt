@@ -11,8 +11,11 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
+import ui.Core;
+import ui.Text;
 
 public class Start extends Application {
 	private static Start start;
@@ -86,6 +89,7 @@ public class Start extends Application {
 		Kamera.init(gc, width, height);
 		Eingabe.init(scene);
 		Kollision.init(90, 10);
+		Core.init(gc, width, height);
 		
 		
 		// Load game
@@ -163,6 +167,7 @@ public class Start extends Application {
 				devTools.update(delta);
 				
 				dieSpielwelt.draw();
+				Core.draw();
 				devTools.draw(delta);
 			}
 		};

@@ -1,7 +1,6 @@
 package Objects;
 
 import Entities.Sonic;
-import app.CMath;
 import app.Kamera;
 import javafx.scene.image.Image;
 

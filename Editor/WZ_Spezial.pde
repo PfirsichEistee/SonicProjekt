@@ -19,7 +19,7 @@ public class WZ_Spezial extends Werkzeug {
     }
     dieToolbox.addItem(item);
     
-    item = new Toolbox_Item("Bahnlaenge", 1, 1, 99);
+    item = new Toolbox_Item("Bahnlaenge (opt)", 1, 1, 99);
     dieToolbox.addItem(item);
     
     item = new Toolbox_Item("Grid-Snap", 0, 0, 1);
@@ -60,6 +60,10 @@ public class WZ_Spezial extends Werkzeug {
       fill(255, 0, 0, 100);
       stroke(0, 0, 0, 0);
       dieKamera.drawRect(cursX, cursY + 1, dieToolbox.getAnzahlVonItem(1), 1);
+    } else {
+      fill(255, 0, 0, 100);
+      stroke(0, 0, 0, 0);
+      dieKamera.drawRect(cursX, cursY + 1, 1, 1);
     }
   }
   public void cursorMoved(float deltaX, float deltaY) {

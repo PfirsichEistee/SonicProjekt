@@ -32,6 +32,10 @@ public class Fisch extends Gegner {
 	
 	// METHODEN
 	@Override
+	public void start() {
+		
+	}
+	@Override
 	public void update(float delta) {
 		animationTimer += delta;
 		
@@ -71,10 +75,5 @@ public class Fisch extends Gegner {
 		else if(speedY < 0) {
 			dieKamera.drawImageSection(dasImage, 32, 0, 32, 23, x - 0.5f, y - 0.355f, 1f, 0.71f, (float)Math.PI / -2);
 		}
-	}
-	
-	
-	public static void setImage(Image pImage) {
-		dasImage = pImage;
 	}
 }

@@ -20,6 +20,7 @@ public abstract class Gegner {
 	
 	
 	// METHODEN //
+	public abstract void start();
 	public abstract void update(float delta);
 	public abstract void fixedUpdate(float delta);
 	public abstract void draw(Kamera dieKamera);

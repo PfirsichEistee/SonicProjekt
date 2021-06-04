@@ -8,6 +8,7 @@ import java.util.Scanner;
 import Entities.Affe;
 import Entities.Biene;
 import Entities.Fisch;
+import Entities.Fledermaus;
 import Entities.Gegner;
 import Entities.Kaefer;
 import Entities.Sonic;
@@ -20,6 +21,7 @@ import Objects.Ring;
 import Objects.SS_Looping;
 import Objects.SS_SBahn;
 import Objects.SpezialStrecke;
+import Objects.Stachelblock;
 import Objects.Waterfall;
 import javafx.scene.image.Image;
 
@@ -111,6 +113,10 @@ public class LevelLeser {
 						case (7): // Deadzone
 							deadzones.add(new DeadzonePlaceholder(strToFloat(split[1]), strToFloat(split[2]), strToFloat(split[4]), 1));
 							break;
+						case (8): // Stachelblock
+							float r = (float)(Math.PI / 2) * (strToInt(split[4]) - 1);
+							objekte.add(new Stachelblock(strToFloat(split[1]), strToFloat(split[2]), r, 2000));
+							break;
 					}
 				} else if (split[0].equals("GEG")) { // GEG X Y ID RICHTUNG
 					switch (strToInt(split[3])) {
@@ -125,6 +131,9 @@ public class LevelLeser {
 							break;
 						case(3): // Kaefer
 							gegner.add(new Kaefer(strToFloat(split[1]), strToFloat(split[2])));
+							break;
+						case(4): // Fledermaus
+							gegner.add(new Fledermaus(strToFloat(split[1]), strToFloat(split[2])));
 							break;
 					}
 				} else if (split[0].equals("WTR")) { // WTR X Y LAENGE HOEHE

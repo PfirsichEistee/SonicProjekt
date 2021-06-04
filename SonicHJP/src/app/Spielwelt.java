@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import Entities.Gegner;
 import Entities.Kaefer;
 import Entities.Fisch;
+import Entities.Fledermaus;
 import Entities.Biene;
 import Entities.Affe;
 import Entities.Sonic;
@@ -17,6 +18,7 @@ import Objects.Ring;
 import Objects.SS_Looping;
 import Objects.SS_SBahn;
 import Objects.SpezialStrecke;
+import Objects.Stachelblock;
 import Objects.Waterfall;
 import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
@@ -76,6 +78,9 @@ public class Spielwelt {
 	
 	// METHODEN //
 	public void start() {
+		for (Gegner g : dieGegner)
+			g.start();
+		
 		debugStart();
 	}
 	
@@ -215,7 +220,7 @@ public class Spielwelt {
 			// Check projectiles
 			for (int i = (dieProjektile.size() - 1); i >= 0; i--) {
 				if (dieProjektile.get(i).isNextTo(derSpieler.getX(), derSpieler.getY())) {
-					if (!derSpieler.isDeadly()) {
+					if (derSpieler.isVulnerableToProjectiles()) {
 						derSpieler.setKnockback(derSpieler.getSpeedX() * 0.75f, 6f);
 					}
 					

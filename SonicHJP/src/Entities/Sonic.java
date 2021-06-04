@@ -711,6 +711,12 @@ public class Sonic {
 		}
 		return false;
 	}
+	public boolean isVulnerableToProjectiles() {
+		if (invincibleBonus > 0 || physicsLock) {
+			return false;
+		}
+		return true;
+	}
 	
 	
 	public void debugHeal() {

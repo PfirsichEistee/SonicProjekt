@@ -35,4 +35,11 @@ public abstract class Objekt {
 		
 		return false;
 	}
+	
+	public float getX() {
+		return x;
+	}
+	public float getY() {
+		return y;
+	}
 }

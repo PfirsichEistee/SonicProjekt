@@ -54,6 +54,28 @@ public class Spezial {
         fill(100, 100, 255, 155);
         dieKamera.drawRect(x, y + 1, opt, 1);
         break;
+      case (8):
+        fill(255, 50, 50, 155);
+        dieKamera.drawRect(x, y + 1, 1, 1);
+        stroke(200, 255, 0);
+        switch (opt) {
+          case(1):
+            dieKamera.drawLine(x + 0.5, y + 0.5, x + 0.5, y + 1);
+            break;
+          case(2):
+            dieKamera.drawLine(x + 0.5, y + 0.5, x + 1, y + 0.5);
+            break;
+          case(3):
+            dieKamera.drawLine(x + 0.5, y + 0.5, x + 0.5, y);
+            break;
+          case(4):
+            dieKamera.drawLine(x + 0.5, y + 0.5, x, y + 0.5);
+            break;
+          default:
+            opt = 1;
+            break;
+        }
+        break;
     }
     
     dieKamera.drawCircle(x, y, 0.1f);

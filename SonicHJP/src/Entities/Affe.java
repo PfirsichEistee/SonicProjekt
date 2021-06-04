@@ -35,6 +35,10 @@ public class Affe extends Gegner {
 	
 	// METHODEN
 	@Override
+	public void start() {
+		
+	}
+	@Override
 	public void update(float delta) {
 		animationTimer += delta;
 		
@@ -81,10 +85,5 @@ public class Affe extends Gegner {
 		dieKamera.setLineWidth(0.05f);
 		
 		dieKamera.drawImageSection(dasImage, imageZaehler * 32, 0, 32, 48, x - 0.5f, y - 0.75f, 1f, 1.5f);
-	}
-	
-	
-	public static void setImage(Image pImage) {
-		dasImage = pImage;
 	}
 }

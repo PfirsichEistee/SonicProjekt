@@ -66,7 +66,7 @@ public class Item extends Objekt {
 					derSpieler.setLiveCount(derSpieler.getLiveCount() + 10);
 					break;
 				case(5): // Eggman
-					derSpieler.setKnockback(derSpieler.getSpeedX() * 0.75f, 6f);
+					derSpieler.hit(derSpieler.getSpeedX() * 0.75f, 6f);
 					break;
 			}
 		}

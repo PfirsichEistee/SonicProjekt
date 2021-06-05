@@ -40,7 +40,7 @@ public class Stachelblock extends Objekt {
 	@Override
 	public void onPlayerCollide(Sonic derSpieler) {
 		if (derSpieler.isVulnerableToProjectiles()) {
-			derSpieler.setKnockback(derSpieler.getSpeedX() * 0.75f, 6f);
+			derSpieler.hit(derSpieler.getSpeedX() * 0.75f, 6f);
 		}
 	}
 	

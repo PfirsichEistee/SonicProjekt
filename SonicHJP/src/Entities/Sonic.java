@@ -6,6 +6,7 @@ import app.CMath;
 import app.Eingabe;
 import app.Kamera;
 import app.Kollision;
+import app.Particle;
 import app.RaycastHit;
 import app.Start;
 import javafx.scene.image.Image;
@@ -51,6 +52,7 @@ public class Sonic {
 	private boolean shieldBonus;
 	
 	private boolean knockbackActive;
+	private boolean knockbackDeath;
 	
 	private long lastHit;
 	
@@ -138,6 +140,7 @@ public class Sonic {
 		shieldBonus = false;
 		
 		knockbackActive = false;
+		knockbackDeath = false;
 		
 		lastHit = 0;
 		
@@ -528,7 +531,8 @@ public class Sonic {
 			if (!knockbackActive) {
 				y = 0.05f;
 				speedY = 0;
-				setKnockback(0, 6f);
+				setForce(0, 6f);
+				knockbackActive = true;
 			} else {
 				if (y < -3)
 					die();
@@ -553,29 +557,26 @@ public class Sonic {
 	private void knockbackUpdate(float delta) {
 		speedX = CMath.move(speedX, 0, delta * 5f);
 		speedY = CMath.move(speedY, -MAX_SPEED, delta * GRAVITY * 0.3f);
+		
+		
+		if (!knockbackDeath) {
+			RaycastHit hit = Kollision.raycast(x, y, 0, radVer * 1.25f * Math.signum(speedY), true);
+			if (hit != null) {
+				if (speedY < 0)
+					knockbackActive = false;
+				
+				speedY = 0;
+			}
+			
+			if (Kollision.raycast(x, y, -radHor * 1.25f, 0, true) != null || Kollision.raycast(x, y, radHor * 1.25f, 0, true) != null)
+				speedX = 0;
+		}
+		
 
 		// Apply velocity
 		x += speedX * delta;
 		y += speedY * delta;
-		
-		if (speedY < 0) {
-			if (shieldBonus || ringCount > 0) {
-				RaycastHit hit = Kollision.raycast(x, y, 0, -radVer * 1.25f, true);
-				
-				if (hit != null) {
-					knockbackActive = false;
-					
-					if (shieldBonus) {
-						shieldBonus = false;
-					} else {
-						// TODO DROP RINGS!!
-						ringCount = 0;
-					}
-				} else if (Kollision.raycast(x, y, -radHor * 1.25f, 0, true) != null || Kollision.raycast(x, y, radHor * 1.25f, 0, true) != null) {
-					speedX = 0;
-				}
-			}
-		}
+
 		
 		if (y < -3)
 			die();
@@ -718,21 +719,32 @@ public class Sonic {
 	public void setInvincibleBonus() { invincibleBonus = 5f; }
 	public void setShieldBonus() { shieldBonus = true; }
 	public boolean getKnockback() { return knockbackActive; }
-	public void setKnockback(float px, float py) {
-		setForce(px, py);
-		knockbackActive = true;
-		rotation = 0;
-		speed = 0;
-	}
 	public void hit() {
-		if (invincibleBonus > 0 || physicsLock || knockbackActive || (System.currentTimeMillis() - lastHit) < 5000)
+		hit(0, 3f);
+	}
+	public void hit(float forceX, float forceY) {
+		if (invincibleBonus > 0 || physicsLock || knockbackActive || (System.currentTimeMillis() - lastHit) < 2500)
 			return;
-		
-		setForce(0, 3f);
+
+		setForce(forceX, forceY);
 		knockbackActive = true;
 		rotation = 0;
 		speed = 0;
 		lastHit = System.currentTimeMillis();
+		
+		punish();
+	}
+	private void punish() {
+		if (shieldBonus) {
+			shieldBonus = false;
+		} else if (ringCount > 0) {
+			for (int i = 0; i < ringCount; i++)
+				new Particle(2, x, y, 1);
+			
+			ringCount = 0;
+		} else {
+			knockbackDeath = true;
+		}
 	}
 	public boolean isDeadly() {
 		if (rolling || !grounded || invincibleBonus > 0 || physicsLock) {

@@ -116,6 +116,7 @@ public class Start extends Application {
 			@Override
 			public void handle(MouseEvent event) {
 				if (event.getButton() != MouseButton.SECONDARY) return;
+				
 				float px = dieSpielwelt.getKamera().pixelZuEinheitX((float)event.getX());
 				float py = dieSpielwelt.getKamera().pixelZuEinheitY((float)event.getY());
 				

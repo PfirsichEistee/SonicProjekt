@@ -91,12 +91,15 @@ public class Spielwelt {
 		
 		derSpieler.update(delta);
 		
-		for (Gegner g : dieGegner) {
+		for (Gegner g : dieGegner)
 			g.update(delta);
-		}
-		for (Projektil p : dieProjektile) {
+		
+		for (Projektil p : dieProjektile)
 			p.update(delta);
-		}
+		
+		for (Particle p : Particle.particleList)
+			p.update(delta);
+		
 		
 		animTimer += delta;
 		if (animTimer >= 0.05f) {
@@ -124,7 +127,7 @@ public class Spielwelt {
 			Ring.imageZaehler %= 16;
 			
 			
-			for (int i = 0; i < Particle.particleList.size(); i++) {
+			for (int i = (Particle.particleList.size() - 1); i >= 0; i--) {
 				Particle.particleList.get(i).update();
 			}
 		}
@@ -217,7 +220,7 @@ public class Spielwelt {
 					} else {
 						float ph = (derSpieler.getX() - g.getX());
 						if (ph == 0) ph = -0.1f;
-						derSpieler.setKnockback(ph * 5f, 6f);
+						derSpieler.hit(ph * 5f, 6f);
 					}
 				}
 			}
@@ -226,7 +229,7 @@ public class Spielwelt {
 			for (int i = (dieProjektile.size() - 1); i >= 0; i--) {
 				if (dieProjektile.get(i).isNextTo(derSpieler.getX(), derSpieler.getY())) {
 					if (derSpieler.isVulnerableToProjectiles()) {
-						derSpieler.setKnockback(derSpieler.getSpeedX() * 0.75f, 6f);
+						derSpieler.hit(derSpieler.getSpeedX() * 0.75f, 6f);
 					}
 					
 					if (dieProjektile.get(i).timer > 2f) {

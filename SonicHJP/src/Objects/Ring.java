@@ -3,6 +3,7 @@ package Objects;
 import Entities.Sonic;
 import app.Kamera;
 import app.Particle;
+import app.SoundMan;
 import javafx.scene.image.Image;
 
 public class Ring extends Objekt {
@@ -28,5 +29,6 @@ public class Ring extends Objekt {
 		new Particle(1, x + (w / 2), y + (h / 2), 1);
 		
 		derSpieler.setRingCount(derSpieler.getRingCount() + 1);
+		SoundMan.playClip(0);
 	}
 }

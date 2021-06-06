@@ -8,6 +8,7 @@ import app.Kamera;
 import app.Kollision;
 import app.Particle;
 import app.RaycastHit;
+import app.SoundMan;
 import app.Start;
 import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
@@ -124,7 +125,7 @@ public class Sonic {
 		physicsLock = false;
 		
 		
-		imageFlip = false;
+		imageFlip = true;
 		animationZustand = 0;
 		animationZaehler = 0;
 		animationTimer = 0;
@@ -158,10 +159,16 @@ public class Sonic {
 	// METHODEN //
 	public void update(float delta) {
 		// Buffs
-		if (speedBonus > 0)
+		if (speedBonus > 0) {
 			speedBonus -= delta;
-		if (invincibleBonus > 0)
+			if (speedBonus <= 0)
+				SoundMan.setMusicSpeed(false);
+		}
+		if (invincibleBonus > 0) {
 			invincibleBonus -= delta;
+			if (invincibleBonus <= 0)
+				SoundMan.playMusic();
+		}
 		
 		
 		// Animationen
@@ -377,8 +384,10 @@ public class Sonic {
 			
 			
 			// Rolling
-			if (Eingabe.isKeyDown("S") && !rolling)
+			if (Eingabe.isKeyDown("S") && !rolling) {
 				rolling = true;
+				SoundMan.playClip(2);
+			}
 			
 			if (rolling && Math.abs(speed) < 0.25f)
 				spinDash = CMath.max(spinDash + delta * 2, 1.5f);
@@ -396,6 +405,8 @@ public class Sonic {
 					}
 					
 					spinDash = 0;
+					
+					SoundMan.playClip(7);
 					
 					return; // Max-Speed * Big-Delta-Time = teleport through wall. Let the next Fixed-Update lower delta-time
 				}
@@ -435,6 +446,8 @@ public class Sonic {
 				jumpTimer = 0.5f;
 				
 				jumpLock = true;
+				
+				SoundMan.playClip(1);
 				
 				return;
 			} else {
@@ -715,8 +728,18 @@ public class Sonic {
 	public int getRingCount() { return ringCount; }
 	public void setRingCount(int p) { ringCount = p; }
 	public void addPoints(int p) { scoreCount += p; }
-	public void setSpeedBonus() { speedBonus = 5f; }
-	public void setInvincibleBonus() { invincibleBonus = 5f; }
+	public void setSpeedBonus() {
+		if (speedBonus <= 0)
+			SoundMan.setMusicSpeed(true);
+		
+		speedBonus = 10f;
+	}
+	public void setInvincibleBonus() {
+		if (invincibleBonus <= 0)
+			SoundMan.playMusic(2);
+		
+		invincibleBonus = 10f;
+	}
 	public void setShieldBonus() { shieldBonus = true; }
 	public boolean getKnockback() { return knockbackActive; }
 	public void hit() {
@@ -737,13 +760,16 @@ public class Sonic {
 	private void punish() {
 		if (shieldBonus) {
 			shieldBonus = false;
+			SoundMan.playClip(4, 1);
 		} else if (ringCount > 0) {
 			for (int i = 0; i < ringCount; i++)
 				new Particle(2, x, y, 1);
 			
 			ringCount = 0;
+			SoundMan.playClip(3);
 		} else {
 			knockbackDeath = true;
+			SoundMan.playClip(4, 1);
 		}
 	}
 	public boolean isDeadly() {

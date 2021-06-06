@@ -5,6 +5,8 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 
@@ -14,6 +16,8 @@ public class GUI_Launcher {
 	private ComboBox<String> comboBox;
 	@FXML
 	private Label statLabel;
+	@FXML
+	private ImageView header;
 	
 	
 	private Daten dieDaten;
@@ -25,6 +29,7 @@ public class GUI_Launcher {
 	// KONSTRUKTOR //
 	public void initialize() {
 		statLabel.setText("");
+		header.setImage(new Image("file:files/textures/ui/title.png"));
 		
 		comboBox.getItems().add("Emerald Hill Zone");
 		comboBox.getItems().add("Marble Zone");

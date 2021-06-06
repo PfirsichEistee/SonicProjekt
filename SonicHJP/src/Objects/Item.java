@@ -71,4 +71,8 @@ public class Item extends Objekt {
 			}
 		}
 	}
+	
+	public boolean isDead() {
+		return dead;
+	}
 }

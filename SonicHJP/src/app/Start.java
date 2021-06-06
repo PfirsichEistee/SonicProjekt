@@ -99,6 +99,7 @@ public class Start extends Application {
 		
 		
 		// Game loop
+		SoundMan.init(dieSpielwelt.getKamera(), mapID - 1);
 		runGame();
 		
 		
@@ -180,6 +181,7 @@ public class Start extends Application {
 		start.animTimer.stop();
 		start.launcher.show();
 		start.gameStage.close();
+		SoundMan.stopMusic();
 	}
 }
 

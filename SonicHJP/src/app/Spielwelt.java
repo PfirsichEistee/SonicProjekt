@@ -81,6 +81,8 @@ public class Spielwelt {
 		for (Gegner g : dieGegner)
 			g.start();
 		
+		SoundMan.playMusic();
+		
 		debugStart();
 	}
 	
@@ -192,15 +194,18 @@ public class Spielwelt {
 					if (!obj.playerWasInside) {
 						obj.playerWasInside = true;
 						
-						obj.onPlayerCollide(derSpieler);
-						
 						if (obj.getClass() == Ring.class) {
 							dieObjekte.remove(i);
 							derSpieler.addPoints(10);
 						} else {
-							if (!derSpieler.getKnockback())
+							if (derSpieler.getKnockback()) continue;
+							if (obj.getClass() == Item.class && ((Item)obj).isDead()) continue;
+							
 							derSpieler.addPoints(100);
+							SoundMan.playClip(5);
 						}
+						
+						obj.onPlayerCollide(derSpieler);
 					}
 				} else {
 					obj.playerWasInside = false;
@@ -217,6 +222,7 @@ public class Spielwelt {
 						
 						dieGegner.remove(i);
 						derSpieler.addPoints(250);
+						SoundMan.playClip(5);
 					} else {
 						float ph = (derSpieler.getX() - g.getX());
 						if (ph == 0) ph = -0.1f;

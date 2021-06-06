@@ -2,6 +2,7 @@ package Objects;
 
 import Entities.Sonic;
 import app.Kamera;
+import app.SoundMan;
 import javafx.scene.image.Image;
 
 public class Stachelblock extends Objekt {
@@ -31,6 +32,7 @@ public class Stachelblock extends Objekt {
 		if (timer > 0 && (System.currentTimeMillis() - lastTime) >= timer) {
 			lastTime = System.currentTimeMillis();
 			visible = !visible;
+			SoundMan.playClipAt(6, x, y);
 		}
 		
 		if (visible)

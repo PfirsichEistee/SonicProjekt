@@ -90,6 +90,7 @@ public class Start extends Application {
 		Eingabe.init(scene);
 		Kollision.init(90, 10);
 		Core.init(gc, width, height);
+		TriggerBox.init();
 		
 		
 		// Load game

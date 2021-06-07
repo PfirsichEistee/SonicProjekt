@@ -63,4 +63,9 @@ public class TriggerBox {
 		
 		return false;
 	}
+	
+	
+	public static void init() {
+		tbList = new ArrayList<TriggerBox>();
+	}
 }

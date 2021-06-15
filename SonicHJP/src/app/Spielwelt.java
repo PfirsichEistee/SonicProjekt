@@ -20,6 +20,7 @@ import Objects.SS_SBahn;
 import Objects.SpezialStrecke;
 import Objects.Stachelblock;
 import Objects.Waterfall;
+import Objects.Ziellinie;
 import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
 
@@ -28,6 +29,7 @@ public class Spielwelt {
 	private Image dasLevelImage;
 	private int levelPixelProEinheit;
 	private int imgWidth, imgHeight;
+	private int mapID;
 	
 	private Kamera dieKamera;
 	private Sonic derSpieler;
@@ -44,32 +46,31 @@ public class Spielwelt {
 	private float animTimer;
 	private int animSlow;
 	
+	private float fixedUpdateDeltaMult;
+	
 	// DEBUG
 	private float debugDelta;
 	
 	
 	// KONSTRUKTOR //
-	public Spielwelt(Image pLevelImage, int pLevelPixelProEinheit, float pSpielerX, float pSpielerY, SpezialStrecke[] pSpezialStrecken, ArrayList<Objekt> pDieObjekte, ArrayList<Gegner> pDieGegner, ArrayList<DekoObjekt> pDieDekos, ArrayList<Waterfall> pDieWasserfaelle) {
+	public Spielwelt(int pMapID, Image pLevelImage, int pLevelPixelProEinheit, float pSpielerX, float pSpielerY) {
 		dasLevelImage = pLevelImage;
 		levelPixelProEinheit = pLevelPixelProEinheit;
 		imgWidth = (int)dasLevelImage.getWidth();
 		imgHeight = (int)dasLevelImage.getHeight();
+		mapID = pMapID;
 		
 		dieKamera = new Kamera(pSpielerX, pSpielerY, 48);
 		derSpieler = new Sonic(pSpielerX, pSpielerY, dieKamera);
 		derHintergrund = new Background(dieKamera);
 		
-		dieSpezialStrecken = pSpezialStrecken;
-		dieGegner = pDieGegner;
-		//diePlatformen = new ArrayList<MovingPlatform>();
-		dieObjekte = pDieObjekte;
-		dieDekos = pDieDekos;
-		dieWasserfaelle = pDieWasserfaelle;
 		dieProjektile = new ArrayList<Projektil>();
 		
 		
 		animTimer = 0;
 		animSlow = 0;
+		
+		fixedUpdateDeltaMult = 1;
 		
 		// Klassenattribute
 		Gegner.setSpielwelt(this);
@@ -88,7 +89,6 @@ public class Spielwelt {
 	
 	
 	public void update(float delta) {
-		debugUpdate();
 		debugDelta = delta;
 		
 		derSpieler.update(delta);
@@ -129,6 +129,15 @@ public class Spielwelt {
 			Ring.imageZaehler %= 16;
 			
 			
+			if (fixedUpdateDeltaMult == 0) { // Wenn Ziellinie erreicht wurde ist dieser Wert = 0
+				for (Objekt obj : dieObjekte) {
+					if (obj.getClass() == Ziellinie.class) {
+						((Ziellinie)obj).incImage();
+					}
+				}
+			}
+			
+			
 			for (int i = (Particle.particleList.size() - 1); i >= 0; i--) {
 				Particle.particleList.get(i).update();
 			}
@@ -137,6 +146,8 @@ public class Spielwelt {
 	
 	
 	public void fixedUpdate(float delta) {
+		delta *= fixedUpdateDeltaMult;
+		
 		for (MovingPlatform mp : diePlatformen) {
 			mp.fixedUpdate(delta);
 		}
@@ -329,10 +340,32 @@ public class Spielwelt {
 	public Kamera getKamera() {
 		return dieKamera;
 	}
+	public int getMapID() {
+		return mapID;
+	}
 	
 	// Setter
 	public void setPlatformen(ArrayList<MovingPlatform> pDiePlatformen) {
 		diePlatformen = pDiePlatformen;
+	}
+	public void setObjekte(ArrayList<Objekt> p) {
+		dieObjekte = p;
+	}
+	public void setGegner(ArrayList<Gegner> p) {
+		dieGegner = p;
+	}
+	public void setDekos(ArrayList<DekoObjekt> p) {
+		dieDekos = p;
+	}
+	public void setWasserfaelle(ArrayList<Waterfall> p) {
+		dieWasserfaelle = p;
+	}
+	public void setSpezialStrecken(SpezialStrecke[] p) {
+		dieSpezialStrecken = p;
+	}
+	
+	public void setFixedUpdateDeltaMult(float m) {
+		fixedUpdateDeltaMult = m;
 	}
 	
 	
@@ -405,19 +438,6 @@ public class Spielwelt {
 		if (hit != null) {
 			dieKamera.drawOval(hit.hitX - 0.2f, hit.hitY - 0.2f, 0.4f, 0.4f);
 			dieKamera.drawLine(hit.hitX, hit.hitY, hit.hitX + hit.normalX, hit.hitY + hit.normalY);
-		}*/
-	}
-	
-	private void debugUpdate() {
-		/*if (Eingabe.isKeyDown("A")) {
-			dieKamera.setX(dieKamera.getX() - 0.1f);
-		} else if (Eingabe.isKeyDown("D")) {
-			dieKamera.setX(dieKamera.getX() + 0.1f);
-		}
-		if (Eingabe.isKeyDown("S")) {
-			dieKamera.setY(dieKamera.getY() - 0.1f);
-		} else if (Eingabe.isKeyDown("W")) {
-			dieKamera.setY(dieKamera.getY() + 0.1f);
 		}*/
 	}
 	

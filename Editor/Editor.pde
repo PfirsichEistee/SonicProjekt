@@ -37,7 +37,7 @@ void setup(){
   gegnerBezeichnungen[3] = "Kaefer";
   gegnerBezeichnungen[4] = "Fledermaus";
   
-  objektBezeichnungen = new String [8];
+  objektBezeichnungen = new String [9];
   objektBezeichnungen[0] = "Ring";
   objektBezeichnungen[1] = "Checkpoint";
   objektBezeichnungen[2] = "Ring (TV-Box)";
@@ -46,6 +46,7 @@ void setup(){
   objektBezeichnungen[5] = "Powerup"; //Unsterblichkeit
   objektBezeichnungen[6] = "Lvl-Up";
   objektBezeichnungen[7] = "Eggman (Trap)"; // wirkt, wie wenn Sonic einen Gegner beruehrt haette
+  objektBezeichnungen[8] = "Ziellinie"; // wirkt, wie wenn Sonic einen Gegner beruehrt haette
   
   
   dieEingabe = new Eingabe();

@@ -728,6 +728,8 @@ public class Sonic {
 	public int getRingCount() { return ringCount; }
 	public void setRingCount(int p) { ringCount = p; }
 	public void addPoints(int p) { scoreCount += p; }
+	public int getScore() { return scoreCount; }
+	public int getTime() { return (int)uiTimer; }
 	public void setSpeedBonus() {
 		if (speedBonus <= 0)
 			SoundMan.setMusicSpeed(true);
@@ -794,6 +796,7 @@ public class Sonic {
 		}
 		return txt;
 	}
+	
 	
 	
 	public void debugHeal() {

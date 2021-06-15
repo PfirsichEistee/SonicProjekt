@@ -13,6 +13,7 @@ public class SoundMan {
 			new AudioClip("file:files/sounds/boom.mp3"),
 			new AudioClip("file:files/sounds/gate.mp3"),
 			new AudioClip("file:files/sounds/dash.mp3"),
+			new AudioClip("file:files/sounds/goal.mp3"),
 	};
 	private static AudioClip[] music = {
 			new AudioClip("file:files/sounds/map_01.mp3"),

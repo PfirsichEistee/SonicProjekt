@@ -23,6 +23,7 @@ import Objects.SS_SBahn;
 import Objects.SpezialStrecke;
 import Objects.Stachelblock;
 import Objects.Waterfall;
+import Objects.Ziellinie;
 import javafx.scene.image.Image;
 
 public class LevelLeser {
@@ -81,6 +82,9 @@ public class LevelLeser {
 						case (6):
 						case (7):
 							objekte.add(new Item(strToInt(split[3]) - 2, strToFloat(split[1]), strToFloat(split[2])));
+							break;
+						case (8):
+							objekte.add(new Ziellinie(strToFloat(split[1]), strToFloat(split[2])));
 							break;
 					}
 				} else if (split[0].equals("STK")) { // STK X1 Y1 X2 Y2 TYP
@@ -223,12 +227,24 @@ public class LevelLeser {
 		
 		
 		
-		Spielwelt dieSpielwelt = new Spielwelt(new Image("file:files/textures/maps/map_0" + (mapID + 1) + ".png"), pixelProEinheit, sonicX, sonicY, finalSpezialStrecken, objekte, gegner, dekos, wasserfaelle);
+		//Spielwelt dieSpielwelt = new Spielwelt(new Image("file:files/textures/maps/map_0" + (mapID + 1) + ".png"), pixelProEinheit, sonicX, sonicY, finalSpezialStrecken, objekte, gegner, dekos, wasserfaelle);
+		Spielwelt dieSpielwelt = new Spielwelt(mapID, new Image("file:files/textures/maps/map_0" + (mapID + 1) + ".png"), pixelProEinheit, sonicX, sonicY);
 		dieSpielwelt.setPlatformen(platformen);
+		dieSpielwelt.setSpezialStrecken(finalSpezialStrecken);
+		dieSpielwelt.setObjekte(objekte);
+		dieSpielwelt.setGegner(gegner);
+		dieSpielwelt.setDekos(dekos);
+		dieSpielwelt.setWasserfaelle(wasserfaelle);
 		
 		Sonic derSpieler = dieSpielwelt.getSpieler();
 		for (DeadzonePlaceholder dz : deadzones) {
 			dz.makeTriggerBox(derSpieler);
+		}
+		
+		for (Objekt obj : objekte) {
+			if (obj.getClass() == Ziellinie.class) {
+				((Ziellinie)obj).setSpielwelt(dieSpielwelt);
+			}
 		}
 		
 		

@@ -20,7 +20,7 @@ public class GUI_Launcher {
 	private ImageView header;
 	
 	
-	private Daten dieDaten;
+	private static Daten dieDaten;
 	
 	private Start dieStartklasse;
 	private Stage primaryStage;
@@ -45,7 +45,7 @@ public class GUI_Launcher {
 			statLabel.setText("Du musst ein Level waehlen!");
 			return;
 		}
-
+		
 		int index = comboBox.getItems().indexOf(comboBox.getValue());
 		
 		dieStartklasse.startGame(new Stage(), index + 1);
@@ -61,11 +61,16 @@ public class GUI_Launcher {
 		int index = comboBox.getItems().indexOf(comboBox.getValue());
 		int[] stats = dieDaten.getStats(index);
 		
-		statLabel.setText("-- Statistiken --\n\nZeit: " + stats[0] + "\nRinge: " + stats[1] + "\nHighscore: " + stats[2]);
+		statLabel.setText("-- Statistiken --\n\nZeit: " + stats[0] + " sec\nRinge: " + stats[1] + "\nHighscore: " + stats[2]);
 	}
 	
 	public void show() {
 		primaryStage.show();
+		try {
+			comboBoxAction(null);
+		} catch (Exception e) {
+			
+		}
 	}
 	
 	public void setStart(Start pStart) {
@@ -73,5 +78,9 @@ public class GUI_Launcher {
 	}
 	public void setPrimaryStage(Stage pStage) {
 		primaryStage = pStage;
+	}
+	
+	public static Daten getDaten() {
+		return dieDaten;
 	}
 }
